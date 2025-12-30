@@ -1,0 +1,24 @@
+﻿# Core packages
+pandas
+numpy
+
+# Machine Learning
+scikit-learn
+lightgbm
+xgboost
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Web App
+streamlit
+
+# Utilities
+joblib
+pyyaml
+scipy
+
+# Testing
+pytest
