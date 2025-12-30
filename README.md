@@ -1,97 +1,101 @@
-🏥 Advanced Diabetes Risk Prediction System
 
-AI-powered clinical screening system with disease-specific medical recommendations
 
-🚀 Project Overview
+# 🏥 Advanced Diabetes Risk Prediction System
 
-Diabetes is one of the most dangerous chronic diseases worldwide and often remains undiagnosed until advanced stages.
-This project is a full-stack medical AI system that predicts diabetes risk using machine learning and provides condition-specific medical recommendations, test suggestions, and action plans through an interactive clinical dashboard.
+> AI-powered medical screening system with disease-specific clinical recommendations and interactive dashboards.
 
-Unlike basic ML projects, this system simulates real hospital screening software with confidence-based medical decision support.
 
-✨ Key Features
+## 🚀 Project Overview
 
-🔬 Random Forest ML model trained on Pima Indians Diabetes Dataset
+Diabetes is one of the most life-threatening chronic diseases worldwide and often remains undiagnosed until advanced stages.  
+This project presents a full-stack medical AI system that predicts the probability of diabetes using machine learning and provides condition-specific medical recommendations, diagnostic test suggestions, and immediate action plans through a professional hospital-style dashboard.
 
-🧠 Advanced feature engineering for metabolic risk detection
 
-📊 Interactive clinical dashboard using Streamlit + Plotly
+## ✨ Key Features
 
-🩺 Disease-specific recommendations (Diabetes, Hypertension, Obesity, Insulin Resistance etc.)
+- 🧠 Random Forest machine learning model  
+- ⚙ Advanced feature engineering for metabolic risk detection  
+- 📊 Interactive Streamlit medical dashboard  
+- 🩺 Disease-specific medical recommendations  
+- 🎯 Confidence-based risk stratification  
+- 📈 Risk gauge and contributing factor analysis  
+- 🏥 Professional hospital-style UI  
 
-🎯 Confidence-based risk stratification
 
-📈 Risk gauge, factor analysis, and parameter insights
 
-⚡ Real-time prediction engine
+## 🏗 System Architecture
 
-🏥 Professional hospital-style UI
-
-🏗️ System Architecture
 Patient Input
-     ↓
+↓
 Data Preprocessing
-     ↓
+↓
 Feature Engineering
-     ↓
+↓
 Random Forest Classifier
-     ↓
+↓
 Risk Probability Estimation
-     ↓
+↓
 Disease Condition Analysis
-     ↓
+↓
 Medical Recommendations Dashboard
 
-🛠️ Tech Stack
-Technology	Purpose
-Python	Core Programming
-Pandas, NumPy	Data Processing
-Scikit-learn	Machine Learning
-Random Forest	Prediction Model
-Streamlit	Web Interface
-Plotly	Interactive Visualization
-VS Code	Development Environment
-📊 Dataset
+yaml
+Copy code
 
-Pima Indians Diabetes Dataset
-Contains 768 clinical patient records with 8 physiological features and diabetes outcome.
 
-🚀 How to Run
-Install Dependencies
+## 🛠 Tech Stack
+
+| Technology | Purpose |
+|----------|--------|
+| Python | Core Programming |
+| Pandas, NumPy | Data Processing |
+| Scikit-learn | Machine Learning |
+| Random Forest | Prediction Model |
+| Streamlit | Web Interface |
+| Plotly | Interactive Visualization |
+| VS Code | Development Environment |
+
+
+## 📊 Dataset
+
+**Pima Indians Diabetes Dataset**  
+Contains 768 patient records with 8 clinical features and diabetes outcome labels.
+
+
+## ▶ How to Run the Project
+
+### Install dependencies
+```bash
 pip install -r requirements.txt
-
-Run the Web Application
+Run the application
+bash
+Copy code
 streamlit run app.py
-
 🧪 Model Evaluation
+Metrics Used: Accuracy, ROC-AUC
 
-Metric Used: Accuracy & ROC-AUC
-
-The model predicts probability-based diabetes risk for accurate classification.
+Outputs probability-based diabetes risk predictions.
 
 🏆 Project Highlights
+Hospital-grade dashboard UI
 
-Hospital-grade medical UI
+Explainable AI predictions
 
-Disease-wise action recommendations
+Condition-wise action recommendations
 
-Explainable ML predictions
-
-Suitable for clinics, screening camps, and health startups
+Real-world screening usability
 
 🔮 Future Enhancements
-
 Cloud deployment
 
 Mobile application
 
-Integration with hospital databases
+Hospital database integration
 
-Multi-disease prediction engine
+Multi-disease prediction
 
-Appointment & report generation system
+Appointment and report automation
 
 👨‍💻 Author
-
 Ajay Kumar
 GitHub: https://github.com/AjayKumarKR07
