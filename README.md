@@ -1,101 +1,79 @@
+# 🩺 Advanced Diabetes Risk Prediction System
+
+A full-stack Machine Learning system that predicts diabetes risk using clinical and lifestyle parameters.  
+This project includes data preprocessing, feature engineering, model training, Streamlit deployment, and Kaggle leaderboard submission.
 
 
-# 🏥 Advanced Diabetes Risk Prediction System
-
-> AI-powered medical screening system with disease-specific clinical recommendations and interactive dashboards.
-
-
-## 🚀 Project Overview
-
-Diabetes is one of the most life-threatening chronic diseases worldwide and often remains undiagnosed until advanced stages.  
-This project presents a full-stack medical AI system that predicts the probability of diabetes using machine learning and provides condition-specific medical recommendations, diagnostic test suggestions, and immediate action plans through a professional hospital-style dashboard.
+## 🚀 Live Demo
+🔗 **Streamlit App:**  
+https://advanced-diabetes-risk-prediction-system-sqgjemwis3jbvzspq7vb8.streamlit.app/
 
 
-## ✨ Key Features
-
-- 🧠 Random Forest machine learning model  
-- ⚙ Advanced feature engineering for metabolic risk detection  
-- 📊 Interactive Streamlit medical dashboard  
-- 🩺 Disease-specific medical recommendations  
-- 🎯 Confidence-based risk stratification  
-- 📈 Risk gauge and contributing factor analysis  
-- 🏥 Professional hospital-style UI  
+## 🏆 Kaggle Competition
+**Playground Series S5E12 – Diabetes Prediction**  
+Public Leaderboard ROC-AUC: **0.68538**
 
 
-
-## 🏗 System Architecture
-
-Patient Input
-↓
-Data Preprocessing
-↓
-Feature Engineering
-↓
-Random Forest Classifier
-↓
-Risk Probability Estimation
-↓
-Disease Condition Analysis
-↓
-Medical Recommendations Dashboard
-
-yaml
-Copy code
+## 📊 Features
+- Advanced Random Forest ML model
+- Categorical feature encoding & missing value handling
+- Feature engineering for improved accuracy
+- Interactive Streamlit web interface
+- Kaggle competition submission pipeline
+- ROC-AUC, confusion matrix & evaluation charts
 
 
-## 🛠 Tech Stack
-
-| Technology | Purpose |
-|----------|--------|
-| Python | Core Programming |
-| Pandas, NumPy | Data Processing |
-| Scikit-learn | Machine Learning |
-| Random Forest | Prediction Model |
-| Streamlit | Web Interface |
-| Plotly | Interactive Visualization |
-| VS Code | Development Environment |
+## 🧠 Technologies Used
+- Python
+- Pandas, NumPy
+- Scikit-Learn
+- Streamlit
+- Matplotlib & Seaborn
+- Kaggle API
 
 
-## 📊 Dataset
+## 📁 Project Structure
 
-**Pima Indians Diabetes Dataset**  
-Contains 768 patient records with 8 clinical features and diabetes outcome labels.
+Diabetes-prediction-project/
+│
+├── data/ # Datasets (train.csv, test.csv, etc.)
+├── models/ # Trained ML models
+├── notebooks/ # Experiments & EDA
+├── results/ # Graphs & reports
+├── src/ # Source code
+├── tests/ # Unit tests
+├── train_kaggle_model.py # Kaggle training pipeline
+├── kaggle_submit.py # Kaggle submission generator
+├── main.py # Streamlit app
+├── requirements.txt
+└── README.md
 
 
-## ▶ How to Run the Project
+## ⚙️ Installation
 
-### Install dependencies
 ```bash
+git clone https://github.com/AjayKumarKR07/Advanced-Diabetes-Risk-Prediction-System.git
+cd Diabetes-prediction-project
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
-Run the application
+▶️ Run Web App
 bash
 Copy code
-streamlit run app.py
-🧪 Model Evaluation
-Metrics Used: Accuracy, ROC-AUC
+streamlit run main.py
+📤 Kaggle Submission
+bash
+Copy code
+python train_kaggle_model.py
+python kaggle_submit.py
+Upload the generated submission.csv to Kaggle.
 
-Outputs probability-based diabetes risk predictions.
+📈 Results
+Validation ROC-AUC: 0.70+
 
-🏆 Project Highlights
-Hospital-grade dashboard UI
+Kaggle Public Score: 0.68538
 
-Explainable AI predictions
-
-Condition-wise action recommendations
-
-Real-world screening usability
-
-🔮 Future Enhancements
-Cloud deployment
-
-Mobile application
-
-Hospital database integration
-
-Multi-disease prediction
-
-Appointment and report automation
-
-👨‍💻 Author
-Ajay Kumar
+📌 Author
+Ajay Kumar KR
 GitHub: https://github.com/AjayKumarKR07
+
