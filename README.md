@@ -22,3 +22,11 @@ Security notes
 
 - Use a strong `JWT_SECRET` and keep it out of source control.
 - In production set `NODE_ENV=production` so cookies are secure.
+- The repo also includes an optional **NextAuth** credentials provider example (`frontend/app/api/auth/[...nextauth]/route.ts`) that uses the Prisma adapter. To enable NextAuth fully:
+  1. Install: `npm install next-auth @next-auth/prisma-adapter`
+  2. Set `NEXTAUTH_URL` and `NEXTAUTH_SECRET` in your `.env` (example in `.env.example`).
+  3. Consider configuring OAuth providers (Google/GitHub) in `authOptions.providers` for social sign-in.
+
+Notes
+
+- The project contains both a custom JWT auth flow (with httpOnly cookie) and an optional NextAuth implementation using credentials + Prisma adapter. Choose one strategy for production to avoid duplicate auth flows.

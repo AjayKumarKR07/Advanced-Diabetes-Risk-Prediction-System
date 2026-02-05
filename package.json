@@ -9,5 +9,9 @@
     "prisma:migrate": "prisma migrate dev --schema ./database/schema.prisma",
     "prisma:generate": "prisma generate --schema ./database/schema.prisma",
     "test": "jest"
+  },
+  "dependencies": {
+    "next-auth": "^4.30.0",
+    "@next-auth/prisma-adapter": "^1.0.5"
   }
 }

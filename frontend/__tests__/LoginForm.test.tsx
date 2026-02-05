@@ -1,15 +1,18 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LoginForm from '../components/forms/LoginForm';
+import { signIn } from 'next-auth/react';
+
+jest.mock('next-auth/react', () => ({
+  signIn: jest.fn(),
+}));
 
 describe('LoginForm', () => {
   beforeEach(() => {
-    // @ts-ignore
-    global.fetch = jest.fn();
+    (signIn as jest.Mock).mockReset();
   });
 
-  it('submits login and calls /api/auth/login', async () => {
-    // @ts-ignore
-    global.fetch.mockResolvedValue({ ok: true, json: async () => ({ id: 1, email: 'a@example.com' }) });
+  it('calls signIn with credentials and redirects on success', async () => {
+    (signIn as jest.Mock).mockResolvedValue({ ok: true });
 
     render(<LoginForm />);
 
@@ -19,13 +22,12 @@ describe('LoginForm', () => {
     fireEvent.click(screen.getByText(/Login/i));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', expect.any(Object));
+      expect(signIn).toHaveBeenCalledWith('credentials', expect.objectContaining({ email: 'a@example.com' , password: 'password123', redirect: false }));
     });
   });
 
-  it('shows error on invalid credentials', async () => {
-    // @ts-ignore
-    global.fetch.mockResolvedValue({ ok: false, json: async () => ({ error: 'Invalid credentials' }) });
+  it('shows error when signIn returns an error', async () => {
+    (signIn as jest.Mock).mockResolvedValue({ error: 'Invalid credentials' });
 
     render(<LoginForm />);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -11,13 +12,8 @@ export default function LoginForm() {
     e.preventDefault();
     setError(null);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Login failed');
+      const res: any = await signIn('credentials', { redirect: false, email, password });
+      if (res?.error) throw new Error(res.error || 'Login failed');
       // On success, redirect to dashboard
       window.location.href = '/(dashboard)/resident';
     } catch (err: any) {
