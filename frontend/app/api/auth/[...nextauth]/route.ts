@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import { compare } from 'bcrypt';
 import { prisma } from '../../../lib/prisma';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
@@ -21,6 +22,11 @@ export const authOptions = {
         if (!valid) return null;
         return { id: user.id, email: user.email, name: user.name } as any;
       },
+    }),
+    // Google OAuth
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
     }),
   ],
   session: { strategy: 'jwt' },

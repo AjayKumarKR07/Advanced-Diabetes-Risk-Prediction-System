@@ -29,4 +29,4 @@ Security notes
 
 Notes
 
-- The project contains both a custom JWT auth flow (with httpOnly cookie) and an optional NextAuth implementation using credentials + Prisma adapter. Choose one strategy for production to avoid duplicate auth flows.
+- The project uses **NextAuth** as the primary authentication strategy (Credentials + Google OAuth). The repo used to include a custom JWT flow; those endpoints are now deprecated in favor of NextAuth. For signup, use the `/api/auth/register` endpoint to create a user (the login flow should use NextAuth's `signIn`), and use the protected example at `GET /api/profile` to see how to access the session on the server.
