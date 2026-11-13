@@ -192,7 +192,21 @@ async def change_password(
             detail="Current password is incorrect.",
         )
 
-    # 2. Hash new password
+    # 2. Reject if new password equals current password
+    if verify_password(payload.new_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password cannot be the same as the current password.",
+        )
+
+    # 3. Check optional confirmation match
+    if payload.confirm_password is not None and payload.confirm_password != payload.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password and confirmation password do not match.",
+        )
+
+    # 4. Hash new password
     try:
         new_hash = hash_password(payload.new_password)
     except Exception as exc:

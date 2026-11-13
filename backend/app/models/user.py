@@ -41,6 +41,11 @@ class User(Base):
         "Assessment", back_populates="user", cascade="all, delete-orphan"
     )
 
+    # 1-to-1 Relationship: user preferences and settings
+    settings: Mapped["UserSettings | None"] = relationship(  # noqa: F821
+        "UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email!r}>"
 

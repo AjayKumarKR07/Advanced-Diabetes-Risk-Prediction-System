@@ -101,7 +101,8 @@ export default function AuthenticatedLayout({ children }) {
   }
   const currentTitle = PAGE_TITLES[location.pathname] || 'DiabetesRisk AI'
 
-  // User initials avatar
+  // User initials & stored avatar
+  const avatarUrl = user?.id ? localStorage.getItem(`diabetes_ai_avatar_${user.id}`) : null
   const initials = user?.full_name
     ? user.full_name
         .split(' ')
@@ -197,8 +198,12 @@ export default function AuthenticatedLayout({ children }) {
         <div className="p-3 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
           {!collapsed && user && (
             <div className="flex items-center gap-3 px-2 py-2 mb-2 rounded-xl bg-white border border-slate-200/80 shadow-xs">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
-                {initials}
+              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-slate-900 truncate">{user.full_name}</p>
@@ -297,8 +302,12 @@ export default function AuthenticatedLayout({ children }) {
         <div className="p-4 border-t border-slate-100 bg-slate-50">
           {user && (
             <div className="flex items-center gap-3 px-2 py-2 mb-3 rounded-xl bg-white border border-slate-200">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                {initials}
+              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-slate-900 truncate">{user.full_name}</p>
@@ -380,8 +389,12 @@ export default function AuthenticatedLayout({ children }) {
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
               >
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-600 to-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                  {initials}
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-600 to-blue-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    initials
+                  )}
                 </div>
                 <span className="text-xs font-bold text-slate-800 hidden sm:inline max-w-[120px] truncate">
                   {user?.full_name?.split(' ')[0] || 'Account'}

@@ -5,6 +5,7 @@ FastAPI API router — diabetes prediction, model inspection, health check,
 and DB-backed assessment/prediction history endpoints (Phase 6.6).
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -14,8 +15,16 @@ from sqlalchemy.orm import Session
 from backend.app.api.auth_routes import auth_router
 from backend.app.core.config import settings
 from backend.app.core.database import check_db_connection, get_db
-from backend.app.core.security import get_current_user, get_optional_user
+from backend.app.core.security import get_current_user, get_optional_user, verify_password
 from backend.app.models.user import User
+from backend.app.schemas.auth_schemas import (
+    AccountDeleteRequest,
+    MessageResponse,
+    UserProfileResponse,
+    UserProfileUpdateRequest,
+    UserSettingsResponse,
+    UserSettingsUpdateRequest,
+)
 from backend.app.schemas.db_schemas import (
     AssessmentCreate,
     AssessmentListOut,
@@ -356,3 +365,178 @@ async def get_prediction(
                 detail="Access forbidden: You do not have permission to view this prediction.",
             )
     return record
+
+
+# ---------------------------------------------------------------------------
+# User Profile, Settings & Account Management (Phase 6.14)
+# ---------------------------------------------------------------------------
+
+logger = logging.getLogger(__name__)
+
+
+@api_router.get(
+    "/profile",
+    response_model=UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve enriched profile of current user",
+    description="Returns authenticated user details and longitudinal activity statistics from PostgreSQL.",
+    tags=["User Account"],
+)
+async def get_user_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserProfileResponse:
+    """Retrieve full profile details and real activity metrics for authenticated user."""
+    stats = db_service.get_user_profile_stats(db, current_user.id)
+    return UserProfileResponse(
+        id=current_user.id,
+        full_name=current_user.full_name,
+        email=current_user.email,
+        created_at=current_user.created_at,
+        total_assessments=stats["total_assessments"],
+        latest_assessment_date=stats["latest_assessment_date"],
+        account_status="Active",
+        email_verified=True,
+    )
+
+
+@api_router.put(
+    "/profile",
+    response_model=UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update authenticated user profile",
+    description="Updates user full name in PostgreSQL with strict sanitization and validation.",
+    tags=["User Account"],
+)
+async def update_user_profile(
+    payload: UserProfileUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserProfileResponse:
+    """Update user full name and return refreshed profile with statistics."""
+    try:
+        user = db_service.update_user_profile(db, current_user, payload.full_name)
+        db.commit()
+        db.refresh(user)
+        stats = db_service.get_user_profile_stats(db, user.id)
+        return UserProfileResponse(
+            id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            created_at=user.created_at,
+            total_assessments=stats["total_assessments"],
+            latest_assessment_date=stats["latest_assessment_date"],
+            account_status="Active",
+            email_verified=True,
+        )
+    except Exception as exc:
+        db.rollback()
+        logger.error("Failed to update user profile: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update profile information.",
+        )
+
+
+@api_router.get(
+    "/settings",
+    response_model=UserSettingsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve authenticated user settings and preferences",
+    description="Returns theme, notification preferences, and system defaults for current user.",
+    tags=["User Account"],
+)
+async def get_user_settings(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserSettingsResponse:
+    """Fetch user preferences or initialize default preferences row."""
+    settings = db_service.get_or_create_user_settings(db, current_user.id)
+    db.commit()
+    return UserSettingsResponse.model_validate(settings)
+
+
+@api_router.put(
+    "/settings",
+    response_model=UserSettingsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update authenticated user settings and preferences",
+    description="Updates theme or notification settings in PostgreSQL.",
+    tags=["User Account"],
+)
+async def update_user_settings(
+    payload: UserSettingsUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserSettingsResponse:
+    """Update user preferences and persist to PostgreSQL."""
+    try:
+        settings = db_service.update_user_settings(
+            db=db,
+            user_id=current_user.id,
+            theme=payload.theme,
+            notify_assessment_ready=payload.notify_assessment_ready,
+            notify_security_alerts=payload.notify_security_alerts,
+            notify_product_updates=payload.notify_product_updates,
+        )
+        db.commit()
+        db.refresh(settings)
+        return UserSettingsResponse.model_validate(settings)
+    except Exception as exc:
+        db.rollback()
+        logger.error("Failed to update user settings: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update account preferences.",
+        )
+
+
+@api_router.delete(
+    "/account",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Permanently delete user account and associated data",
+    description="Requires password re-authentication and explicit confirmation token 'DELETE'. Permanently deletes user account and cascades deletion to all associated health records.",
+    tags=["User Account"],
+)
+@api_router.post(
+    "/account/delete",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Permanently delete user account (POST alias for HTTP clients that restrict body in DELETE)",
+    description="Requires password re-authentication and explicit confirmation token 'DELETE'. Permanently deletes user account and cascades deletion to all associated health records.",
+    tags=["User Account"],
+)
+async def delete_user_account(
+    payload: AccountDeleteRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> MessageResponse:
+    """Re-authenticate and delete user account within atomic database transaction."""
+    # 1. Verify re-authentication password
+    if not verify_password(payload.password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect password. Account deletion aborted.",
+        )
+
+    # 2. Verify explicit confirmation token
+    if payload.confirmation.strip().upper() != "DELETE":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Confirmation token mismatch. Please type DELETE to confirm.",
+        )
+
+    # 3. Perform atomic deletion
+    try:
+        db_service.delete_user_account(db, current_user)
+        db.commit()
+        return MessageResponse(message="Your account and all associated records have been permanently deleted.")
+    except Exception as exc:
+        db.rollback()
+        logger.error("Failed to delete user account %s: %s", current_user.id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete account from database.",
+        )
+

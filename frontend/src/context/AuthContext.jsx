@@ -74,7 +74,10 @@ export function AuthProvider({ children }) {
   }
 
   const updateUser = (updatedUser) => {
-    setUser(updatedUser)
+    setUser((prev) => ({ ...prev, ...updatedUser }))
+    const storage = localStorage.getItem('diabetes_ai_token') ? localStorage : sessionStorage
+    const existing = getStoredUser() || {}
+    storage.setItem('diabetes_ai_user', JSON.stringify({ ...existing, ...updatedUser }))
   }
 
   const value = {

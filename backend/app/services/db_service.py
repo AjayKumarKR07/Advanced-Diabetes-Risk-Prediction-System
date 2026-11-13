@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from backend.app.models.assessment import Assessment
 from backend.app.models.prediction import Prediction
 from backend.app.models.user import User
+from backend.app.models.user_settings import UserSettings
 from backend.app.schemas.db_schemas import AssessmentCreate
 
 
@@ -255,6 +256,66 @@ def update_user_password(
     user.hashed_password = hashed_password
     db.flush()
     return user
+
+
+def get_user_profile_stats(db: Session, user_id: int) -> dict:
+    """Compute total completed assessments and latest assessment date for a user."""
+    count = db.scalar(
+        select(func.count(Assessment.id)).where(Assessment.user_id == user_id)
+    ) or 0
+    latest_dt = db.scalar(
+        select(func.max(Assessment.created_at)).where(Assessment.user_id == user_id)
+    )
+    return {
+        "total_assessments": int(count),
+        "latest_assessment_date": latest_dt,
+    }
+
+
+def get_or_create_user_settings(db: Session, user_id: int) -> UserSettings:
+    """Retrieve existing settings or create default settings row for user."""
+    settings = db.scalar(
+        select(UserSettings).where(UserSettings.user_id == user_id)
+    )
+    if settings is None:
+        settings = UserSettings(
+            user_id=user_id,
+            theme="system",
+            notify_assessment_ready=True,
+            notify_security_alerts=True,
+            notify_product_updates=False,
+        )
+        db.add(settings)
+        db.flush()
+    return settings
+
+
+def update_user_settings(
+    db: Session,
+    user_id: int,
+    theme: Optional[str] = None,
+    notify_assessment_ready: Optional[bool] = None,
+    notify_security_alerts: Optional[bool] = None,
+    notify_product_updates: Optional[bool] = None,
+) -> UserSettings:
+    """Update specific user preferences."""
+    settings = get_or_create_user_settings(db, user_id)
+    if theme is not None:
+        settings.theme = theme
+    if notify_assessment_ready is not None:
+        settings.notify_assessment_ready = notify_assessment_ready
+    if notify_security_alerts is not None:
+        settings.notify_security_alerts = notify_security_alerts
+    if notify_product_updates is not None:
+        settings.notify_product_updates = notify_product_updates
+    db.flush()
+    return settings
+
+
+def delete_user_account(db: Session, user: User) -> None:
+    """Permanently delete a user account and cascade delete all associated records."""
+    db.delete(user)
+    db.flush()
 
 
 

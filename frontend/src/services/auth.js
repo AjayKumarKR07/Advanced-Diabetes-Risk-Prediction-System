@@ -50,13 +50,23 @@ export async function fetchCurrentUser() {
 }
 
 /**
+ * Fetch enriched user profile with activity statistics.
+ * GET /api/profile
+ * @returns {Promise<Object>}
+ */
+export async function fetchUserProfile() {
+  const { data } = await apiClient.get('/profile')
+  return data
+}
+
+/**
  * Update authenticated user full name.
- * PUT /api/auth/profile
+ * PUT /api/profile
  * @param {Object} data - { full_name }
  * @returns {Promise<Object>} updated user
  */
 export async function updateUserProfile({ full_name }) {
-  const { data } = await apiClient.put('/auth/profile', { full_name })
+  const { data } = await apiClient.put('/profile', { full_name })
   const storage = localStorage.getItem(TOKEN_KEY) ? localStorage : sessionStorage
   storage.setItem(USER_KEY, JSON.stringify(data))
   return data
@@ -65,13 +75,48 @@ export async function updateUserProfile({ full_name }) {
 /**
  * Change user password securely.
  * POST /api/auth/change-password
- * @param {Object} data - { current_password, new_password }
+ * @param {Object} data - { current_password, new_password, confirm_password }
  * @returns {Promise<{ message: string }>}
  */
-export async function changeUserPassword({ current_password, new_password }) {
+export async function changeUserPassword({ current_password, new_password, confirm_password }) {
   const { data } = await apiClient.post('/auth/change-password', {
     current_password,
     new_password,
+    confirm_password,
+  })
+  return data
+}
+
+/**
+ * Fetch authenticated user settings and preferences.
+ * GET /api/settings
+ * @returns {Promise<Object>}
+ */
+export async function fetchUserSettings() {
+  const { data } = await apiClient.get('/settings')
+  return data
+}
+
+/**
+ * Update user settings and preferences in PostgreSQL.
+ * PUT /api/settings
+ * @param {Object} preferences - { theme, notify_assessment_ready, notify_security_alerts, notify_product_updates }
+ * @returns {Promise<Object>} updated settings
+ */
+export async function updateUserSettings(preferences) {
+  const { data } = await apiClient.put('/settings', preferences)
+  return data
+}
+
+/**
+ * Permanently delete authenticated user account and associated health records.
+ * DELETE /api/account
+ * @param {Object} payload - { password, confirmation: 'DELETE' }
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteUserAccount({ password, confirmation }) {
+  const { data } = await apiClient.delete('/account', {
+    data: { password, confirmation },
   })
   return data
 }
