@@ -1,0 +1,81 @@
+{
+  "feature_mapping": {
+    "feature_count": 21,
+    "canonical_features": [
+      "HighBP",
+      "HighChol",
+      "CholCheck",
+      "BMI",
+      "Smoker",
+      "Stroke",
+      "HeartDiseaseorAttack",
+      "PhysActivity",
+      "Fruits",
+      "Veggies",
+      "HvyAlcoholConsump",
+      "AnyHealthcare",
+      "NoDocbcCost",
+      "GenHlth",
+      "MentHlth",
+      "PhysHlth",
+      "DiffWalk",
+      "Sex",
+      "Age",
+      "Education",
+      "Income"
+    ],
+    "feature_set_match": true
+  },
+  "age_conversion_audit": {
+    "all_boundaries_verified": true
+  },
+  "profile_inference_audit": [
+    {
+      "profile": "Healthy Young Profile (Expected No Diabetes / Class 0)",
+      "predicted_class": 0,
+      "predicted_label": "No Diabetes",
+      "probabilities": {
+        "no_diabetes": 0.9229,
+        "prediabetes": 0.0598,
+        "diabetes": 0.0173
+      },
+      "risk_tier": "Low / Baseline Risk",
+      "confidence": 0.9229,
+      "equivalence_verified": true
+    },
+    {
+      "profile": "High-Risk Chronic Profile (Expected Diabetes / Class 2)",
+      "predicted_class": 2,
+      "predicted_label": "Diabetes",
+      "probabilities": {
+        "no_diabetes": 0.015,
+        "prediabetes": 0.2553,
+        "diabetes": 0.7297
+      },
+      "risk_tier": "High Risk (Diabetes Indication)",
+      "confidence": 0.7297,
+      "equivalence_verified": true
+    },
+    {
+      "profile": "Intermediate Risk Profile (Metabolic Syndrome Indicators)",
+      "predicted_class": 2,
+      "predicted_label": "Diabetes",
+      "probabilities": {
+        "no_diabetes": 0.1843,
+        "prediabetes": 0.3809,
+        "diabetes": 0.4348
+      },
+      "risk_tier": "High Risk (Diabetes Indication)",
+      "confidence": 0.4348,
+      "equivalence_verified": true
+    }
+  ],
+  "security_audit": {
+    "user_a_id": 39,
+    "user_b_id": 40,
+    "cross_user_assessment_forbidden_403": true,
+    "cross_user_prediction_forbidden_403": true,
+    "user_history_isolated": true,
+    "user_stats_isolated": true
+  }
+}

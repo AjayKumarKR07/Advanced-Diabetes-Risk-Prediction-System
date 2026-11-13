@@ -26,12 +26,24 @@ from backend.app.services.model_service import model_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Pre-warm and load the model artifact upon application startup."""
+    """Pre-warm model and verify database on startup."""
+    # Load ML model
     try:
         model_service.load_model()
         print("✅ CDC Logistic Regression Model Pipeline loaded successfully.")
     except Exception as exc:
-        print(f"⚠️ Warning: Could not preload model on startup: {exc}")
+        print(f"⚠️  Warning: Could not preload model on startup: {exc}")
+
+    # Verify database connectivity (non-fatal — app degrades gracefully)
+    try:
+        from backend.app.core.database import check_db_connection, init_db
+        if check_db_connection():
+            print("✅ PostgreSQL connected.")
+        else:
+            print("⚠️  PostgreSQL unreachable — running without DB persistence.")
+    except Exception as exc:
+        print(f"⚠️  Database startup check failed: {exc}")
+
     yield
 
 
@@ -96,4 +108,3 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
-

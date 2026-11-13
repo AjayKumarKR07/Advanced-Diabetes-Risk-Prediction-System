@@ -1,281 +1,1679 @@
 /**
  * src/pages/HealthAssessmentForm.jsx
  * ====================================
- * 21-field CDC input form with range-validated controls.
- * Navigates to PredictionResult with the API response on submit.
+ * Professional Multi-Section Health Assessment Form for DiabetesRisk AI.
+ * 
+ * Features:
+ * - 6-step guided wizard (Personal Info, Medical History, Lifestyle, General Health, Demographics, Review)
+ * - Strict step-by-step form validation preventing forward navigation on invalid fields
+ * - Unselected / empty fields trigger inline errors and red border highlighting
+ * - Clicking "Review & Submit" directly checks all fields; prevents skipping and enforces "fill all fields"
+ * - Step 6 submission pre-check: halts submission and redirects to incomplete step if any field is missing
+ * - Stepper indicators show checkmarks ONLY when all questions in that step are actually answered
+ * - Live error clearing on input change when a field becomes valid
+ * - Backward navigation without validation, preserving all entered values
+ * - Duplicate submission prevention (disabled button + loading state)
+ * - Automatic conversion of raw chronological age to CDC BRFSS 13-category ordinal
+ * - Prefills authenticated user profile (Full Name, Email)
+ * - Transitions seamlessly to /result with model-estimated risk probabilities
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  User,
+  Heart,
+  Activity,
+  Smile,
+  Shield,
+  FileCheck2,
+  ChevronRight,
+  ChevronLeft,
+  CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
+  Loader2,
+  Calendar,
+  Mail,
+  Info,
+  Scale,
+} from 'lucide-react'
 import { predict } from '../services/api'
-import { ClipboardList, ChevronDown, Loader2, AlertCircle } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 import DisclaimerBanner from '../components/DisclaimerBanner'
-
-// ── Field definitions ─────────────────────────────────────────────────────
-
-const BINARY_FIELDS = [
-  { key: 'HighBP',               label: 'High Blood Pressure',          desc: 'Diagnosed with high blood pressure' },
-  { key: 'HighChol',             label: 'High Cholesterol',             desc: 'Diagnosed with high cholesterol' },
-  { key: 'CholCheck',            label: 'Cholesterol Checked',          desc: 'Cholesterol checked in past 5 years' },
-  { key: 'Smoker',               label: 'Smoker',                       desc: 'Smoked at least 100 cigarettes in lifetime' },
-  { key: 'Stroke',               label: 'Stroke History',               desc: 'Ever told you had a stroke' },
-  { key: 'HeartDiseaseorAttack', label: 'Heart Disease / Attack',       desc: 'Coronary heart disease or heart attack' },
-  { key: 'PhysActivity',         label: 'Physical Activity',            desc: 'Physical activity in past 30 days (not job-related)' },
-  { key: 'Fruits',               label: 'Fruits Daily',                 desc: 'Consume fruit 1+ times per day' },
-  { key: 'Veggies',              label: 'Vegetables Daily',             desc: 'Consume vegetables 1+ times per day' },
-  { key: 'HvyAlcoholConsump',    label: 'Heavy Alcohol',                desc: 'Heavy alcohol consumer (men >14/wk, women >7/wk)' },
-  { key: 'AnyHealthcare',        label: 'Health Coverage',              desc: 'Have any health care coverage' },
-  { key: 'NoDocbcCost',          label: 'Avoided Doctor (Cost)',        desc: 'Could not see doctor due to cost in past 12 months' },
-  { key: 'DiffWalk',             label: 'Difficulty Walking',           desc: 'Serious difficulty walking or climbing stairs' },
-  { key: 'Sex',                  label: 'Sex',                          desc: '0 = Female, 1 = Male' },
-]
-
-const SELECT_FIELDS = [
-  {
-    key: 'GenHlth', label: 'General Health (1–5)', desc: 'Self-rated general health',
-    options: [
-      { value: 1, label: '1 — Excellent' },
-      { value: 2, label: '2 — Very Good' },
-      { value: 3, label: '3 — Good' },
-      { value: 4, label: '4 — Fair' },
-      { value: 5, label: '5 — Poor' },
-    ],
-  },
-  {
-    key: 'Age', label: 'Age Category (1–13)', desc: 'Age bracket',
-    options: [
-      { value: 1,  label: '1 — 18–24' },
-      { value: 2,  label: '2 — 25–29' },
-      { value: 3,  label: '3 — 30–34' },
-      { value: 4,  label: '4 — 35–39' },
-      { value: 5,  label: '5 — 40–44' },
-      { value: 6,  label: '6 — 45–49' },
-      { value: 7,  label: '7 — 50–54' },
-      { value: 8,  label: '8 — 55–59' },
-      { value: 9,  label: '9 — 60–64' },
-      { value: 10, label: '10 — 65–69' },
-      { value: 11, label: '11 — 70–74' },
-      { value: 12, label: '12 — 75–79' },
-      { value: 13, label: '13 — 80 or older' },
-    ],
-  },
-  {
-    key: 'Education', label: 'Education Level (1–6)', desc: 'Highest education completed',
-    options: [
-      { value: 1, label: '1 — Never attended / Kindergarten' },
-      { value: 2, label: '2 — Grades 1–8 (Elementary)' },
-      { value: 3, label: '3 — Grades 9–11 (Some high school)' },
-      { value: 4, label: '4 — Grade 12 / GED' },
-      { value: 5, label: '5 — Some college / technical school' },
-      { value: 6, label: '6 — College graduate (4+ years)' },
-    ],
-  },
-  {
-    key: 'Income', label: 'Income Level (1–8)', desc: 'Annual household income category',
-    options: [
-      { value: 1, label: '1 — Less than $10,000' },
-      { value: 2, label: '2 — $10,000 – $14,999' },
-      { value: 3, label: '3 — $15,000 – $19,999' },
-      { value: 4, label: '4 — $20,000 – $24,999' },
-      { value: 5, label: '5 — $25,000 – $34,999' },
-      { value: 6, label: '6 — $35,000 – $49,999' },
-      { value: 7, label: '7 — $50,000 – $74,999' },
-      { value: 8, label: '8 — $75,000 or more' },
-    ],
-  },
-]
-
-// ── Default form state ─────────────────────────────────────────────────────
-
-const DEFAULT_STATE = {
-  HighBP: 0, HighChol: 0, CholCheck: 1, BMI: 25.0,
-  Smoker: 0, Stroke: 0, HeartDiseaseorAttack: 0, PhysActivity: 1,
-  Fruits: 1, Veggies: 1, HvyAlcoholConsump: 0, AnyHealthcare: 1,
-  NoDocbcCost: 0, GenHlth: 3, MentHlth: 0, PhysHlth: 0,
-  DiffWalk: 0, Sex: 0, Age: 5, Education: 5, Income: 5,
-}
-
-// ── Component ──────────────────────────────────────────────────────────────
-
-function BinaryToggle({ label, desc, value, onChange }) {
-  return (
-    <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-colors">
-      <div>
-        <div className="text-sm font-medium text-slate-700">{label}</div>
-        <div className="text-xs text-slate-400 mt-0.5">{desc}</div>
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange(value === 0 ? 1 : 0)}
-        className={`relative w-14 h-7 rounded-full transition-colors duration-200 focus:outline-none ${
-          value === 1 ? 'bg-blue-600' : 'bg-slate-200'
-        }`}
-      >
-        <span
-          className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
-            value === 1 ? 'translate-x-7' : 'translate-x-1'
-          }`}
-        />
-      </button>
-    </div>
-  )
-}
+import {
+  convertAgeToCdcCategory,
+  CDC_AGE_CATEGORIES,
+  CDC_GENHLTH_OPTIONS,
+  CDC_EDUCATION_OPTIONS,
+  CDC_INCOME_OPTIONS,
+  getBmiCategory,
+} from '../utils/cdcFeatures'
 
 export default function HealthAssessmentForm() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ ...DEFAULT_STATE })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const { user } = useAuth()
 
-  const setBinary = (key, val) => setForm(f => ({ ...f, [key]: val }))
-  const setVal    = (key, val) => setForm(f => ({ ...f, [key]: val }))
+  // ── Step & Submission State ────────────────────────────────────────────────
+  const [currentStep, setCurrentStep] = useState(1)
+  const [errors, setErrors] = useState({})
+  const [validationError, setValidationError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [apiError, setApiError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    try {
-      const payload = { ...form, BMI: parseFloat(form.BMI) }
-      const result = await predict(payload)
-      navigate('/result', { state: { result, inputs: form } })
-    } catch (err) {
-      const detail = err.response?.data?.message || err.message || 'Unknown error'
-      setError(`Prediction failed: ${detail}`)
-    } finally {
-      setLoading(false)
+  // ── Form State ─────────────────────────────────────────────────────────────
+  // Personal Information
+  const [personal, setPersonal] = useState({
+    fullName: user?.full_name || '',
+    email: user?.email || '',
+    rawAge: '',
+    sex: null, // null = unselected, 0 = Female, 1 = Male
+    assessmentDate: new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+  })
+
+  // 21 CDC features state - initialized to null/empty so every question must be explicitly answered
+  const [form, setForm] = useState({
+    HighBP: null,
+    HighChol: null,
+    CholCheck: null,
+    BMI: '',
+    Smoker: null,
+    Stroke: null,
+    HeartDiseaseorAttack: null,
+    PhysActivity: null,
+    Fruits: null,
+    Veggies: null,
+    HvyAlcoholConsump: null,
+    AnyHealthcare: null,
+    NoDocbcCost: null,
+    GenHlth: null,
+    MentHlth: '',
+    PhysHlth: '',
+    DiffWalk: null,
+    Sex: null,
+    Age: null,
+    Education: '',
+    Income: '',
+  })
+
+  // Synchronize user profile if loaded asynchronously
+  useEffect(() => {
+    if (user) {
+      setPersonal((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.full_name || '',
+        email: user.email || '',
+      }))
+    }
+  }, [user])
+
+  // Synchronize sex and converted age into the 21-feature state when valid
+  useEffect(() => {
+    const cdcAge = convertAgeToCdcCategory(personal.rawAge)
+    if (cdcAge !== null && (personal.sex === 0 || personal.sex === 1)) {
+      setForm((prev) => ({
+        ...prev,
+        Age: cdcAge,
+        Sex: parseInt(personal.sex, 10),
+      }))
+    }
+  }, [personal.rawAge, personal.sex])
+
+  // ── Step Completion Checker ────────────────────────────────────────────────
+  const isStepComplete = (stepNum) => {
+    if (stepNum === 1) {
+      const name = (personal.fullName || '').trim()
+      const rawAgeStr = String(personal.rawAge || '').trim()
+      const ageNum = parseInt(rawAgeStr, 10)
+      return (
+        name.length >= 2 &&
+        /^\d+$/.test(rawAgeStr) &&
+        ageNum >= 18 &&
+        ageNum <= 120 &&
+        (personal.sex === 0 || personal.sex === 1)
+      )
+    }
+    if (stepNum === 2) {
+      return (
+        (form.HighBP === 0 || form.HighBP === 1) &&
+        (form.HighChol === 0 || form.HighChol === 1) &&
+        (form.CholCheck === 0 || form.CholCheck === 1) &&
+        (form.Stroke === 0 || form.Stroke === 1) &&
+        (form.HeartDiseaseorAttack === 0 || form.HeartDiseaseorAttack === 1)
+      )
+    }
+    if (stepNum === 3) {
+      const bmiVal = parseFloat(form.BMI)
+      return (
+        !isNaN(bmiVal) &&
+        bmiVal >= 10.0 &&
+        bmiVal <= 100.0 &&
+        (form.Smoker === 0 || form.Smoker === 1) &&
+        (form.PhysActivity === 0 || form.PhysActivity === 1) &&
+        (form.Fruits === 0 || form.Fruits === 1) &&
+        (form.Veggies === 0 || form.Veggies === 1) &&
+        (form.HvyAlcoholConsump === 0 || form.HvyAlcoholConsump === 1)
+      )
+    }
+    if (stepNum === 4) {
+      const genHlth = parseInt(form.GenHlth, 10)
+      const physStr = String(form.PhysHlth === undefined || form.PhysHlth === null ? '' : form.PhysHlth).trim()
+      const mentStr = String(form.MentHlth === undefined || form.MentHlth === null ? '' : form.MentHlth).trim()
+      const physVal = parseInt(physStr, 10)
+      const mentVal = parseInt(mentStr, 10)
+      return (
+        !isNaN(genHlth) && genHlth >= 1 && genHlth <= 5 &&
+        physStr !== '' && /^\d+$/.test(physStr) && physVal >= 0 && physVal <= 30 &&
+        mentStr !== '' && /^\d+$/.test(mentStr) && mentVal >= 0 && mentVal <= 30 &&
+        (form.DiffWalk === 0 || form.DiffWalk === 1)
+      )
+    }
+    if (stepNum === 5) {
+      const edu = parseInt(form.Education, 10)
+      const inc = parseInt(form.Income, 10)
+      return (
+        (form.AnyHealthcare === 0 || form.AnyHealthcare === 1) &&
+        (form.NoDocbcCost === 0 || form.NoDocbcCost === 1) &&
+        !isNaN(edu) && edu >= 1 && edu <= 6 &&
+        !isNaN(inc) && inc >= 1 && inc <= 8
+      )
+    }
+    return false
+  }
+
+  // ── Error Scrolling & Focus Helper ─────────────────────────────────────────
+  const scrollToFirstError = (stepErrors) => {
+    const errorKeys = Object.keys(stepErrors)
+    if (errorKeys.length === 0) return
+    const firstKey = errorKeys[0]
+    setTimeout(() => {
+      const el = document.getElementById(`field-${firstKey}`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (typeof el.focus === 'function' && el.tagName !== 'DIV') {
+          el.focus()
+        } else {
+          const innerInput = el.querySelector('input, select, button')
+          innerInput?.focus?.()
+        }
+      }
+    }, 60)
+  }
+
+  // ── Input Change Handlers with Live Error Clearing ────────────────────────
+  const handlePersonalChange = (field, val) => {
+    setPersonal((prev) => ({ ...prev, [field]: val }))
+
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+
+      if (field === 'fullName') {
+        const trimmed = (val || '').trim()
+        if (trimmed.length >= 2) delete next.fullName
+      } else if (field === 'rawAge') {
+        const trimmed = String(val || '').trim()
+        if (/^\d+$/.test(trimmed)) {
+          const num = parseInt(trimmed, 10)
+          if (num >= 18 && num <= 120) delete next.rawAge
+        }
+      } else if (field === 'sex') {
+        if (val === 0 || val === 1) delete next.sex
+      }
+
+      return next
+    })
+
+    setValidationError('')
+  }
+
+  const setVal = (key, val) => {
+    setForm((f) => ({ ...f, [key]: val }))
+
+    setErrors((prev) => {
+      if (!prev[key]) return prev
+      const next = { ...prev }
+
+      if (key === 'BMI') {
+        const num = parseFloat(val)
+        if (!isNaN(num) && num >= 10.0 && num <= 100.0) delete next.BMI
+      } else if (key === 'PhysHlth' || key === 'MentHlth') {
+        const num = parseInt(val, 10)
+        if (!isNaN(num) && num >= 0 && num <= 30) delete next[key]
+      } else {
+        delete next[key]
+      }
+
+      return next
+    })
+
+    setValidationError('')
+  }
+
+  // ── Step Validation Logic ──────────────────────────────────────────────────
+  const validateStep = (stepNumber) => {
+    const stepErrors = {}
+
+    // STEP 1: Personal Information
+    if (stepNumber === 1) {
+      const name = (personal.fullName || '').trim()
+      if (!name) {
+        stepErrors.fullName = 'Please enter your full name.'
+      } else if (name.length < 2) {
+        stepErrors.fullName = 'Full name must be at least 2 characters.'
+      }
+
+      const rawAgeStr = String(personal.rawAge || '').trim()
+      if (!rawAgeStr) {
+        stepErrors.rawAge = 'Please enter your age.'
+      } else if (!/^\d+$/.test(rawAgeStr)) {
+        stepErrors.rawAge = 'Age must be a whole integer number without decimals or text.'
+      } else {
+        const ageNum = parseInt(rawAgeStr, 10)
+        if (ageNum < 18 || ageNum > 120) {
+          stepErrors.rawAge = 'Age must be between 18 and 120 years (CDC BRFSS research standard is 18+).'
+        } else {
+          const cdcAge = convertAgeToCdcCategory(rawAgeStr)
+          if (!cdcAge) {
+            stepErrors.rawAge = 'Could not map chronological age to a valid CDC age bracket.'
+          }
+        }
+      }
+
+      if (personal.sex !== 0 && personal.sex !== 1) {
+        stepErrors.sex = 'Please select your biological sex (Female or Male).'
+      }
+    }
+
+    // STEP 2: Medical History
+    if (stepNumber === 2) {
+      const binaryFields = [
+        { key: 'HighBP', label: 'High Blood Pressure' },
+        { key: 'HighChol', label: 'High Blood Cholesterol' },
+        { key: 'CholCheck', label: 'Cholesterol Check in Past 5 Years' },
+        { key: 'Stroke', label: 'History of Stroke' },
+        { key: 'HeartDiseaseorAttack', label: 'Coronary Heart Disease' },
+      ]
+      for (const f of binaryFields) {
+        if (form[f.key] !== 0 && form[f.key] !== 1) {
+          stepErrors[f.key] = `Please select Yes or No for ${f.label}.`
+        }
+      }
+    }
+
+    // STEP 3: Lifestyle & Physical Activity
+    if (stepNumber === 3) {
+      const bmiStr = String(form.BMI === undefined || form.BMI === null ? '' : form.BMI).trim()
+      if (!bmiStr) {
+        stepErrors.BMI = 'Please enter your Body Mass Index (BMI).'
+      } else {
+        const bmiVal = parseFloat(bmiStr)
+        if (isNaN(bmiVal)) {
+          stepErrors.BMI = 'BMI must be a valid numeric value.'
+        } else if (bmiVal < 10.0 || bmiVal > 100.0) {
+          stepErrors.BMI = 'BMI must be a realistic numeric value between 10.0 and 100.0 kg/m².'
+        }
+      }
+
+      const binaryFields = [
+        { key: 'Smoker', label: 'Smoking History (100+ Cigarettes)' },
+        { key: 'PhysActivity', label: 'Physical Activity in Past 30 Days' },
+        { key: 'Fruits', label: 'Daily Fruit Consumption' },
+        { key: 'Veggies', label: 'Daily Vegetable Consumption' },
+        { key: 'HvyAlcoholConsump', label: 'Heavy Alcohol Consumption' },
+      ]
+      for (const f of binaryFields) {
+        if (form[f.key] !== 0 && form[f.key] !== 1) {
+          stepErrors[f.key] = `Please select Yes or No for ${f.label}.`
+        }
+      }
+    }
+
+    // STEP 4: General Health & Functional Status
+    if (stepNumber === 4) {
+      const genHlth = parseInt(form.GenHlth, 10)
+      if (isNaN(genHlth) || genHlth < 1 || genHlth > 5) {
+        stepErrors.GenHlth = 'Please select your general health self-rating (1 to 5).'
+      }
+
+      const physStr = String(form.PhysHlth === undefined || form.PhysHlth === null ? '' : form.PhysHlth).trim()
+      if (!physStr || !/^\d+$/.test(physStr)) {
+        stepErrors.PhysHlth = 'Poor physical health days must be a whole integer between 0 and 30.'
+      } else {
+        const physVal = parseInt(physStr, 10)
+        if (physVal < 0 || physVal > 30) {
+          stepErrors.PhysHlth = 'Poor physical health days must be between 0 and 30.'
+        }
+      }
+
+      const mentStr = String(form.MentHlth === undefined || form.MentHlth === null ? '' : form.MentHlth).trim()
+      if (!mentStr || !/^\d+$/.test(mentStr)) {
+        stepErrors.MentHlth = 'Poor mental health days must be a whole integer between 0 and 30.'
+      } else {
+        const mentVal = parseInt(mentStr, 10)
+        if (mentVal < 0 || mentVal > 30) {
+          stepErrors.MentHlth = 'Poor mental health days must be between 0 and 30.'
+        }
+      }
+
+      if (form.DiffWalk !== 0 && form.DiffWalk !== 1) {
+        stepErrors.DiffWalk = 'Please select Yes or No for difficulty walking or climbing stairs.'
+      }
+    }
+
+    // STEP 5: Demographics & Healthcare Access
+    if (stepNumber === 5) {
+      if (form.AnyHealthcare !== 0 && form.AnyHealthcare !== 1) {
+        stepErrors.AnyHealthcare = 'Please select Yes or No for health care coverage.'
+      }
+      if (form.NoDocbcCost !== 0 && form.NoDocbcCost !== 1) {
+        stepErrors.NoDocbcCost = 'Please select Yes or No for avoiding doctor due to cost.'
+      }
+
+      const edu = parseInt(form.Education, 10)
+      if (isNaN(edu) || edu < 1 || edu > 6) {
+        stepErrors.Education = 'Please select your highest education level completed (1 to 6).'
+      }
+
+      const inc = parseInt(form.Income, 10)
+      if (isNaN(inc) || inc < 1 || inc > 8) {
+        stepErrors.Income = 'Please select your annual household income bracket (1 to 8).'
+      }
+    }
+
+    setErrors(stepErrors)
+
+    if (Object.keys(stepErrors).length > 0) {
+      const firstMsg = Object.values(stepErrors)[0]
+      setValidationError(firstMsg)
+      scrollToFirstError(stepErrors)
+      return false
+    }
+
+    setValidationError('')
+    return true
+  }
+
+  // Validate all steps before final submission
+  const validateAllSteps = () => {
+    for (let s = 1; s <= 5; s++) {
+      if (!validateStep(s)) {
+        setCurrentStep(s)
+        setValidationError('Please fill all fields across all steps before submitting your assessment.')
+        return false
+      }
+    }
+    return true
+  }
+
+  // ── Navigation Handlers ────────────────────────────────────────────────────
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setErrors({})
+      setValidationError('')
+      setCurrentStep((s) => Math.min(6, s + 1))
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
+  const handlePrev = () => {
+    setErrors({})
+    setValidationError('')
+    setCurrentStep((s) => Math.max(1, s - 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Stepper Click Handler: enforces completing all preceding steps before advancing to Step 6
+  const handleStepClick = (targetStep) => {
+    if (targetStep < currentStep) {
+      // Allow moving backward without validation
+      setErrors({})
+      setValidationError('')
+      setCurrentStep(targetStep)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    if (targetStep === currentStep) return
+
+    // Validate every step from 1 up to targetStep - 1
+    for (let s = 1; s < targetStep; s++) {
+      if (!validateStep(s)) {
+        setCurrentStep(s)
+        setValidationError(
+          targetStep === 6
+            ? 'Please fill all fields across all steps before proceeding to Review & Submit.'
+            : 'Please fill all required fields in this step before advancing.'
+        )
+        return
+      }
+    }
+
+    setErrors({})
+    setValidationError('')
+    setCurrentStep(targetStep)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // ── Form Submission ────────────────────────────────────────────────────────
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault()
+    if (submitting) return // Prevent duplicate form submissions
+
+    // Validate ALL steps from 1 to 5 before allowing submission
+    for (let s = 1; s <= 5; s++) {
+      const isValid = validateStep(s)
+      if (!isValid) {
+        setCurrentStep(s)
+        setValidationError('Please fill all fields across all steps before submitting your assessment.')
+        return
+      }
+    }
+
+    setSubmitting(true)
+    setApiError('')
+
+    try {
+      const cdcAge = convertAgeToCdcCategory(personal.rawAge)
+      const payload = {
+        HighBP: parseInt(form.HighBP, 10),
+        HighChol: parseInt(form.HighChol, 10),
+        CholCheck: parseInt(form.CholCheck, 10),
+        BMI: parseFloat(form.BMI),
+        Smoker: parseInt(form.Smoker, 10),
+        Stroke: parseInt(form.Stroke, 10),
+        HeartDiseaseorAttack: parseInt(form.HeartDiseaseorAttack, 10),
+        PhysActivity: parseInt(form.PhysActivity, 10),
+        Fruits: parseInt(form.Fruits, 10),
+        Veggies: parseInt(form.Veggies, 10),
+        HvyAlcoholConsump: parseInt(form.HvyAlcoholConsump, 10),
+        AnyHealthcare: parseInt(form.AnyHealthcare, 10),
+        NoDocbcCost: parseInt(form.NoDocbcCost, 10),
+        GenHlth: parseInt(form.GenHlth, 10),
+        MentHlth: parseInt(form.MentHlth, 10),
+        PhysHlth: parseInt(form.PhysHlth, 10),
+        DiffWalk: parseInt(form.DiffWalk, 10),
+        Sex: parseInt(personal.sex, 10),
+        Age: cdcAge,
+        Education: parseInt(form.Education, 10),
+        Income: parseInt(form.Income, 10),
+      }
+
+      // API client automatically attaches JWT bearer token from storage
+      const result = await predict(payload)
+
+      // Navigate to result view with model output and inputs
+      navigate('/result', {
+        state: {
+          result,
+          inputs: payload,
+          personalInfo: {
+            ...personal,
+            cdcAgeCategory: cdcAge,
+            cdcAgeLabel: CDC_AGE_CATEGORIES[cdcAge]?.bracket,
+          },
+        },
+      })
+    } catch (err) {
+      const detail =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to connect to the prediction engine.'
+      setApiError(typeof detail === 'string' ? detail : JSON.stringify(detail))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  // ── Step Navigation Metadata ───────────────────────────────────────────────
+  const STEPS = [
+    { num: 1, title: 'Personal Info', icon: User },
+    { num: 2, title: 'Medical History', icon: Heart },
+    { num: 3, title: 'Lifestyle & Body', icon: Activity },
+    { num: 4, title: 'General Health', icon: Smile },
+    { num: 5, title: 'Demographics', icon: Shield },
+    { num: 6, title: 'Review & Submit', icon: FileCheck2 },
+  ]
+
+  const calculatedAgeCat = convertAgeToCdcCategory(personal.rawAge)
+  const bmiInfo =
+    form.BMI === '' || isNaN(parseFloat(form.BMI))
+      ? { label: 'Enter BMI (10.0–100.0)', color: 'slate' }
+      : getBmiCategory(form.BMI)
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8 flex items-start gap-3">
-        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <ClipboardList className="w-5 h-5 text-blue-600" />
-        </div>
-        <div>
-          <h1 className="section-title">Health Risk Assessment</h1>
-          <p className="section-subtitle">
-            Complete all 21 CDC BRFSS health indicators below.
-            All fields are required. This prototype uses a Logistic Regression model
-            trained with group-aware cross-validation.
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-3">
+            <Activity className="w-3.5 h-3.5 text-blue-600" />
+            <span>CDC BRFSS Health Indicator Protocol</span>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">New Health Assessment</h1>
+          <p className="text-sm text-slate-600 mt-2 max-w-xl mx-auto">
+            Provide the 21 health and demographic indicators evaluated by our research machine learning model.
+            All responses remain private and confidential.
           </p>
         </div>
-      </div>
 
-      <DisclaimerBanner className="mb-8" />
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* BMI */}
-        <div className="card">
-          <h2 className="font-semibold text-slate-800 mb-4">Body Measurements</h2>
-          <div>
-            <label className="label">BMI (Body Mass Index) — 10.0 to 100.0</label>
-            <div className="flex items-center gap-4">
-              <input
-                type="range" min="10" max="100" step="0.5"
-                value={form.BMI}
-                onChange={e => setVal('BMI', parseFloat(e.target.value))}
-                className="flex-1 accent-blue-600"
-              />
-              <div className="w-20 text-center font-bold text-blue-700 text-lg">
-                {parseFloat(form.BMI).toFixed(1)}
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-slate-400 mt-1">
-              <span>10 (Very low)</span>
-              <span>55 (Obese III)</span>
-              <span>100 (Max)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Count fields */}
-        <div className="card">
-          <h2 className="font-semibold text-slate-800 mb-4">Health Days (Last 30 Days)</h2>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              { key: 'MentHlth', label: 'Poor Mental Health Days (0–30)' },
-              { key: 'PhysHlth', label: 'Poor Physical Health Days (0–30)' },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <label className="label">{label}</label>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="range" min="0" max="30" step="1"
-                    value={form[key]}
-                    onChange={e => setVal(key, parseInt(e.target.value))}
-                    className="flex-1 accent-blue-600"
-                  />
-                  <span className="w-10 text-center font-bold text-slate-700">{form[key]}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Select fields */}
-        <div className="card">
-          <h2 className="font-semibold text-slate-800 mb-4">Demographic &amp; Lifestyle Categories</h2>
-          <div className="grid sm:grid-cols-2 gap-5">
-            {SELECT_FIELDS.map(({ key, label, desc, options }) => (
-              <div key={key}>
-                <label className="label">{label}</label>
-                <div className="relative">
-                  <select
-                    value={form[key]}
-                    onChange={e => setVal(key, parseInt(e.target.value))}
-                    className="input-field pr-10 appearance-none"
+        {/* Stepper Progress Bar */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 sm:p-6 mb-8">
+          <div className="grid grid-cols-6 gap-2 text-center">
+            {STEPS.map((s) => {
+              const Icon = s.icon
+              const isDone = isStepComplete(s.num)
+              const isCurrent = currentStep === s.num
+              return (
+                <button
+                  key={s.num}
+                  type="button"
+                  onClick={() => handleStepClick(s.num)}
+                  className={`flex flex-col items-center group transition-colors ${
+                    isCurrent
+                      ? 'text-blue-600 font-semibold'
+                      : isDone
+                      ? 'text-teal-600'
+                      : 'text-slate-400'
+                  }`}
+                  title={`Step ${s.num}: ${s.title}`}
+                >
+                  <div
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all mb-1.5 ${
+                      isCurrent
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 ring-4 ring-blue-50'
+                        : isDone
+                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                        : 'bg-slate-100 text-slate-500 border border-slate-200'
+                    }`}
                   >
-                    {options.map(o => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
-                </div>
-                <p className="text-xs text-slate-400 mt-1">{desc}</p>
-              </div>
-            ))}
+                    {isDone ? <CheckCircle2 className="w-5 h-5 text-teal-600" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
+                  </div>
+                  <span className="text-xs hidden md:inline truncate max-w-[100px]">{s.title}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="w-full bg-slate-100 h-2 rounded-full mt-4 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-blue-600 to-teal-500 h-full rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+            />
           </div>
         </div>
 
-        {/* Binary toggles */}
-        <div className="card">
-          <h2 className="font-semibold text-slate-800 mb-4">Health Conditions &amp; Behaviours</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {BINARY_FIELDS.map(({ key, label, desc }) => (
-              <BinaryToggle
-                key={key}
-                label={label}
-                desc={desc}
-                value={form[key]}
-                onChange={val => setBinary(key, val)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {error && (
-          <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            {error}
+        {/* Top Validation Error Banner */}
+        {validationError && (
+          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm animate-shake shadow-xs">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
+            <div>
+              <p className="font-bold text-red-800">Incomplete Assessment</p>
+              <p className="text-xs text-red-700 mt-0.5 font-medium">{validationError}</p>
+            </div>
           </div>
         )}
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary flex items-center gap-2 text-base px-8 py-4"
-          >
-            {loading ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Analysing…</>
-            ) : (
-              'Get Risk Assessment →'
-            )}
-          </button>
+        {/* API Error Banner */}
+        {apiError && (
+          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-sm">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
+            <div>
+              <p className="font-semibold">Assessment Inference Failed</p>
+              <p className="text-xs text-rose-700 mt-0.5">{apiError}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Step Forms */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 mb-8">
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 1: Personal Information                                      */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <User className="w-5 h-5 text-blue-600" /> Personal Information
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Demographic baseline. Your age will be automatically mapped to the CDC BRFSS model category.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-5">
+                {/* Full Name */}
+                <div id="field-fullName">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className={`absolute left-3.5 top-3.5 w-4 h-4 ${errors.fullName ? 'text-red-500' : 'text-slate-400'}`} />
+                    <input
+                      type="text"
+                      value={personal.fullName}
+                      onChange={(e) => handlePersonalChange('fullName', e.target.value)}
+                      placeholder="Jane Doe"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none ${
+                        errors.fullName
+                          ? 'border-red-500 bg-red-50/20 text-red-900 focus:ring-2 focus:ring-red-300'
+                          : 'border-slate-200 focus:ring-2 focus:ring-blue-500 text-slate-800'
+                      }`}
+                    />
+                  </div>
+                  {errors.fullName ? (
+                    <p id="err-fullName" className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span>{errors.fullName}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400 mt-1">Prefilled from your account profile; editable for this assessment.</p>
+                  )}
+                </div>
+
+                {/* Email (Read-only) */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Account Email (Verified)
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+                    <input
+                      type="email"
+                      value={personal.email}
+                      readOnly
+                      disabled
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm cursor-not-allowed"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">Linked directly to your authenticated user account.</p>
+                </div>
+
+                {/* Age (Years) with Live CDC Bracket Conversion */}
+                <div id="field-rawAge">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Age (Years) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={personal.rawAge}
+                    onChange={(e) => handlePersonalChange('rawAge', e.target.value)}
+                    placeholder="e.g. 45"
+                    className={`w-full px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all focus:outline-none ${
+                      errors.rawAge
+                        ? 'border-red-500 bg-red-50/20 text-red-900 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 focus:ring-2 focus:ring-blue-500 text-slate-800'
+                    }`}
+                  />
+                  {errors.rawAge && (
+                    <p id="err-rawAge" className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span>{errors.rawAge}</span>
+                    </p>
+                  )}
+
+                  <div className="mt-2 p-2.5 rounded-lg bg-blue-50/70 border border-blue-200 text-xs text-blue-800 flex items-center justify-between">
+                    <span className="font-medium">CDC Model Bracket:</span>
+                    <span className="font-bold bg-white px-2.5 py-0.5 rounded border border-blue-200 text-blue-700">
+                      {calculatedAgeCat ? CDC_AGE_CATEGORIES[calculatedAgeCat]?.bracket : 'Enter age (18–120)'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    CDC BRFSS uses 13 discrete age brackets. Our system automatically converts chronological age.
+                  </p>
+                </div>
+
+                {/* Biological Sex */}
+                <div id="field-sex">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Sex <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3 mt-1">
+                    {[
+                      { val: 0, label: 'Female' },
+                      { val: 1, label: 'Male' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.val}
+                        type="button"
+                        onClick={() => handlePersonalChange('sex', opt.val)}
+                        className={`py-2.5 px-4 rounded-xl border text-sm font-medium transition-all ${
+                          personal.sex === opt.val
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                            : errors.sex
+                            ? 'bg-red-50/30 border-red-300 text-slate-700 hover:bg-red-50'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.sex ? (
+                    <p id="err-sex" className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span>{errors.sex}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400 mt-2">Encoded according to CDC BRFSS specification (0 = Female, 1 = Male).</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Assessment Timestamp */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <strong>Assessment Timestamp:</strong>
+                </span>
+                <span className="font-mono bg-white px-3 py-1 rounded-md border border-slate-200 font-medium">
+                  {personal.assessmentDate}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 2: Medical History                                           */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500" /> Medical &amp; Clinical History
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Cardiovascular and metabolic clinical indicators diagnosed by a healthcare provider.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    key: 'HighBP',
+                    label: 'High Blood Pressure (Hypertension)',
+                    desc: 'Have you ever been told by a doctor, nurse, or healthcare professional that you have high blood pressure?',
+                  },
+                  {
+                    key: 'HighChol',
+                    label: 'High Blood Cholesterol',
+                    desc: 'Have you ever been told by a doctor or health professional that your blood cholesterol is high?',
+                  },
+                  {
+                    key: 'CholCheck',
+                    label: 'Cholesterol Check in Past 5 Years',
+                    desc: 'Has your blood cholesterol been checked by a healthcare provider within the last 5 years?',
+                  },
+                  {
+                    key: 'Stroke',
+                    label: 'History of Stroke',
+                    desc: 'Have you ever been formally diagnosed with a stroke (cerebrovascular accident)?',
+                  },
+                  {
+                    key: 'HeartDiseaseorAttack',
+                    label: 'Coronary Heart Disease or Myocardial Infarction',
+                    desc: 'Have you ever had coronary heart disease (CHD), angina, or a heart attack?',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    id={`field-${item.key}`}
+                    className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      errors[item.key]
+                        ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
+                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate-800">
+                        {item.label} <span className="text-red-500">*</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      {errors[item.key] && (
+                        <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors[item.key]}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2 self-end sm:self-center">
+                      {[
+                        { val: 0, label: 'No' },
+                        { val: 1, label: 'Yes' },
+                      ].map((opt) => (
+                        <button
+                          key={opt.val}
+                          type="button"
+                          onClick={() => setVal(item.key, opt.val)}
+                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
+                            form[item.key] === opt.val
+                              ? opt.val === 1
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'bg-slate-700 text-white shadow-sm'
+                              : errors[item.key]
+                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 3: Lifestyle & Physical Activity                             */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-teal-600" /> Lifestyle, Nutrition &amp; Physical Activity
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Anthropometric and behavioral factors that significantly influence diabetes risk.
+                </p>
+              </div>
+
+              {/* BMI Card */}
+              <div
+                id="field-BMI"
+                className={`p-5 rounded-xl border transition-all ${
+                  errors.BMI
+                    ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
+                    : 'border-slate-200 bg-slate-50/50'
+                }`}
+              >
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                  <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-blue-600" /> Body Mass Index (BMI, kg/m²) <span className="text-red-500">*</span>
+                  </label>
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                      bmiInfo.color === 'emerald'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : bmiInfo.color === 'amber'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : bmiInfo.color === 'blue'
+                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                        : bmiInfo.color === 'rose'
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    {bmiInfo.label}
+                  </span>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4 items-center mt-3">
+                  <div className="sm:col-span-2">
+                    <input
+                      type="range"
+                      min="10.0"
+                      max="60.0"
+                      step="0.1"
+                      value={form.BMI === '' || isNaN(parseFloat(form.BMI)) ? 25.0 : parseFloat(form.BMI)}
+                      onChange={(e) => setVal('BMI', parseFloat(e.target.value))}
+                      className="w-full accent-blue-600"
+                    />
+                    <div className="flex justify-between text-[11px] text-slate-400 mt-1">
+                      <span>10.0 (Min)</span>
+                      <span>18.5 (Normal)</span>
+                      <span>25.0 (Overweight)</span>
+                      <span>30.0 (Obese)</span>
+                      <span>60.0+ (Severe)</span>
+                    </div>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      min="10.0"
+                      max="100.0"
+                      step="0.1"
+                      placeholder="e.g. 25.0"
+                      value={form.BMI}
+                      onChange={(e) => setVal('BMI', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                      className={`w-full px-3 py-2 rounded-xl border text-center text-lg font-bold transition-all focus:outline-none ${
+                        errors.BMI
+                          ? 'border-red-500 bg-red-50 text-red-900 focus:ring-2 focus:ring-red-300'
+                          : 'border-slate-200 text-blue-700 bg-white focus:ring-2 focus:ring-blue-500'
+                      }`}
+                    />
+                  </div>
+                </div>
+                {errors.BMI && (
+                  <p id="err-BMI" className="text-xs font-semibold text-red-600 mt-2 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{errors.BMI}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Behavioral Questions */}
+              <div className="space-y-4">
+                {[
+                  {
+                    key: 'Smoker',
+                    label: 'Smoking History (100+ Cigarettes Lifetime)',
+                    desc: 'Have you smoked at least 100 cigarettes (5 packs) in your entire life? (Includes former smokers).',
+                  },
+                  {
+                    key: 'PhysActivity',
+                    label: 'Physical Activity in Past 30 Days',
+                    desc: 'During the past month, other than your regular job, did you participate in any physical activities or exercises such as running, calisthenics, golf, gardening, or walking?',
+                  },
+                  {
+                    key: 'Fruits',
+                    label: 'Fruit Consumption Daily',
+                    desc: 'Do you consume fruit (fresh, frozen, or 100% pure juice) 1 or more times per day?',
+                  },
+                  {
+                    key: 'Veggies',
+                    label: 'Vegetable Consumption Daily',
+                    desc: 'Do you consume vegetables (including green salads and cooked vegetables) 1 or more times per day?',
+                  },
+                  {
+                    key: 'HvyAlcoholConsump',
+                    label: 'Heavy Alcohol Consumption',
+                    desc: 'Adult men having more than 14 drinks/week; adult women having more than 7 drinks/week.',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    id={`field-${item.key}`}
+                    className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      errors[item.key]
+                        ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
+                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate-800">
+                        {item.label} <span className="text-red-500">*</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      {errors[item.key] && (
+                        <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors[item.key]}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2 self-end sm:self-center">
+                      {[
+                        { val: 0, label: 'No' },
+                        { val: 1, label: 'Yes' },
+                      ].map((opt) => (
+                        <button
+                          key={opt.val}
+                          type="button"
+                          onClick={() => setVal(item.key, opt.val)}
+                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
+                            form[item.key] === opt.val
+                              ? opt.val === 1
+                                ? 'bg-teal-600 text-white shadow-sm'
+                                : 'bg-slate-700 text-white shadow-sm'
+                              : errors[item.key]
+                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 4: General Health & Functional Status                         */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Smile className="w-5 h-5 text-amber-500" /> General Health &amp; Functional Status
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Self-rated general wellness and days of impaired physical or mental health in the past 30 days.
+                </p>
+              </div>
+
+              {/* General Health Dropdown */}
+              <div id="field-GenHlth">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  General Health Self-Assessment <span className="text-red-500">*</span>
+                </label>
+                <div className="grid sm:grid-cols-5 gap-2.5">
+                  {CDC_GENHLTH_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setVal('GenHlth', opt.value)}
+                      className={`p-3 rounded-xl border text-center transition-all ${
+                        form.GenHlth === opt.value
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-100'
+                          : errors.GenHlth
+                          ? 'bg-red-50/30 border-red-300 text-slate-700 hover:bg-red-50'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="text-xs font-bold">{opt.label.split('—')[1]?.trim()}</div>
+                      <div className={`text-[10px] mt-1 ${form.GenHlth === opt.value ? 'text-blue-100' : 'text-slate-400'}`}>
+                        {opt.desc}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {errors.GenHlth && (
+                  <p className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>{errors.GenHlth}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Health Days Sliders */}
+              <div className="grid sm:grid-cols-2 gap-6 pt-2">
+                {/* Physical Health Days */}
+                <div
+                  id="field-PhysHlth"
+                  className={`p-4 rounded-xl border transition-all ${
+                    errors.PhysHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200 bg-slate-50/50'
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Poor Physical Health Days (0–30) <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-sm font-extrabold text-blue-600 font-mono">
+                      {form.PhysHlth === '' ? 'Unset' : `${form.PhysHlth} days`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3">
+                    Number of days during the past 30 days when physical health (illness, injury) was not good.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="30"
+                      step="1"
+                      value={form.PhysHlth === '' ? 0 : form.PhysHlth}
+                      onChange={(e) => setVal('PhysHlth', parseInt(e.target.value, 10))}
+                      className="w-full accent-blue-600"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      placeholder="0"
+                      value={form.PhysHlth}
+                      onChange={(e) => setVal('PhysHlth', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white ${
+                        errors.PhysHlth ? 'border-red-500 text-red-700' : 'border-slate-300 text-slate-800'
+                      }`}
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    {[0, 5, 15, 30].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setVal('PhysHlth', preset)}
+                        className={`text-[10px] px-2 py-0.5 rounded border ${
+                          form.PhysHlth === preset
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {preset === 0 ? '0 (None)' : `${preset}d`}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.PhysHlth && (
+                    <p className="text-xs font-semibold text-red-600 mt-2 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.PhysHlth}</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* Mental Health Days */}
+                <div
+                  id="field-MentHlth"
+                  className={`p-4 rounded-xl border transition-all ${
+                    errors.MentHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200 bg-slate-50/50'
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Poor Mental Health Days (0–30) <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-sm font-extrabold text-purple-600 font-mono">
+                      {form.MentHlth === '' ? 'Unset' : `${form.MentHlth} days`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3">
+                    Number of days during the past 30 days when mental health (stress, depression) was not good.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="30"
+                      step="1"
+                      value={form.MentHlth === '' ? 0 : form.MentHlth}
+                      onChange={(e) => setVal('MentHlth', parseInt(e.target.value, 10))}
+                      className="w-full accent-purple-600"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      placeholder="0"
+                      value={form.MentHlth}
+                      onChange={(e) => setVal('MentHlth', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white ${
+                        errors.MentHlth ? 'border-red-500 text-red-700' : 'border-slate-300 text-slate-800'
+                      }`}
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    {[0, 5, 15, 30].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setVal('MentHlth', preset)}
+                        className={`text-[10px] px-2 py-0.5 rounded border ${
+                          form.MentHlth === preset
+                            ? 'bg-purple-600 text-white border-purple-600'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {preset === 0 ? '0 (None)' : `${preset}d`}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.MentHlth && (
+                    <p className="text-xs font-semibold text-red-600 mt-2 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.MentHlth}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Difficulty Walking */}
+              <div
+                id="field-DiffWalk"
+                className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  errors.DiffWalk
+                    ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
+                    : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                }`}
+              >
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-800">
+                    Difficulty Walking or Climbing Stairs <span className="text-red-500">*</span>
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Do you have serious difficulty walking or climbing stairs due to health issues?
+                  </p>
+                  {errors.DiffWalk && (
+                    <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.DiffWalk}</span>
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2 self-end sm:self-center">
+                  {[
+                    { val: 0, label: 'No' },
+                    { val: 1, label: 'Yes' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.val}
+                      type="button"
+                      onClick={() => setVal('DiffWalk', opt.val)}
+                      className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
+                        form.DiffWalk === opt.val
+                          ? opt.val === 1
+                            ? 'bg-rose-600 text-white shadow-sm'
+                            : 'bg-slate-700 text-white shadow-sm'
+                          : errors.DiffWalk
+                          ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 5: Demographics & Healthcare Access                          */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 5 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-indigo-600" /> Demographics &amp; Healthcare Access
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Socioeconomic and insurance access indicators associated with diabetes screening frequency.
+                </p>
+              </div>
+
+              {/* Healthcare Coverage */}
+              <div className="space-y-4">
+                {[
+                  {
+                    key: 'AnyHealthcare',
+                    label: 'Health Care Coverage',
+                    desc: 'Do you have any health care coverage (health insurance, prepaid plans such as HMOs, or government plans like Medicare/Medicaid)?',
+                  },
+                  {
+                    key: 'NoDocbcCost',
+                    label: 'Avoided Doctor Due to Cost in Past 12 Months',
+                    desc: 'Was there a time in the past 12 months when you needed to see a doctor but could not because of cost?',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    id={`field-${item.key}`}
+                    className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      errors[item.key]
+                        ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
+                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate-800">
+                        {item.label} <span className="text-red-500">*</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      {errors[item.key] && (
+                        <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors[item.key]}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2 self-end sm:self-center">
+                      {[
+                        { val: 0, label: 'No' },
+                        { val: 1, label: 'Yes' },
+                      ].map((opt) => (
+                        <button
+                          key={opt.val}
+                          type="button"
+                          onClick={() => setVal(item.key, opt.val)}
+                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
+                            form[item.key] === opt.val
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : errors[item.key]
+                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Education & Income Selectors */}
+              <div className="grid sm:grid-cols-2 gap-5 pt-2">
+                {/* Education */}
+                <div id="field-Education">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Highest Education Level Completed <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={form.Education}
+                    onChange={(e) => setVal('Education', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-all ${
+                      errors.Education
+                        ? 'border-red-500 bg-red-50/20 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 bg-white focus:ring-2 focus:ring-blue-500'
+                    }`}
+                  >
+                    <option value="">-- Select Highest Education Level Completed --</option>
+                    {CDC_EDUCATION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.Education ? (
+                    <p className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.Education}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400 mt-1">Standard 6-level CDC education bracket.</p>
+                  )}
+                </div>
+
+                {/* Income */}
+                <div id="field-Income">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Annual Household Income Bracket <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={form.Income}
+                    onChange={(e) => setVal('Income', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-all ${
+                      errors.Income
+                        ? 'border-red-500 bg-red-50/20 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 bg-white focus:ring-2 focus:ring-blue-500'
+                    }`}
+                  >
+                    <option value="">-- Select Annual Household Income Bracket --</option>
+                    {CDC_INCOME_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.Income ? (
+                    <p className="text-xs font-semibold text-red-600 mt-1.5 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{errors.Income}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400 mt-1">Standard 8-level CDC household income bracket.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {/* STEP 6: Review Your Answers & Final Submit                        */}
+          {/* ═════════════════════════════════════════════════════════════════ */}
+          {currentStep === 6 && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <FileCheck2 className="w-5 h-5 text-teal-600" /> Review Your Health Assessment
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Please review all 21 parameters below. You can navigate back to modify any values before submitting.
+                </p>
+              </div>
+
+              {/* Review Grid */}
+              <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                {/* Personal */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-blue-600" /> Personal Baseline
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleStepClick(1)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600">
+                    <div className="flex justify-between">
+                      <span>Full Name:</span>
+                      <strong className={personal.fullName?.trim() ? 'text-slate-900' : 'text-red-600'}>
+                        {personal.fullName?.trim() || 'Missing (Required)'}
+                      </strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Email:</span>
+                      <span className="text-slate-700">{personal.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Age:</span>
+                      <strong className={personal.rawAge ? 'text-slate-900' : 'text-red-600'}>
+                        {personal.rawAge ? `${personal.rawAge} yrs (${calculatedAgeCat ? CDC_AGE_CATEGORIES[calculatedAgeCat]?.bracket : 'Cat ' + form.Age})` : 'Missing (Required)'}
+                      </strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sex:</span>
+                      <strong className={personal.sex !== null ? 'text-slate-900' : 'text-red-600'}>
+                        {personal.sex === 1 ? 'Male (1)' : personal.sex === 0 ? 'Female (0)' : 'Unselected (Required)'}
+                      </strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Date:</span>
+                      <span>{personal.assessmentDate}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Medical History */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <Heart className="w-3.5 h-3.5 text-red-500" /> Clinical Indicators
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleStepClick(2)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600">
+                    <div className="flex justify-between">
+                      <span>High Blood Pressure:</span>
+                      <span className={form.HighBP === null ? 'text-red-600 font-bold' : form.HighBP ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.HighBP === null ? 'Unanswered (Required)' : form.HighBP ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>High Cholesterol:</span>
+                      <span className={form.HighChol === null ? 'text-red-600 font-bold' : form.HighChol ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.HighChol === null ? 'Unanswered (Required)' : form.HighChol ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Cholesterol Checked (5 yrs):</span>
+                      <span className={form.CholCheck === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.CholCheck === null ? 'Unanswered (Required)' : form.CholCheck ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>History of Stroke:</span>
+                      <span className={form.Stroke === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.Stroke === null ? 'Unanswered (Required)' : form.Stroke ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Coronary Heart Disease / MI:</span>
+                      <span className={form.HeartDiseaseorAttack === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.HeartDiseaseorAttack === null ? 'Unanswered (Required)' : form.HeartDiseaseorAttack ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lifestyle */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-teal-600" /> Lifestyle &amp; Body
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleStepClick(3)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600">
+                    <div className="flex justify-between">
+                      <span>BMI:</span>
+                      <strong className={form.BMI !== '' ? 'text-slate-900' : 'text-red-600 font-bold'}>
+                        {form.BMI !== '' ? `${form.BMI} kg/m² (${bmiInfo.label})` : 'Missing (Required)'}
+                      </strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Smoker (100+ lifetime):</span>
+                      <span className={form.Smoker === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.Smoker === null ? 'Unanswered (Required)' : form.Smoker ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Physical Activity (30d):</span>
+                      <span className={form.PhysActivity === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.PhysActivity === null ? 'Unanswered (Required)' : form.PhysActivity ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Fruits / Veggies Daily:</span>
+                      <span className={form.Fruits === null || form.Veggies === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.Fruits === null ? 'Fruits: ?' : form.Fruits ? 'Fruits' : 'No Fruit'} / {form.Veggies === null ? 'Veggies: ?' : form.Veggies ? 'Veggies' : 'No Veggies'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Heavy Alcohol Consumption:</span>
+                      <span className={form.HvyAlcoholConsump === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.HvyAlcoholConsump === null ? 'Unanswered (Required)' : form.HvyAlcoholConsump ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* General Health & Demographics */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <Smile className="w-3.5 h-3.5 text-amber-500" /> General &amp; Demographics
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleStepClick(4)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600">
+                    <div className="flex justify-between">
+                      <span>General Health Self-Rating:</span>
+                      <strong className={form.GenHlth ? 'text-slate-900' : 'text-red-600 font-bold'}>
+                        {form.GenHlth ? `Level ${form.GenHlth} (1=Exc, 5=Poor)` : 'Unanswered (Required)'}
+                      </strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Unhealthy Days (30d):</span>
+                      <span className={form.PhysHlth === '' || form.MentHlth === '' ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        Phys: {form.PhysHlth === '' ? '?' : `${form.PhysHlth}d`} | Ment: {form.MentHlth === '' ? '?' : `${form.MentHlth}d`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Difficulty Walking:</span>
+                      <span className={form.DiffWalk === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.DiffWalk === null ? 'Unanswered (Required)' : form.DiffWalk ? 'Yes (1)' : 'No (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Health Care Coverage:</span>
+                      <span className={form.AnyHealthcare === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        {form.AnyHealthcare === null ? 'Unanswered (Required)' : form.AnyHealthcare ? 'Covered (1)' : 'Uninsured (0)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Education &amp; Income:</span>
+                      <span className={!form.Education || !form.Income ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                        Edu: {form.Education ? `${form.Education} / 6` : '?'} | Inc: {form.Income ? `${form.Income} / 8` : '?'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Research Protocol Notice */}
+              <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-800 flex items-start gap-3">
+                <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <p>
+                  Upon submission, your responses will be processed by our frozen Phase 5 Logistic Regression model
+                  evaluated on 202,944 CDC BRFSS records. Assessment results will be saved to your personal history.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-      </form>
+
+        {/* Stepper Controls */}
+        <div className="flex items-center justify-between gap-4">
+          {currentStep > 1 ? (
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={submitting}
+              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 text-sm font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+            >
+              <ChevronLeft className="w-4 h-4" /> Previous
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {currentStep < 6 ? (
+            <button
+              type="button"
+              onClick={handleNext}
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition-all shadow-md shadow-blue-500/20"
+            >
+              Next Step <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Analyzing Indicators...
+                </>
+              ) : (
+                <>
+                  Submit Health Assessment <ChevronRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Disclaimer Footer */}
+        <div className="mt-12">
+          <DisclaimerBanner />
+        </div>
+      </div>
     </div>
   )
 }
-
