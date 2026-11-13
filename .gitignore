@@ -80,3 +80,6 @@ frontend/.env.local
 *.tmp
 *.bak
 
+# ------ One-off diagnostic scripts -------
+test.py
+
