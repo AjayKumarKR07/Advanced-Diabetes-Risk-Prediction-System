@@ -48,7 +48,7 @@ Before calculating test set metrics, **Logistic Regression** was formally design
 |---|---|---|---|---|---|
 | **Accuracy** | **0.6433** (64.33%) | 0.6452 (64.52%) | -0.0019 | -0.30% | ✅ Flawless alignment |
 | **Balanced Accuracy** | **0.5172** (51.72%) | 0.5195 (51.95%) | -0.0022 | -0.43% | ✅ Consistent sensitivity |
-| **Macro F1-Score** | **0.4246** | 0.4271 | -0.0024 | -0.57% | ✅ Zero overfitting |
+| **Macro F1-Score** | **0.4246** | 0.4271 | -0.0024 | -0.57% | ✅ Minimal generalization gap (|Δ| < 0.003) |
 | **Weighted F1-Score** | **0.7187** | 0.7203 | -0.0017 | -0.23% | ✅ Stable majority performance |
 | **Macro Precision** | **0.4442** | 0.4463 | -0.0021 | -0.46% | ✅ Stable precision |
 | **Macro Recall** | **0.5172** | 0.5195 | -0.0022 | -0.43% | ✅ Stable recall |
@@ -109,9 +109,9 @@ The comparison between the 5-fold group-aware development Out-Of-Fold (OOF) pred
 - **ROC-AUC:** Development OOF = `0.7731`, Final Test = `0.7707` (Delta = `-0.0024` or `-0.31%`).
 
 This confirms that:
-1. **Zero Overfitting:** The model did not overfit to the training folds.
+1. **Minimal Generalization Gap:** The model demonstrates consistent out-of-sample performance, with macro F1 and balanced accuracy closely tracking cross-validation expectations within expected variance (|Δ| < 0.003).
 2. **Leakage-Safe Validation:** StratifiedGroupKFold with feature-profile hashing prevented optimistic bias during development.
-3. **True Out-of-Distribution Stability:** Performance is completely maintained when applied to previously unseen respondents.
+3. **Out-of-Sample Stability:** Empirical performance is maintained when evaluated on previously unseen respondent profiles.
 
 ---
 
@@ -121,8 +121,8 @@ This confirms that:
 In the general population represented by the BRFSS survey, prediabetes constitutes only 1.83% of respondents. Mathematically, by Bayes' theorem, even with an 82% specificity, a low-prevalence condition inevitably yields a low Positive Predictive Value (PPV / Precision = 3.0%). Out of every 100 positive prediabetes flags, approximately 3 represent true prediabetes.
 
 ### 2. Clinical Consequences of Errors
-- **Consequences of False Positives (FP):** In a preventative healthcare workflow, a positive prediabetes prediction triggers non-invasive, low-risk follow-up actions: fasting blood glucose or HbA1c lab tests, nutritional counseling, and exercise recommendations. While this incurs mild clinical resource overhead and temporary patient anxiety, it carries no physical harm.
-- **Consequences of False Negatives (FN):** A false negative means a patient in the asymptomatic prediabetic phase continues their standard lifestyle without intervention. Prediabetes often progresses undetected to irreversible Type 2 diabetes, with severe long-term cardiovascular, renal, and ophthalmological complications. Therefore, optimizing for recall (sensitivity) over precision is the medically ethical posture.
+- **Consequences of False Positives (FP):** In a preventative screening research context, a false positive flag indicates elevated risk where clinical glycemic markers may still be normal. While confirmatory diagnostic blood assays (e.g. venipuncture for HbA1c or fasting glucose) carry very low procedural risk, false positives can induce patient anxiety, unnecessary clinical appointments, and secondary healthcare resource utilization.
+- **Consequences of False Negatives (FN):** A false negative means a patient in the asymptomatic prediabetic phase does not receive early screening prompts, potentially delaying secondary clinical evaluation and lifestyle modifications during early metabolic shifts. In screening research, balancing sensitivity and specificity remains a central trade-off given the 1.83% base rate.
 
 ### 3. Self-Reported Survey Limitations & Bayes Noise
 The BRFSS 2015 dataset relies entirely on self-reported phone surveys without laboratory confirmation (no fasting blood glucose, HbA1c, or oral glucose tolerance tests). As demonstrated in Phase 3, **1,834 identical feature profiles** had contradictory target labels (some respondents had diabetes while others with identical answers did not). This represents irreducible **Bayes-error noise**.

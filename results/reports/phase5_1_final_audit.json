@@ -1,0 +1,83 @@
+{
+  "audit_phase": "Phase 5.1 - Final Audit and Research Governance Review (Corrected)",
+  "audit_timestamp": "2026-11-13T15:10:00+05:30",
+  "audit_verdict": "PASS",
+  "audit_nature": "Documentation correction & governance review (all models, data, and test predictions preserved without modification)",
+  "categories": {
+    "1_split_integrity": {
+      "status": "PASS",
+      "dataset_fingerprint": "a971809d0786d2d7",
+      "total_dataset_rows": 253680,
+      "phase3_metadata_train_rows": 202943,
+      "phase3_metadata_test_rows": 50737,
+      "phase42_and_phase5_train_rows": 202944,
+      "phase42_and_phase5_test_rows": 50736,
+      "split_provenance_reconciled": true,
+      "split_provenance_explanation": "Phase 3 and Phase 4.2 generated two different 5-fold group splits because the input column order passed to hash(tuple(row)) differed: Phase 3 used FEATURE_ORDER (BMI at index 20), whereas Phase 4.2/Phase 5 used raw CSV column order df.drop(columns=[TARGET_COL]) (BMI at index 3). The two test sets (50,737 vs 50,736 rows) are distinct 20% group partitions sharing 10,289 rows in common. The Phase 4.2 models were trained strictly on the 202,944 training rows of the raw-order split, and the Phase 5 final evaluation was evaluated strictly on the disjoint 50,736 test rows of that same split.",
+      "train_test_overlap_rows": 0,
+      "train_test_overlap_groups": 0,
+      "train_unique_profiles": 182387,
+      "test_unique_profiles": 45521,
+      "group_isolation_verified": true
+    },
+    "2_metric_integrity": {
+      "status": "PASS",
+      "test_rows": 50736,
+      "confusion_matrix_sum": 50736,
+      "support_sum": 50736,
+      "accuracy_computed": 0.6432710501419111,
+      "accuracy_reported": 0.6432710501419111,
+      "balanced_accuracy_computed": 0.517240925770629,
+      "balanced_accuracy_reported": 0.517240925770629,
+      "macro_f1_computed": 0.42462598942678076,
+      "macro_f1_reported": 0.42462598942678076,
+      "class1_specificity_computed": 0.8185504918691026,
+      "class1_specificity_reported": 0.8185504918691026,
+      "internal_consistency_verified": true,
+      "report_matches_json": true
+    },
+    "3_clinical_and_scientific_language": {
+      "status": "PASS",
+      "edits_applied": [
+        "Replaced 'Zero overfitting' with 'Minimal generalization gap (|Δ| < 0.003 across global metrics; within expected cross-validation variance)'.",
+        "Replaced 'Zero test-set degradation' with 'Minimal generalization gap'.",
+        "Removed unverified claim of irreversible biological beta-cell loss; rephrased to describe potential delays in secondary clinical evaluation and lifestyle modifications.",
+        "Removed claim that false positives cause 'zero physical harm'; rephrased to transparently document psychological distress, unnecessary clinical appointments, and secondary healthcare resource utilization.",
+        "Strengthened mandatory clinical disclaimer: research prototype only, not a clinical diagnostic tool or medical device."
+      ],
+      "compliance_verified": true
+    },
+    "4_test_evidence": {
+      "status": "PASS",
+      "phase5_test_file": "tests/test_phase5_final_evaluation.py",
+      "phase5_test_count": 8,
+      "phase5_test_passed": 8,
+      "phase5_exit_code": 0,
+      "phase42_test_file": "tests/test_cdc_group_aware_benchmarking.py",
+      "phase42_test_count": 12,
+      "phase42_test_passed": 12,
+      "phase42_exit_code": 0,
+      "total_tests_passed": 20,
+      "total_tests_failed": 0,
+      "artifacts_preserved": true
+    },
+    "5_git_integrity": {
+      "status": "PASS",
+      "original_kaggle_workflow_modified": false,
+      "original_kaggle_files_checked": [
+        "data/diabetes.csv",
+        "src/data_preprocessing.py",
+        "src/train_model.py",
+        "src/predict.py",
+        "src/app.py",
+        "src/utils.py",
+        "config.yaml"
+      ],
+      "secrets_staged": false,
+      "kaggle_json_tracked": false,
+      "working_tree_clean": false,
+      "pushed_to_remote": false
+    }
+  },
+  "remaining_issues": []
+}

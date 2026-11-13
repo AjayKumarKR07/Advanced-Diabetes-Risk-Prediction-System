@@ -156,6 +156,6 @@
     "class_imbalance_impact": "Severe imbalance (1.83% Class 1) drives low positive predictive value (3.0%) despite balanced class weighting.",
     "false_positive_consequence": "Triggers secondary confirmatory laboratory screening (HbA1c/fasting plasma glucose); causes mild patient concern and modest healthcare resource utilization.",
     "false_negative_consequence": "Delays early prediabetes lifestyle/dietary intervention, allowing metabolic decline to progress toward overt type 2 diabetes.",
-    "generalization_conclusion": "OOF and Test metrics match within \u00b10.5% relative error across all key parameters, confirming zero test-set overfitting and rigorous group isolation."
+    "generalization_conclusion": "OOF and Test metrics match within ±0.5% relative error across all key parameters, confirming a minimal generalization gap and consistent out-of-sample performance across isolated groups."
   }
 }

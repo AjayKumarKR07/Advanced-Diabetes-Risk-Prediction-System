@@ -1,0 +1,63 @@
+{
+  "phase": "Phase 5.2 - Split Reproducibility and Audit Consistency Correction",
+  "audit_timestamp": "2026-11-13T15:12:00+05:30",
+  "overall_verdict": "PASS",
+  "evaluation_categories": {
+    "1_hash_implementation_identification": {
+      "status": "PASS",
+      "outer_split_hashing": "Python built-in hash(tuple(row))",
+      "outer_split_input_columns": "df.drop(columns=['Diabetes_012']).columns (raw CSV order)",
+      "inner_and_outer_cv_hashing": "pd.util.hash_pandas_object (deterministic 64-bit Murmur3)",
+      "findings": "Identified exact hashing functions. Built-in hash() was used for the train/test split on tuples, while Murmur3 was used for cross-validation within the training partition."
+    },
+    "2_exact_split_provenance": {
+      "status": "PASS",
+      "phase3_split": {
+        "source_file": "src/cdc_preprocessing.py",
+        "column_order": "FEATURE_ORDER (BMI at index 20)",
+        "train_rows": 202943,
+        "test_rows": 50737
+      },
+      "phase42_and_phase5_split": {
+        "source_files": [
+          "src/cdc_group_aware_benchmarking.py",
+          "src/cdc_final_evaluation.py"
+        ],
+        "column_order": "df.drop(columns=[TARGET_COL]) (BMI at index 3)",
+        "train_rows": 202944,
+        "test_rows": 50736
+      },
+      "shared_test_rows_count": 10289,
+      "discrepancy_root_cause": "Different input column order passed to hash(tuple(row)). Because Python's tuple hashing is position-dependent, different numerical group IDs were generated for each profile, causing StratifiedGroupKFold to produce a distinct 5-fold partition.",
+      "authoritative_model_split": "Phase 4.2 models and Phase 5 evaluation used the exact same raw-order split (202,944 train / 50,736 test)."
+    },
+    "3_training_test_index_separation": {
+      "status": "PASS",
+      "train_indices_count": 202944,
+      "test_indices_count": 50736,
+      "total_dataset_rows": 253680,
+      "row_intersection_count": 0,
+      "disjoint_index_separation_verified": true
+    },
+    "4_feature_profile_group_isolation": {
+      "status": "PASS",
+      "unique_profiles_total": 227908,
+      "unique_profiles_train": 182387,
+      "unique_profiles_test": 45521,
+      "profile_intersection_count": 0,
+      "profile_overlap_pct": 0.0,
+      "zero_group_leakage_verified": true
+    },
+    "5_frozen_test_evaluation_provenance": {
+      "status": "PASS",
+      "evaluated_model_artifact": "models/cdc/group_aware_benchmarks/LogisticRegression/model.pkl",
+      "model_training_rows": 202944,
+      "evaluated_test_rows": 50736,
+      "metrics_json_file": "results/reports/phase5_final_metrics.json",
+      "provenance_confirmed": true,
+      "notes": "Verified that Phase 5 evaluated the model on the true, disjoint 50,736 test partition without leakage or repeated access."
+    }
+  },
+  "remaining_issues": []
+}
+

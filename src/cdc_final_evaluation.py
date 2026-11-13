@@ -692,7 +692,7 @@ Before calculating test set metrics, **Logistic Regression** was formally design
 |---|---|---|---|---|---|
 | **Accuracy** | **{test_acc:.4f}** ({test_acc*100:.2f}%) | {oof_metrics['accuracy']:.4f} ({oof_metrics['accuracy']*100:.2f}%) | {comparison['accuracy']['delta_abs']:+.4f} | {comparison['accuracy']['delta_rel_pct']:+.2f}% | ✅ Flawless alignment |
 | **Balanced Accuracy** | **{test_bal_acc:.4f}** ({test_bal_acc*100:.2f}%) | {oof_metrics['balanced_accuracy']:.4f} ({oof_metrics['balanced_accuracy']*100:.2f}%) | {comparison['balanced_accuracy']['delta_abs']:+.4f} | {comparison['balanced_accuracy']['delta_rel_pct']:+.2f}% | ✅ Consistent sensitivity |
-| **Macro F1-Score** | **{test_macro_f1:.4f}** | {oof_metrics['macro_f1']:.4f} | {comparison['macro_f1']['delta_abs']:+.4f} | {comparison['macro_f1']['delta_rel_pct']:+.2f}% | ✅ Zero overfitting |
+| **Macro F1-Score** | **{test_macro_f1:.4f}** | {oof_metrics['macro_f1']:.4f} | {comparison['macro_f1']['delta_abs']:+.4f} | {comparison['macro_f1']['delta_rel_pct']:+.2f}% | ✅ Minimal generalization gap (|Δ| < 0.003) |
 | **Weighted F1-Score** | **{test_weighted_f1:.4f}** | {oof_metrics['weighted_f1']:.4f} | {comparison['weighted_f1']['delta_abs']:+.4f} | {comparison['weighted_f1']['delta_rel_pct']:+.2f}% | ✅ Stable majority performance |
 | **Macro Precision** | **{test_macro_prec:.4f}** | {oof_metrics['macro_precision']:.4f} | {test_macro_prec - oof_metrics['macro_precision']:+.4f} | {(test_macro_prec - oof_metrics['macro_precision'])/oof_metrics['macro_precision']*100:+.2f}% | ✅ Stable precision |
 | **Macro Recall** | **{test_macro_rec:.4f}** | {oof_metrics['macro_recall']:.4f} | {test_macro_rec - oof_metrics['macro_recall']:+.4f} | {(test_macro_rec - oof_metrics['macro_recall'])/oof_metrics['macro_recall']*100:+.2f}% | ✅ Stable recall |
@@ -753,9 +753,9 @@ The comparison between the 5-fold group-aware development Out-Of-Fold (OOF) pred
 - **ROC-AUC:** Development OOF = `{oof_metrics['roc_auc_ovr']:.4f}`, Final Test = `{test_roc_auc_ovr_macro:.4f}` (Delta = `{comparison['roc_auc_ovr']['delta_abs']:+.4f}` or `{comparison['roc_auc_ovr']['delta_rel_pct']:+.2f}%`).
 
 This confirms that:
-1. **Zero Overfitting:** The model did not overfit to the training folds.
+1. **Minimal Generalization Gap:** The model demonstrates consistent out-of-sample performance, with macro F1 and balanced accuracy closely tracking cross-validation expectations within expected variance (|Δ| < 0.003).
 2. **Leakage-Safe Validation:** StratifiedGroupKFold with feature-profile hashing prevented optimistic bias during development.
-3. **True Out-of-Distribution Stability:** Performance is completely maintained when applied to previously unseen respondents.
+3. **Out-of-Sample Stability:** Empirical performance is maintained when evaluated on previously unseen respondent profiles.
 
 ---
 
@@ -765,8 +765,8 @@ This confirms that:
 In the general population represented by the BRFSS survey, prediabetes constitutes only 1.83% of respondents. Mathematically, by Bayes' theorem, even with an 82% specificity, a low-prevalence condition inevitably yields a low Positive Predictive Value (PPV / Precision = 3.0%). Out of every 100 positive prediabetes flags, approximately 3 represent true prediabetes.
 
 ### 2. Clinical Consequences of Errors
-- **Consequences of False Positives (FP):** In a preventative healthcare workflow, a positive prediabetes prediction triggers non-invasive, low-risk follow-up actions: fasting blood glucose or HbA1c lab tests, nutritional counseling, and exercise recommendations. While this incurs mild clinical resource overhead and temporary patient anxiety, it carries no physical harm.
-- **Consequences of False Negatives (FN):** A false negative means a patient in the asymptomatic prediabetic phase continues their standard lifestyle without intervention. Prediabetes often progresses undetected to irreversible Type 2 diabetes, with severe long-term cardiovascular, renal, and ophthalmological complications. Therefore, optimizing for recall (sensitivity) over precision is the medically ethical posture.
+- **Consequences of False Positives (FP):** In a preventative screening research context, a false positive flag indicates elevated risk where clinical glycemic markers may still be normal. While confirmatory diagnostic blood assays (e.g. venipuncture for HbA1c or fasting glucose) carry very low procedural risk, false positives can induce patient anxiety, unnecessary clinical appointments, and secondary healthcare resource utilization.
+- **Consequences of False Negatives (FN):** A false negative means a patient in the asymptomatic prediabetic phase does not receive early screening prompts, potentially delaying secondary clinical evaluation and lifestyle modifications during early metabolic shifts. In screening research, balancing sensitivity and specificity remains a central trade-off given the 1.83% base rate.
 
 ### 3. Self-Reported Survey Limitations & Bayes Noise
 The BRFSS 2015 dataset relies entirely on self-reported phone surveys without laboratory confirmation (no fasting blood glucose, HbA1c, or oral glucose tolerance tests). As demonstrated in Phase 3, **1,834 identical feature profiles** had contradictory target labels (some respondents had diabetes while others with identical answers did not). This represents irreducible **Bayes-error noise**.
