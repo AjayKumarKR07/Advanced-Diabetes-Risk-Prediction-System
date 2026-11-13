@@ -1,0 +1,232 @@
+{
+  "target_conflicts": {
+    "verdict": "PASS",
+    "total_unique_groups": 182387,
+    "conflicting_groups": 1408,
+    "pct_conflicting_groups": 0.77,
+    "conflicting_rows": 4778,
+    "pct_conflicting_rows": 2.35,
+    "conflict_breakdown": {
+      "classes_0_and_1": 213,
+      "classes_0_and_2": 1146,
+      "classes_1_and_2": 22,
+      "classes_0_1_2": 27
+    },
+    "target_excluded_from_hash": true,
+    "handling_explanation": "StratifiedGroupKFold treats each profile group as an atomic, indivisible cluster. All duplicate respondents with the exact same 21 features (even with conflicting labels) are assigned as a single block to either train or val. Thus 0% profile overlap is preserved."
+  },
+  "group_isolation": {
+    "verdict": "PASS",
+    "outer_cv_overlap_pct": 0.0,
+    "outer_folds": [
+      {
+        "fold": 1,
+        "train_size": 162355,
+        "val_size": 40589,
+        "overlap_count": 0,
+        "overlap_pct": 0.0
+      },
+      {
+        "fold": 2,
+        "train_size": 162355,
+        "val_size": 40589,
+        "overlap_count": 0,
+        "overlap_pct": 0.0
+      },
+      {
+        "fold": 3,
+        "train_size": 162355,
+        "val_size": 40589,
+        "overlap_count": 0,
+        "overlap_pct": 0.0
+      },
+      {
+        "fold": 4,
+        "train_size": 162355,
+        "val_size": 40589,
+        "overlap_count": 0,
+        "overlap_pct": 0.0
+      },
+      {
+        "fold": 5,
+        "train_size": 162356,
+        "val_size": 40588,
+        "overlap_count": 0,
+        "overlap_pct": 0.0
+      }
+    ],
+    "inner_folds": [
+      {
+        "inner_fold": 1,
+        "train_size": 108236,
+        "val_size": 54119,
+        "overlap_count": 0
+      },
+      {
+        "inner_fold": 2,
+        "train_size": 108236,
+        "val_size": 54119,
+        "overlap_count": 0
+      },
+      {
+        "inner_fold": 3,
+        "train_size": 108238,
+        "val_size": 54117,
+        "overlap_count": 0
+      }
+    ],
+    "all_21_features_used": true,
+    "target_excluded": true
+  },
+  "oof_integrity": {
+    "verdict": "PASS",
+    "y_true_aligned": true,
+    "total_development_rows": 202944,
+    "model_oof_checks": {
+      "LogisticRegression": {
+        "is_complete": true,
+        "valid_classes": true,
+        "shape_valid": true,
+        "finite_valid": true,
+        "range_valid": true,
+        "sums_to_1": true,
+        "min_prob": 0.0005241496678951986,
+        "max_prob": 0.9711315286943697,
+        "max_sum_diff": 2.220446049250313e-16
+      },
+      "DecisionTree": {
+        "is_complete": true,
+        "valid_classes": true,
+        "shape_valid": true,
+        "finite_valid": true,
+        "range_valid": true,
+        "sums_to_1": true,
+        "min_prob": 0.0,
+        "max_prob": 1.0,
+        "max_sum_diff": 5.129230373768223e-14
+      },
+      "RandomForest": {
+        "is_complete": true,
+        "valid_classes": true,
+        "shape_valid": true,
+        "finite_valid": true,
+        "range_valid": true,
+        "sums_to_1": true,
+        "min_prob": 0.0,
+        "max_prob": 1.0,
+        "max_sum_diff": 1.5543122344752192e-15
+      },
+      "XGBoost": {
+        "is_complete": true,
+        "valid_classes": true,
+        "shape_valid": true,
+        "finite_valid": true,
+        "range_valid": true,
+        "sums_to_1": true,
+        "min_prob": 2.356519689783454e-05,
+        "max_prob": 0.9998830556869507,
+        "max_sum_diff": 8.940696716308594e-08
+      }
+    }
+  },
+  "metric_consistency": {
+    "verdict": "PASS",
+    "models": {
+      "LogisticRegression": {
+        "recomputed": {
+          "macro_f1": 0.42707088083448314,
+          "balanced_acc": 0.5194896338455407,
+          "roc_auc_ovr": 0.7731357384072166,
+          "cohen_kappa": 0.24636212732549434,
+          "mcc": 0.29540371422069167
+        },
+        "reported": {
+          "macro_f1": 0.42707088083448314,
+          "balanced_acc": 0.5194896338455407,
+          "roc_auc_ovr": 0.7731357384072166,
+          "cohen_kappa": 0.24636212732549434,
+          "mcc": 0.29540371422069167
+        },
+        "max_difference": 0.0,
+        "confusion_matrix_total": 202944,
+        "matches_reported": true
+      },
+      "DecisionTree": {
+        "recomputed": {
+          "macro_f1": 0.3871664289709147,
+          "balanced_acc": 0.48547463252637507,
+          "roc_auc_ovr": 0.710831107951455,
+          "cohen_kappa": 0.1870248953483381,
+          "mcc": 0.2427889628523092
+        },
+        "reported": {
+          "macro_f1": 0.3871664289709147,
+          "balanced_acc": 0.48547463252637507,
+          "roc_auc_ovr": 0.710831107951455,
+          "cohen_kappa": 0.1870248953483381,
+          "mcc": 0.2427889628523092
+        },
+        "max_difference": 0.0,
+        "confusion_matrix_total": 202944,
+        "matches_reported": true
+      },
+      "RandomForest": {
+        "recomputed": {
+          "macro_f1": 0.44810615663449554,
+          "balanced_acc": 0.48337588453550334,
+          "roc_auc_ovr": 0.7572092286389944,
+          "cohen_kappa": 0.3430869599394447,
+          "mcc": 0.354108207964114
+        },
+        "reported": {
+          "macro_f1": 0.44810615663449554,
+          "balanced_acc": 0.48337588453550334,
+          "roc_auc_ovr": 0.7572092286389944,
+          "cohen_kappa": 0.3430869599394447,
+          "mcc": 0.354108207964114
+        },
+        "max_difference": 0.0,
+        "confusion_matrix_total": 202944,
+        "matches_reported": true
+      },
+      "XGBoost": {
+        "recomputed": {
+          "macro_f1": 0.4332038074879141,
+          "balanced_acc": 0.49735649515133745,
+          "roc_auc_ovr": 0.7393275532406167,
+          "cohen_kappa": 0.28278066757486353,
+          "mcc": 0.31913948952399107
+        },
+        "reported": {
+          "macro_f1": 0.4332038074879141,
+          "balanced_acc": 0.49735649515133745,
+          "roc_auc_ovr": 0.7393275532406167,
+          "cohen_kappa": 0.28278066757486353,
+          "mcc": 0.31913948952399107
+        },
+        "max_difference": 0.0,
+        "confusion_matrix_total": 202944,
+        "matches_reported": true
+      }
+    },
+    "distinction_explanation": "Pooled OOF metrics are computed globally across all 202,944 concatenated predictions, whereas fold CV metrics represent the arithmetic mean \u00b1 standard deviation across the 5 validation folds. Both are reported explicitly and accurately."
+  },
+  "test_isolation": {
+    "verdict": "PASS",
+    "n_train": 202944,
+    "n_test_locked": 50736,
+    "dataset_fingerprint": "a971809d0786d2d7",
+    "test_accessed": false
+  },
+  "artifact_integrity": {
+    "verdict": "PASS",
+    "all_4_models_load_in_fresh_process": true,
+    "models_verified": [
+      "LogisticRegression",
+      "DecisionTree",
+      "RandomForest",
+      "XGBoost"
+    ],
+    "phase4_baselines_intact": true
+  }
+}

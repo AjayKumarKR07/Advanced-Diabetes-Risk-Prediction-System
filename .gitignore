@@ -44,6 +44,7 @@ service_account.json
 # ------ Large model files (use Git LFS or external storage) -------
 # RandomForest model is ~411 MB — too large for GitHub (100 MB limit)
 models/cdc/benchmarks/RandomForest/model.pkl
+models/cdc/group_aware_benchmarks/RandomForest/model.pkl
 
 # ------ Large datasets (use Git LFS or download scripts) -------
 data/raw/*.csv
