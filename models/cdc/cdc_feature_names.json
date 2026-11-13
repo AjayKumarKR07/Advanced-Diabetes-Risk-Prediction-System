@@ -1,0 +1,23 @@
+[
+  "HighBP",
+  "HighChol",
+  "CholCheck",
+  "Smoker",
+  "Stroke",
+  "HeartDiseaseorAttack",
+  "PhysActivity",
+  "Fruits",
+  "Veggies",
+  "HvyAlcoholConsump",
+  "AnyHealthcare",
+  "NoDocbcCost",
+  "DiffWalk",
+  "Sex",
+  "GenHlth",
+  "Age",
+  "Education",
+  "Income",
+  "MentHlth",
+  "PhysHlth",
+  "BMI"
+]

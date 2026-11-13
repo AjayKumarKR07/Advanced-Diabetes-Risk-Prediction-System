@@ -1,0 +1,82 @@
+# ============================================================
+# Advanced Diabetes Risk Prediction System — .gitignore
+# ============================================================
+
+# ------ Python cache -------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+
+# ------ Testing -------
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ------ Virtual environments -------
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ------ Jupyter / IPython -------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ------ Secrets & credentials -------
+kaggle.json
+.env
+.env.*
+*.pem
+*.key
+secrets.yaml
+secrets.yml
+credentials.json
+service_account.json
+
+# ------ Large model files (use Git LFS or external storage) -------
+# RandomForest model is ~411 MB — too large for GitHub (100 MB limit)
+models/cdc/benchmarks/RandomForest/model.pkl
+
+# ------ Large datasets (use Git LFS or download scripts) -------
+data/raw/*.csv
+# Keep gitkeep placeholder
+!data/raw/.gitkeep
+
+# ------ OS artefacts -------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------ IDE / editor -------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ------ Build / dist -------
+dist/
+build/
+*.egg-info/
+*.egg
+
+# ------ Node (future frontend) -------
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+
+# ------ Logs & temp -------
+*.log
+*.tmp
+*.bak
+

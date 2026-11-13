@@ -1,0 +1,151 @@
+{
+  "cv_strategy": {
+    "cv_type": "StratifiedKFold",
+    "hp_type": "StratifiedKFold",
+    "cv_line": null,
+    "hp_line": [
+      465,
+      "inner_cv  = StratifiedKFold(n_splits=3, shuffle=True, random_state=RANDOM_SEED)"
+    ]
+  },
+  "cv_profile_overlap": [
+    {
+      "fold": 1,
+      "val_size": 40589,
+      "overlapping_profiles": 4039,
+      "overlapping_rows": 5465,
+      "overlap_pct": 13.46
+    },
+    {
+      "fold": 2,
+      "val_size": 40589,
+      "overlapping_profiles": 4009,
+      "overlapping_rows": 5470,
+      "overlap_pct": 13.48
+    },
+    {
+      "fold": 3,
+      "val_size": 40589,
+      "overlapping_profiles": 4089,
+      "overlapping_rows": 5514,
+      "overlap_pct": 13.58
+    },
+    {
+      "fold": 4,
+      "val_size": 40589,
+      "overlapping_profiles": 4127,
+      "overlapping_rows": 5566,
+      "overlap_pct": 13.71
+    },
+    {
+      "fold": 5,
+      "val_size": 40588,
+      "overlapping_profiles": 4121,
+      "overlapping_rows": 5542,
+      "overlap_pct": 13.65
+    }
+  ],
+  "preprocessing_leakage": {
+    "fresh_preprocessor_per_fold": true,
+    "xgb_sample_weight_from_fold_labels": true,
+    "class_weight_balanced_at_definition": true,
+    "resampling_applied": true,
+    "test_in_fit": false
+  },
+  "hp_audit": {
+    "hp_inner_cv": "StratifiedKFold(3)",
+    "test_accessed": false,
+    "scores_independent": true
+  },
+  "cm_audit": {
+    "cm_source": "last_cv_fold_val_partition_of_X_train",
+    "uses_frozen_test": false,
+    "model_state": "final_model_trained_on_full_X_train",
+    "note": "CMs show final model predictions on seen training data fold \u2014 slight optimism expected"
+  },
+  "artifacts": {
+    "LogisticRegression": {
+      "loads": true,
+      "predicts": true,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "all_three_classes": true,
+      "proba_shape": [
+        200,
+        3
+      ],
+      "proba_sums_to_1": true,
+      "proba_non_negative": true,
+      "metadata_fingerprint": "a971809d0786d2d7",
+      "metadata_fp_matches": true,
+      "metadata_features": true,
+      "metadata_model_name": true
+    },
+    "DecisionTree": {
+      "loads": true,
+      "predicts": true,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "all_three_classes": true,
+      "proba_shape": [
+        200,
+        3
+      ],
+      "proba_sums_to_1": true,
+      "proba_non_negative": true,
+      "metadata_fingerprint": "a971809d0786d2d7",
+      "metadata_fp_matches": true,
+      "metadata_features": true,
+      "metadata_model_name": true
+    },
+    "RandomForest": {
+      "loads": true,
+      "predicts": true,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "all_three_classes": true,
+      "proba_shape": [
+        200,
+        3
+      ],
+      "proba_sums_to_1": true,
+      "proba_non_negative": true,
+      "metadata_fingerprint": "a971809d0786d2d7",
+      "metadata_fp_matches": true,
+      "metadata_features": true,
+      "metadata_model_name": true
+    },
+    "XGBoost": {
+      "loads": true,
+      "predicts": true,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "all_three_classes": true,
+      "proba_shape": [
+        200,
+        3
+      ],
+      "proba_sums_to_1": true,
+      "proba_non_negative": true,
+      "xgb_wrapper": true,
+      "xgb_has_preprocessor": true,
+      "xgb_has_classifier": true,
+      "metadata_fingerprint": "a971809d0786d2d7",
+      "metadata_fp_matches": true,
+      "metadata_features": true,
+      "metadata_model_name": true
+    }
+  }
+}

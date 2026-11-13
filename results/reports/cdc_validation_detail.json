@@ -1,0 +1,33 @@
+{
+  "fingerprint": "a971809d0786d2d7",
+  "n_rows": 253680,
+  "n_cols": 22,
+  "n_missing": 0,
+  "n_duplicates": 23899,
+  "n_duplicate_profiles": 12228,
+  "n_conflict_profiles": 1834,
+  "conflict_rows": 6120,
+  "class_distribution": {
+    "0": 213703,
+    "1": 4631,
+    "2": 35346
+  },
+  "class_percentages": {
+    "0": 84.2412,
+    "1": 1.8255,
+    "2": 13.9333
+  },
+  "invalid_ranges": {},
+  "dtype_issues": [],
+  "missing_columns": [],
+  "extra_columns": [],
+  "validation_passed": true,
+  "errors": [],
+  "warnings": [
+    "1,834 feature profiles have conflicting target labels (irreducible noise). Involves 6,120 rows. These rows are RETAINED but represent Bayes-error noise."
+  ],
+  "notes": [
+    "23,899 exact duplicate rows (9.42%). Likely legitimate (see Phase 2 analysis). Records are RETAINED \u2014 use drop_duplicates() inside training folds only.",
+    "12,228 unique feature profiles appear in multiple rows. These are accounted for in the leakage-aware split strategy."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "random_seed": 42,
+  "test_fraction": 0.2,
+  "n_train": 202943,
+  "n_test": 50737,
+  "strategy": "stratified_group_split",
+  "train_class_dist": {
+    "0": 170962,
+    "1": 3705,
+    "2": 28276
+  },
+  "test_class_dist": {
+    "0": 42741,
+    "1": 926,
+    "2": 7070
+  },
+  "train_class_pct": {
+    "0": 84.2414,
+    "1": 1.8256,
+    "2": 13.933
+  },
+  "test_class_pct": {
+    "0": 84.2403,
+    "1": 1.8251,
+    "2": 13.9346
+  },
+  "leakage_check_passed": true,
+  "leakage_note": "StratifiedGroupKFold applied: no identical feature profile appears in both train and test sets.",
+  "dataset_fingerprint": "25d88703ad530682",
+  "feature_names": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "DiffWalk",
+    "Sex",
+    "GenHlth",
+    "Age",
+    "Education",
+    "Income",
+    "MentHlth",
+    "PhysHlth",
+    "BMI"
+  ],
+  "n_duplicate_rows": 0,
+  "n_conflict_profiles": 0
+}
