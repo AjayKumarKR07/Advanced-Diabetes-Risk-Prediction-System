@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, 
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
+from backend.app.api.analytics_routes import analytics_router
 from backend.app.api.auth_routes import auth_router
 from backend.app.core.config import settings
 from backend.app.core.database import check_db_connection, get_db
@@ -44,6 +45,9 @@ api_router = APIRouter()
 
 # Mount authentication routes (/api/auth/register, /api/auth/login, /api/auth/me)
 api_router.include_router(auth_router)
+
+# Mount personal health analytics routes (/api/analytics/*)
+api_router.include_router(analytics_router)
 
 
 # ---------------------------------------------------------------------------
