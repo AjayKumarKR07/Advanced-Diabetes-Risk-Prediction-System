@@ -290,3 +290,96 @@ class TestAnalyticsDataIsolation:
         assert data_b["latest_bmi"] == 21.0
         assert data_b["class_distribution"]["0"] == 1
         assert data_b["class_distribution"]["2"] == 0
+
+    def test_cross_user_isolation_all_sub_endpoints(self, client, create_test_user, create_assessment_with_pred):
+        user_a, token_a = create_test_user(name="User Isolated A")
+        user_b, token_b = create_test_user(name="User Isolated B")
+
+        headers_a = {"Authorization": f"Bearer {token_a}"}
+        headers_b = {"Authorization": f"Bearer {token_b}"}
+
+        create_assessment_with_pred(user_a.id, bmi=33.3, gen_hlth=5, pred_class=2, pred_label="Diabetes")
+        create_assessment_with_pred(user_b.id, bmi=20.2, gen_hlth=1, pred_class=0, pred_label="No Diabetes")
+
+        # Distribution isolation
+        dist_a = client.get("/api/analytics/prediction-distribution", headers=headers_a).json()
+        dist_b = client.get("/api/analytics/prediction-distribution", headers=headers_b).json()
+        assert dist_a["counts"]["2"] == 1
+        assert dist_a["counts"]["0"] == 0
+        assert dist_b["counts"]["0"] == 1
+        assert dist_b["counts"]["2"] == 0
+
+        # BMI Trends isolation
+        bmi_a = client.get("/api/analytics/bmi-trends", headers=headers_a).json()
+        bmi_b = client.get("/api/analytics/bmi-trends", headers=headers_b).json()
+        assert len(bmi_a["points"]) == 1
+        assert bmi_a["points"][0]["bmi"] == 33.3
+        assert len(bmi_b["points"]) == 1
+        assert bmi_b["points"][0]["bmi"] == 20.2
+
+        # Health Trends isolation
+        hlth_a = client.get("/api/analytics/health-trends", headers=headers_a).json()
+        hlth_b = client.get("/api/analytics/health-trends", headers=headers_b).json()
+        assert hlth_a["points"][0]["gen_hlth"] == 5
+        assert hlth_b["points"][0]["gen_hlth"] == 1
+
+        # Indicators isolation
+        ind_a = client.get("/api/analytics/indicators", headers=headers_a).json()
+        ind_b = client.get("/api/analytics/indicators", headers=headers_b).json()
+        assert ind_a["records"][0]["diff_walk"] == 0
+        assert ind_a["records"][0]["bmi"] == 33.3
+        assert ind_b["records"][0]["bmi"] == 20.2
+
+        # Timeline isolation
+        time_a = client.get("/api/analytics/timeline", headers=headers_a).json()
+        time_b = client.get("/api/analytics/timeline", headers=headers_b).json()
+        assert time_a["items"][0]["predicted_class"] == 2
+        assert time_b["items"][0]["predicted_class"] == 0
+
+
+class TestAnalyticsSecurityAndValidation:
+    def test_invalid_date_format_returns_400(self, client, create_test_user):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        res_bad_start = client.get("/api/analytics/overview?start_date=not-a-date", headers=headers)
+        assert res_bad_start.status_code == 400
+        assert "Invalid start_date format" in res_bad_start.json()["detail"]
+
+        res_bad_end = client.get("/api/analytics/overview?end_date=bad-date", headers=headers)
+        assert res_bad_end.status_code == 400
+        assert "Invalid end_date format" in res_bad_end.json()["detail"]
+
+    def test_inverted_date_range_returns_400(self, client, create_test_user):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        res = client.get(
+            "/api/analytics/overview?start_date=2026-12-01&end_date=2026-11-01",
+            headers=headers,
+        )
+        assert res.status_code == 400
+        assert "start_date (2026-12-01) cannot be after end_date" in res.json()["detail"]
+
+    def test_sql_injection_attempt_in_date_filter_safely_rejected(self, client, create_test_user):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        res = client.get(
+            "/api/analytics/overview?start_date=2026-01-01' OR 1=1 --",
+            headers=headers,
+        )
+        assert res.status_code == 400
+        assert "Invalid start_date format" in res.json()["detail"]
+
+    def test_pagination_boundaries_and_rejections(self, client, create_test_user):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # page_size > 100 rejected with 422
+        res_large = client.get("/api/analytics/timeline?page=1&page_size=500", headers=headers)
+        assert res_large.status_code == 422
+
+        # page < 1 rejected with 422
+        res_zero = client.get("/api/analytics/timeline?page=0&page_size=20", headers=headers)
+        assert res_zero.status_code == 422

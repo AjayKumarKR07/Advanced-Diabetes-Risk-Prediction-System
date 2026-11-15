@@ -9,6 +9,7 @@ All operations are strictly scoped to the authenticated user ID.
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
+from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
@@ -52,7 +53,10 @@ def get_bmi_category(bmi: float) -> str:
 def parse_date_filter(
     start_date: Optional[str], end_date: Optional[str]
 ) -> Tuple[Optional[datetime], Optional[datetime]]:
-    """Parse optional ISO date/timestamp strings into timezone-aware UTC datetimes."""
+    """
+    Parse optional ISO date/timestamp strings into timezone-aware UTC datetimes.
+    Raises HTTPException(400) if date format is invalid or start_date > end_date.
+    """
     dt_start = None
     dt_end = None
 
@@ -63,7 +67,10 @@ def parse_date_filter(
             if dt_start.tzinfo is None:
                 dt_start = dt_start.replace(tzinfo=timezone.utc)
         except ValueError:
-            pass
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid start_date format: '{start_date}'. Expected ISO format (e.g. YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ).",
+            )
 
     if end_date and end_date.strip():
         e = end_date.strip().replace("Z", "+00:00")
@@ -74,7 +81,17 @@ def parse_date_filter(
             if len(e) <= 10:
                 dt_end = dt_end.replace(hour=23, minute=59, second=59, microsecond=999999)
         except ValueError:
-            pass
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid end_date format: '{end_date}'. Expected ISO format (e.g. YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ).",
+            )
+
+    if dt_start is not None and dt_end is not None:
+        if dt_start > dt_end:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid date range: start_date ({start_date}) cannot be after end_date ({end_date}).",
+            )
 
     return dt_start, dt_end
 
