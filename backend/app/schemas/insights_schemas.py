@@ -2,7 +2,7 @@
 backend/app/schemas/insights_schemas.py
 =======================================
 Pydantic schemas for personalized, explainable, educational health insights,
-rule-based recommendations, and historical indicator comparisons (Phase 6.16).
+rule-based recommendations, and historical indicator comparisons (Phase 6.16 & Phase 6.16.1).
 """
 
 from typing import Dict, List, Optional
@@ -20,13 +20,22 @@ class EducationalRecommendation(BaseModel):
     suggestion: str = Field(..., description="Non-medical educational suggestion")
     reason: str = Field(..., description="Exact trigger condition for generating this recommendation")
     date_generated: str = Field(..., description="Date of assessment or evaluation")
+    evidence_reference: Optional[str] = Field(
+        None, description="Authoritative public health citation (e.g. CDC BRFSS, WHO, AHA/ACC)"
+    )
+    limitations: Optional[str] = Field(
+        None, description="Scientific limitations of this self-reported survey indicator"
+    )
 
 
 class HistoricalComparisonItem(BaseModel):
     indicator: str = Field(..., description="Indicator name")
     previous_value: str = Field(..., description="Value in previous assessment")
     current_value: str = Field(..., description="Value in current assessment")
-    change_type: str = Field(..., description="Change category: improved, declined, stable, or neutral")
+    change_type: str = Field(
+        ...,
+        description="Neutral change category: increased, decreased, stable, neutral, or conflicting",
+    )
     observation: str = Field(..., description="Descriptive observation of the change")
 
 
@@ -63,4 +72,3 @@ class InsightsHistoryResponse(BaseModel):
         "Historical comparisons reflect changes in self-reported survey entries over time. "
         "They do not establish clinical disease progression or verified physiological outcomes."
     )
-

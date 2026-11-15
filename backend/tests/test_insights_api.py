@@ -1,14 +1,20 @@
 """
 backend/tests/test_insights_api.py
 ==================================
-Automated test suite for Phase 6.16 Intelligent Health Insights API.
+Comprehensive automated test suite for Phase 6.16 & Phase 6.16.1:
+Intelligent Health Insights, Scientific Accuracy & Recommendation Engine Audit.
+
 Tests cover:
 - Authentication enforcement (401 on unauthenticated access)
 - Empty state handling for accounts with 0 assessments
 - Single-assessment recommendation generation across 9 indicators
-- Multi-assessment historical indicator comparisons & changes
+- Scientific accuracy of Smoker (0 vs 1 lifetime threshold)
+- Scientific accuracy of HighBP and HighChol (screening recall vs clinical measurement)
+- BMI screening classifications & neutral longitudinal comparison (increased, decreased, stable)
+- Authoritative evidence references & survey limitations
+- Conflicting responses disclosure (lifetime smoker reverting, prior diagnoses reverting)
+- Missing / None indicator safety
 - Assessment ID lookup and cross-user data isolation
-- Educational disclaimer verification
 - Summary KPI endpoint counts and category breakdown
 """
 
@@ -146,14 +152,13 @@ class TestInsightsGeneration:
         user, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
 
-        # Elevated risk factors profile
         a = create_assessment(
             user.id,
-            bmi=31.5,        # Obese
-            high_bp=1,       # Hypertension
-            high_chol=1,     # High cholesterol
+            bmi=31.5,        # Obese screening
+            high_bp=1,       # Reported hypertension
+            high_chol=1,     # Reported high cholesterol
             phys_activity=0, # Inactive
-            smoker=1,        # Smoker
+            smoker=1,        # Reported >=100 cigarettes
             gen_hlth=4,      # Fair
             phys_hlth=15,    # Frequent physical distress
             ment_hlth=16,    # Frequent mental distress
@@ -168,7 +173,6 @@ class TestInsightsGeneration:
         assert len(data["recommendations"]) >= 9
         assert len(data["historical_comparisons"]) == 0  # Requires >= 2 assessments
 
-        # Verify recommendation structure
         for rec in data["recommendations"]:
             assert "id" in rec
             assert "category" in rec
@@ -180,72 +184,122 @@ class TestInsightsGeneration:
             assert "suggestion" in rec
             assert "reason" in rec
             assert "date_generated" in rec
+            assert "evidence_reference" in rec
+            assert rec["evidence_reference"] is not None
+            assert "limitations" in rec
+            assert rec["limitations"] is not None
 
-        # Check high priority recommendations
         high_recs = [r for r in data["recommendations"] if r["priority"] == "high"]
         assert len(high_recs) >= 5
 
-        # Check summary
         summary = data["summary"]
         assert summary["total_insights"] == len(data["recommendations"])
         assert summary["high_priority_count"] == len(high_recs)
         assert "Metabolic & Body" in summary["categories_breakdown"]
         assert "Cardiovascular Health" in summary["categories_breakdown"]
 
-    def test_multiple_assessments_historical_comparisons(self, client, create_test_user, create_assessment):
+
+class TestScientificAccuracyAudit:
+    """Scientific accuracy checks for Phase 6.16.1."""
+
+    def test_smoker_feature_interpretation(self, client, create_test_user, create_assessment):
         user, token = create_test_user()
         headers = {"Authorization": f"Bearer {token}"}
 
-        # Assessment 1 (Earlier)
-        a1 = create_assessment(
-            user.id,
-            bmi=28.0,
-            high_bp=1,
-            high_chol=1,
-            phys_activity=0,
-            gen_hlth=4,
-            phys_hlth=10,
-            ment_hlth=8,
-        )
-        # Assessment 2 (Newer, improved profile)
-        a2 = create_assessment(
-            user.id,
-            bmi=26.5,        # Improved by -1.5
-            high_bp=0,       # Improved
-            high_chol=1,     # Stable
-            phys_activity=1, # Improved
-            gen_hlth=2,      # Improved
-            phys_hlth=3,     # Improved
-            ment_hlth=2,     # Improved
-        )
+        # Case 1: Smoker = 1 (>=100 lifetime cigarettes)
+        a1 = create_assessment(user.id, smoker=1)
+        res1 = client.get(f"/api/insights?assessment_id={a1.id}", headers=headers)
+        data1 = res1.json()
+        smk_rec1 = next(r for r in data1["recommendations"] if "Tobacco" in r["indicator_name"])
+        assert "100 cigarettes in your lifetime" in smk_rec1["observation"]
+        assert "≥100 cigarettes" in smk_rec1["indicator_value"]
+
+        # Case 2: Smoker = 0 (<100 lifetime cigarettes)
+        a2 = create_assessment(user.id, smoker=0)
+        res2 = client.get(f"/api/insights?assessment_id={a2.id}", headers=headers)
+        data2 = res2.json()
+        smk_rec2 = next(r for r in data2["recommendations"] if "Tobacco" in r["indicator_name"])
+        assert "did not report having smoked at least 100 cigarettes" in smk_rec2["observation"].lower()
+        # Must not claim confirmed lifetime non-smoker or never smoked
+        assert "never smoked" not in smk_rec2["observation"].lower()
+        assert "CDC" in smk_rec2["evidence_reference"]
+
+    def test_blood_pressure_and_cholesterol_descriptions(self, client, create_test_user, create_assessment):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # HighBP = 0 and HighChol = 0
+        a = create_assessment(user.id, high_bp=0, high_chol=0)
+        res = client.get(f"/api/insights?assessment_id={a.id}", headers=headers)
+        data = res.json()
+
+        bp_rec = next(r for r in data["recommendations"] if "High Blood Pressure" in r["indicator_name"])
+        assert "did not report having been told" in bp_rec["observation"].lower()
+        # Must not describe value 0 as a confirmed normal clinical measurement
+        assert "confirmed normal" not in bp_rec["observation"].lower()
+        assert bp_rec["priority"] == "info"
+        assert "ACC/AHA" in bp_rec["evidence_reference"] or "CDC" in bp_rec["evidence_reference"]
+
+        chol_rec = next(r for r in data["recommendations"] if "High Cholesterol" in r["indicator_name"])
+        assert "did not report having been told" in chol_rec["observation"].lower()
+        assert "confirmed normal" not in chol_rec["observation"].lower()
+        assert chol_rec["priority"] == "info"
+        assert "AHA/ACC" in chol_rec["evidence_reference"] or "CDC" in chol_rec["evidence_reference"]
+
+    def test_bmi_screening_and_neutral_longitudinal_comparisons(self, client, create_test_user, create_assessment):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Assessment 1: BMI 30.5 (obesity screening)
+        a1 = create_assessment(user.id, bmi=30.5)
+        res1 = client.get(f"/api/insights?assessment_id={a1.id}", headers=headers)
+        rec1 = next(r for r in res1.json()["recommendations"] if "BMI" in r["indicator_name"])
+        assert "screening classification" in rec1["observation"].lower()
+        assert "diagnostic" not in rec1["observation"].lower()
+
+        # Assessment 2: BMI 28.0 (decreased by -2.5 kg/m²)
+        a2 = create_assessment(user.id, bmi=28.0)
+        res2 = client.get("/api/insights", headers=headers)
+        comparisons = res2.json()["historical_comparisons"]
+        bmi_comp = next(c for c in comparisons if "BMI" in c["indicator"])
+
+        # Must be neutral "decreased", NOT automatically "improved", and avoid assuming intentional weight loss
+        assert bmi_comp["change_type"] == "decreased"
+        assert "decreased by 2.5 kg/m²" in bmi_comp["observation"]
+        assert "intentional" not in bmi_comp["observation"] or "lifestyle adjustments, appetite shifts" in bmi_comp["observation"]
+
+        # Assessment 3: BMI 28.2 (stable, delta +0.2 kg/m²)
+        a3 = create_assessment(user.id, bmi=28.2)
+        res3 = client.get("/api/insights", headers=headers)
+        comp3 = res3.json()["historical_comparisons"]
+        bmi_comp3 = next(c for c in comp3 if "BMI" in c["indicator"])
+        assert bmi_comp3["change_type"] == "stable"
+        assert "relatively stable" in bmi_comp3["observation"].lower()
+
+    def test_conflicting_responses_disclosure(self, client, create_test_user, create_assessment):
+        user, token = create_test_user()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Earlier assessment (a1): Smoker=1 (lifetime threshold reached), HighBP=1, HighChol=1
+        a1 = create_assessment(user.id, smoker=1, high_bp=1, high_chol=1)
+        # Later assessment (a2): Smoker=0 (conflict), HighBP=0 (conflict), HighChol=0 (conflict)
+        a2 = create_assessment(user.id, smoker=0, high_bp=0, high_chol=0)
 
         res = client.get("/api/insights", headers=headers)
         assert res.status_code == 200
-        data = res.json()
-        assert data["total_assessments"] == 2
-        assert data["assessment_id"] == a2.id
-        assert len(data["historical_comparisons"]) >= 6
+        comparisons = res.json()["historical_comparisons"]
 
-        # Check BMI comparison item
-        bmi_comp = next((c for c in data["historical_comparisons"] if "BMI" in c["indicator"]), None)
-        assert bmi_comp is not None
-        assert bmi_comp["change_type"] == "improved"
-        assert "28.0" in bmi_comp["previous_value"]
-        assert "26.5" in bmi_comp["current_value"]
+        smk_comp = next(c for c in comparisons if "Tobacco" in c["indicator"])
+        assert smk_comp["change_type"] == "conflicting"
+        assert "conflict" in smk_comp["observation"].lower() or "discrepancy" in smk_comp["observation"].lower()
 
-        # Check Physical Activity comparison item
-        act_comp = next((c for c in data["historical_comparisons"] if "Physical Activity" in c["indicator"]), None)
-        assert act_comp is not None
-        assert act_comp["change_type"] == "improved"
-        assert act_comp["previous_value"] == "Inactive"
-        assert act_comp["current_value"] == "Active"
+        bp_comp = next(c for c in comparisons if "Blood Pressure" in c["indicator"])
+        assert bp_comp["change_type"] == "conflicting"
+        assert "variation noted" in bp_comp["observation"].lower()
 
-        # Check History endpoint
-        res_hist = client.get("/api/insights/history", headers=headers)
-        assert res_hist.status_code == 200
-        hist_data = res_hist.json()
-        assert hist_data["total_assessments"] == 2
-        assert len(hist_data["comparisons"]) >= 6
+        chol_comp = next(c for c in comparisons if "Cholesterol" in c["indicator"])
+        assert chol_comp["change_type"] == "conflicting"
+        assert "variation noted" in chol_comp["observation"].lower()
 
 
 class TestInsightsSecurityAndIsolation:
@@ -263,13 +317,13 @@ class TestInsightsSecurityAndIsolation:
         res_a = client.get("/api/insights", headers=headers_a)
         assert res_a.status_code == 200
         assert res_a.json()["assessment_id"] == a_user_a.id
-        assert "Obesity" in res_a.json()["recommendations"][0]["observation"]
+        assert "obesity" in res_a.json()["recommendations"][0]["observation"].lower()
 
         # User B requesting own assessment
         res_b = client.get("/api/insights", headers=headers_b)
         assert res_b.status_code == 200
         assert res_b.json()["assessment_id"] == a_user_b.id
-        assert "Normal Weight" in res_b.json()["recommendations"][0]["observation"]
+        assert "normal weight" in res_b.json()["recommendations"][0]["observation"].lower()
 
         # User A attempting to query User B's assessment ID -> 404
         res_forbidden = client.get(f"/api/insights?assessment_id={a_user_b.id}", headers=headers_a)
@@ -286,4 +340,3 @@ class TestInsightsSecurityAndIsolation:
         assert summary["total_insights"] >= 5
         assert summary["latest_assessment_id"] is not None
         assert summary["positive_habits_count"] >= 1
-

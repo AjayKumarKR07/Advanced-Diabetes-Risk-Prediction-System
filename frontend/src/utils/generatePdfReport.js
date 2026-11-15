@@ -17,7 +17,6 @@
  * 10. Multi-page pagination footer ("Page X of Y")
  */
 
-import { jsPDF } from 'jspdf'
 import {
   CLASS_LABELS,
   CDC_AGE_CATEGORIES,
@@ -27,12 +26,13 @@ import {
   getBmiCategory,
 } from './cdcFeatures'
 
-export function generateAssessmentReportPdf({
+export async function generateAssessmentReportPdf({
   result,
   inputs,
   personalInfo,
   user,
 }) {
+  const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -626,7 +626,7 @@ export function generateAssessmentReportPdf({
  * 10. Research model performance benchmark
  * 11. Research limitations and medical disclaimer
  */
-export function generatePersonalAnalyticsReportPdf({
+export async function generatePersonalAnalyticsReportPdf({
   user,
   overview,
   bmiTrends,
@@ -634,6 +634,7 @@ export function generatePersonalAnalyticsReportPdf({
   indicators,
   timeline,
 }) {
+  const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',

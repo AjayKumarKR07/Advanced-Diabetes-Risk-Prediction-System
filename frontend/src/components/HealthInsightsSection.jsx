@@ -1,13 +1,13 @@
 /**
  * src/components/HealthInsightsSection.jsx
  * ========================================
- * Intelligent Health Insights & Personalized Educational Recommendations Component (Phase 6.16).
+ * Intelligent Health Insights & Personalized Educational Recommendations Component (Phase 6.16 & Phase 6.16.1).
  * 
  * Features:
  * - Summary KPI cards (Total Insights, High Priority, Lifestyle Factors, Positive Habits)
  * - Category filter tabs (All, Metabolic, Cardiovascular, Lifestyle, Well-being, High Priority, Positive)
- * - Educational recommendation cards with expandable scientific rationale & rule triggers
- * - Longitudinal comparison matrix tracking indicator stability and self-reported changes
+ * - Educational recommendation cards with expandable scientific rationale, evidence citations, rule triggers & limitations
+ * - Longitudinal comparison matrix tracking indicator stability, neutral shifts, and survey response discrepancies
  * - Strict non-medical educational disclaimers
  * - Responsive light and dark theme support
  */
@@ -30,6 +30,7 @@ import {
   Minus,
   HelpCircle,
   AlertTriangle,
+  BookOpen,
 } from 'lucide-react'
 
 const PRIORITY_BADGES = {
@@ -141,7 +142,7 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
             className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 self-start"
           >
             <Activity className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-            <span>{showHistory ? 'Hide Indicator Changes' : 'View Indicator Changes'}</span>
+            <span>{showHistory ? 'Hide Longitudinal Changes' : 'View Longitudinal Changes'}</span>
             {showHistory ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
         )}
@@ -185,7 +186,7 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
         {/* Positive Habits */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 shadow-xs">
           <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Positive Health Habits
+            <CheckCircle2 className="w-3.5 h-3.5" /> Positive Health Factors
           </p>
           <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
             {summary.positive_habits_count ?? 0}
@@ -215,35 +216,57 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                {comparisons.map((c, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors">
-                    <td className="py-3 pl-2 font-semibold text-slate-800 dark:text-slate-200">{c.indicator}</td>
-                    <td className="py-3 text-slate-500 font-mono">{c.previous_value}</td>
-                    <td className="py-3 font-mono font-bold text-slate-900 dark:text-white">{c.current_value}</td>
-                    <td className="py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          c.change_type === 'improved'
-                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                            : c.change_type === 'declined'
-                            ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                            : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        {c.change_type === 'improved' && <TrendingDown className="w-3 h-3" />}
-                        {c.change_type === 'declined' && <TrendingUp className="w-3 h-3" />}
-                        {c.change_type === 'stable' && <Minus className="w-3 h-3" />}
-                        {c.change_type.charAt(0).toUpperCase() + c.change_type.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-3 text-slate-600 dark:text-slate-300 pr-2 max-w-md">{c.observation}</td>
-                  </tr>
-                ))}
+                {comparisons.map((c, idx) => {
+                  let badgeClass = 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+                  let icon = <Minus className="w-3 h-3" />
+                  let label = c.change_type.charAt(0).toUpperCase() + c.change_type.slice(1)
+
+                  if (c.change_type === 'decreased') {
+                    badgeClass = 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                    icon = <TrendingDown className="w-3 h-3" />
+                    label = 'Decreased'
+                  } else if (c.change_type === 'increased') {
+                    badgeClass = 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
+                    icon = <TrendingUp className="w-3 h-3" />
+                    label = 'Increased'
+                  } else if (c.change_type === 'conflicting') {
+                    badgeClass = 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                    icon = <AlertTriangle className="w-3 h-3" />
+                    label = 'Response Discrepancy'
+                  } else if (c.change_type === 'improved') {
+                    badgeClass = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                    icon = <TrendingUp className="w-3 h-3" />
+                    label = 'Positive Shift'
+                  } else if (c.change_type === 'declined') {
+                    badgeClass = 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                    icon = <TrendingDown className="w-3 h-3" />
+                    label = 'Shift Noted'
+                  } else if (c.change_type === 'stable') {
+                    badgeClass = 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600'
+                    icon = <Minus className="w-3 h-3" />
+                    label = 'Relatively Stable'
+                  }
+
+                  return (
+                    <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors">
+                      <td className="py-3 pl-2 font-semibold text-slate-800 dark:text-slate-200">{c.indicator}</td>
+                      <td className="py-3 text-slate-500 font-mono">{c.previous_value}</td>
+                      <td className="py-3 font-mono font-bold text-slate-900 dark:text-white">{c.current_value}</td>
+                      <td className="py-3">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}`}>
+                          {icon}
+                          {label}
+                        </span>
+                      </td>
+                      <td className="py-3 text-slate-600 dark:text-slate-300 pr-2 max-w-md">{c.observation}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
           <p className="text-[11px] text-slate-400 italic">
-            * Changes are based strictly on self-reported survey responses. Never infer disease progression or regression from model predictions.
+            * Changes reflect self-reported survey responses over time. They do not constitute objective clinical measurements or indicate disease progression or regression.
           </p>
         </div>
       )}
@@ -314,17 +337,29 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
                   </p>
                 </div>
 
-                {/* Expandable Scientific Context & Rule Trigger */}
+                {/* Expandable Scientific Context, Evidence, Trigger & Limitations */}
                 {isExpanded && (
-                  <div className="pt-2 space-y-2 border-t border-slate-100 dark:border-slate-700/60 text-xs">
+                  <div className="pt-2 space-y-2.5 border-t border-slate-100 dark:border-slate-700/60 text-xs">
                     <div>
                       <span className="font-semibold text-slate-800 dark:text-slate-200 block">
-                        Scientific Background (CDC BRFSS Context):
+                        Scientific Background:
                       </span>
                       <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5 leading-relaxed">
                         {rec.explanation}
                       </p>
                     </div>
+
+                    {rec.evidence_reference && (
+                      <div className="pt-1">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 text-[11px]">
+                          <BookOpen className="w-3 h-3 text-indigo-500" /> Authoritative Evidence Reference:
+                        </span>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5 leading-relaxed italic">
+                          {rec.evidence_reference}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="pt-1">
                       <span className="font-semibold text-slate-800 dark:text-slate-200 block text-[11px]">
                         Rule Trigger Condition:
@@ -333,6 +368,17 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
                         {rec.reason}
                       </code>
                     </div>
+
+                    {rec.limitations && (
+                      <div className="pt-1">
+                        <span className="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1 text-[11px]">
+                          <HelpCircle className="w-3 h-3" /> Survey Indicator Limitations:
+                        </span>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5 leading-relaxed">
+                          {rec.limitations}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -343,7 +389,7 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
                   onClick={() => toggleExpand(rec.id)}
                   className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1"
                 >
-                  <span>{isExpanded ? 'Hide Scientific Rationale' : 'Why was this generated?'}</span>
+                  <span>{isExpanded ? 'Hide Scientific Rationale & References' : 'Why was this generated?'}</span>
                   {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
                 <span className="text-slate-400">{rec.date_generated}</span>
@@ -374,4 +420,3 @@ export default function HealthInsightsSection({ insightsData, onStartAssessment 
     </div>
   )
 }
-
