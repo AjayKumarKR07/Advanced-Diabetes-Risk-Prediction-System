@@ -9,7 +9,8 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from backend.app.api.auth_routes import auth_router
@@ -36,7 +37,7 @@ from backend.app.schemas.db_schemas import (
     PredictionOut,
 )
 from backend.app.schemas.prediction import ModelInfoResponse
-from backend.app.services import db_service
+from backend.app.services import avatar_service, db_service
 from backend.app.services.model_service import model_service
 
 api_router = APIRouter()
@@ -388,6 +389,8 @@ async def get_user_profile(
 ) -> UserProfileResponse:
     """Retrieve full profile details and real activity metrics for authenticated user."""
     stats = db_service.get_user_profile_stats(db, current_user.id)
+    has_avatar = avatar_service.get_user_avatar_path(current_user.id) is not None
+    avatar_url = "/api/profile/avatar" if has_avatar else None
     return UserProfileResponse(
         id=current_user.id,
         full_name=current_user.full_name,
@@ -397,6 +400,8 @@ async def get_user_profile(
         latest_assessment_date=stats["latest_assessment_date"],
         account_status="Active",
         email_verified=True,
+        has_avatar=has_avatar,
+        avatar_url=avatar_url,
     )
 
 
@@ -419,6 +424,8 @@ async def update_user_profile(
         db.commit()
         db.refresh(user)
         stats = db_service.get_user_profile_stats(db, user.id)
+        has_avatar = avatar_service.get_user_avatar_path(user.id) is not None
+        avatar_url = "/api/profile/avatar" if has_avatar else None
         return UserProfileResponse(
             id=user.id,
             full_name=user.full_name,
@@ -428,6 +435,8 @@ async def update_user_profile(
             latest_assessment_date=stats["latest_assessment_date"],
             account_status="Active",
             email_verified=True,
+            has_avatar=has_avatar,
+            avatar_url=avatar_url,
         )
     except Exception as exc:
         db.rollback()
@@ -529,8 +538,11 @@ async def delete_user_account(
 
     # 3. Perform atomic deletion
     try:
+        user_id = current_user.id
         db_service.delete_user_account(db, current_user)
         db.commit()
+        # Clean up any persisted avatar file for this user
+        avatar_service.remove_user_avatar(user_id)
         return MessageResponse(message="Your account and all associated records have been permanently deleted.")
     except Exception as exc:
         db.rollback()
@@ -539,4 +551,85 @@ async def delete_user_account(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete account from database.",
         )
+
+
+# ---------------------------------------------------------------------------
+# Profile Avatar Storage Endpoints (Phase 6.14.1)
+# ---------------------------------------------------------------------------
+
+@api_router.post(
+    "/profile/avatar",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Upload authenticated user avatar",
+    description="Validates image binary format (JPEG, PNG, WebP) and size (<=2MB), and securely persists to disk.",
+    tags=["User Account"],
+)
+async def upload_user_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+) -> MessageResponse:
+    """Validate image magic bytes, enforce 2MB limit, and save avatar."""
+    content = await file.read()
+    avatar_service.save_user_avatar(current_user.id, content)
+    return MessageResponse(message="Avatar image uploaded and persisted successfully.")
+
+
+@api_router.get(
+    "/profile/avatar",
+    summary="Retrieve current authenticated user avatar image",
+    description="Returns the image binary file for the authenticated user, or 404 if not found.",
+    tags=["User Account"],
+)
+async def get_current_user_avatar(
+    current_user: User = Depends(get_current_user),
+):
+    """Serve current user avatar image from secure server storage."""
+    path = avatar_service.get_user_avatar_path(current_user.id)
+    if not path or not path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No avatar image found for current user.",
+        )
+    media_type = "image/jpeg" if path.suffix in [".jpg", ".jpeg"] else f"image/{path.suffix.lstrip('.')}"
+    return FileResponse(path, media_type=media_type)
+
+
+@api_router.get(
+    "/users/{user_id}/avatar",
+    summary="Retrieve avatar image by user ID",
+    description="Returns user avatar image by user ID or 404 if none exists.",
+    tags=["User Account"],
+)
+async def get_user_avatar_by_id(user_id: int):
+    """Serve avatar image for user ID."""
+    path = avatar_service.get_user_avatar_path(user_id)
+    if not path or not path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No avatar found for user #{user_id}.",
+        )
+    media_type = "image/jpeg" if path.suffix in [".jpg", ".jpeg"] else f"image/{path.suffix.lstrip('.')}"
+    return FileResponse(path, media_type=media_type)
+
+
+@api_router.delete(
+    "/profile/avatar",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Remove authenticated user avatar",
+    description="Deletes the stored avatar file for the authenticated user.",
+    tags=["User Account"],
+)
+async def delete_user_avatar(
+    current_user: User = Depends(get_current_user),
+) -> MessageResponse:
+    """Permanently delete user avatar file from disk."""
+    removed = avatar_service.remove_user_avatar(current_user.id)
+    if not removed:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active avatar image found to delete.",
+        )
+    return MessageResponse(message="Avatar removed successfully.")
 

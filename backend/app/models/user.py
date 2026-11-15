@@ -46,6 +46,11 @@ class User(Base):
         "UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
 
+    # Relationship: revoked tokens for secure session invalidation
+    revoked_tokens: Mapped[list["RevokedToken"]] = relationship(  # noqa: F821
+        "RevokedToken", back_populates="user", cascade="all, delete-orphan"
+    )
+
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email!r}>"
 

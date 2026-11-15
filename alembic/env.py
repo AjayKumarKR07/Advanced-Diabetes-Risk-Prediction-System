@@ -28,7 +28,7 @@ from backend.app.core.config import settings  # noqa: E402
 from backend.app.core.database import Base  # noqa: E402
 
 # Import all ORM models so their tables are registered on Base.metadata
-from backend.app.models import user, assessment, prediction, user_settings  # noqa: E402, F401
+from backend.app.models import user, assessment, prediction, user_settings, revoked_token  # noqa: E402, F401
 
 # ---------------------------------------------------------------------------
 # Alembic Config object (gives access to alembic.ini values)

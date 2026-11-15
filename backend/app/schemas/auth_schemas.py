@@ -43,6 +43,8 @@ class UserRegisterRequest(BaseModel):
     def validate_password_strength(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long.")
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password cannot exceed 72 bytes due to bcrypt security limitations.")
         return v
 
 
@@ -98,6 +100,8 @@ class ChangePasswordRequest(BaseModel):
     def validate_password_strength(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("New password must be at least 8 characters long.")
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("New password cannot exceed 72 bytes due to bcrypt security limitations.")
         return v
 
     @field_validator("confirm_password")
@@ -121,6 +125,8 @@ class UserProfileResponse(BaseModel):
     latest_assessment_date: Optional[datetime] = None
     account_status: str = "Active"
     email_verified: bool = True
+    has_avatar: bool = False
+    avatar_url: Optional[str] = None
 
 
 class UserSettingsResponse(BaseModel):

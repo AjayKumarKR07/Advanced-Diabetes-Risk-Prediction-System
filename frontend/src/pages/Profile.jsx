@@ -35,7 +35,12 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { fetchUserProfile, updateUserProfile } from '../services/auth'
+import {
+  deleteUserAvatar,
+  fetchUserProfile,
+  updateUserProfile,
+  uploadUserAvatar,
+} from '../services/auth'
 
 const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024 // 2MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -60,10 +65,12 @@ export default function Profile() {
   // Avatar state
   const avatarStorageKey = user?.id ? `diabetes_ai_avatar_${user.id}` : null
   const [avatarUrl, setAvatarUrl] = useState(() => {
-    return avatarStorageKey ? localStorage.getItem(avatarStorageKey) : null
+    return user?.has_avatar ? '/api/profile/avatar' : (avatarStorageKey ? localStorage.getItem(avatarStorageKey) : null)
   })
   const [avatarPreview, setAvatarPreview] = useState(null)
+  const [selectedFile, setSelectedFile] = useState(null)
   const [avatarError, setAvatarError] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   // Load enriched profile data from GET /api/profile
   useEffect(() => {
@@ -75,6 +82,9 @@ export default function Profile() {
         if (isMounted) {
           setProfileData(data)
           setFullName(data.full_name)
+          if (data.has_avatar) {
+            setAvatarUrl(`/api/profile/avatar?t=${Date.now()}`)
+          }
           updateUser(data)
         }
       })
@@ -161,6 +171,7 @@ export default function Profile() {
       return
     }
 
+    setSelectedFile(file)
     const reader = new FileReader()
     reader.onload = () => {
       setAvatarPreview(reader.result)
@@ -168,31 +179,57 @@ export default function Profile() {
     reader.readAsDataURL(file)
   }
 
-  // Save Selected Avatar
-  const handleSaveAvatar = () => {
-    if (!avatarPreview || !avatarStorageKey) return
-    localStorage.setItem(avatarStorageKey, avatarPreview)
-    setAvatarUrl(avatarPreview)
-    setAvatarPreview(null)
-    setSuccessBanner('Profile picture updated successfully.')
+  // Save Selected Avatar to Server Storage
+  const handleSaveAvatar = async () => {
+    if (!selectedFile) return
+    setUploadingAvatar(true)
+    setAvatarError('')
+
+    try {
+      await uploadUserAvatar(selectedFile)
+      const freshUrl = `/api/profile/avatar?t=${Date.now()}`
+      setAvatarUrl(freshUrl)
+      if (avatarStorageKey) {
+        localStorage.setItem(avatarStorageKey, freshUrl)
+      }
+      updateUser({ ...user, has_avatar: true, avatar_url: '/api/profile/avatar' })
+      setAvatarPreview(null)
+      setSelectedFile(null)
+      setSuccessBanner('Profile picture saved and persisted to server storage.')
+    } catch (err) {
+      setAvatarError(
+        err.response?.data?.detail || 'Failed to upload avatar to server storage.'
+      )
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
 
   const handleCancelAvatarPreview = () => {
     setAvatarPreview(null)
+    setSelectedFile(null)
     setAvatarError('')
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // Remove Avatar
-  const handleRemoveAvatar = () => {
+  // Remove Avatar from Server Storage
+  const handleRemoveAvatar = async () => {
+    try {
+      await deleteUserAvatar()
+    } catch (err) {
+      // Ignore if already deleted
+    }
+
     if (avatarStorageKey) {
       localStorage.removeItem(avatarStorageKey)
     }
     setAvatarUrl(null)
     setAvatarPreview(null)
+    setSelectedFile(null)
     setAvatarError('')
     if (fileInputRef.current) fileInputRef.current.value = ''
-    setSuccessBanner('Profile picture removed. User initials restored.')
+    updateUser({ ...user, has_avatar: false, avatar_url: null })
+    setSuccessBanner('Profile picture removed from server. Initials avatar restored.')
   }
 
   // Computed initials

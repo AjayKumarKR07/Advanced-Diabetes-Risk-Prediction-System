@@ -121,6 +121,46 @@ export async function deleteUserAccount({ password, confirmation }) {
   return data
 }
 
+/**
+ * Upload authenticated user avatar photo to server storage.
+ * POST /api/profile/avatar
+ * @param {File} file
+ * @returns {Promise<{ message: string }>}
+ */
+export async function uploadUserAvatar(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  const { data } = await apiClient.post('/profile/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
+/**
+ * Remove authenticated user avatar photo from server storage.
+ * DELETE /api/profile/avatar
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteUserAvatar() {
+  const { data } = await apiClient.delete('/profile/avatar')
+  return data
+}
+
+/**
+ * Revoke session token on the server and purge local credentials.
+ * POST /api/auth/logout
+ * @returns {Promise<void>}
+ */
+export async function logoutUser() {
+  try {
+    await apiClient.post('/auth/logout')
+  } catch (err) {
+    // If token already expired or network failed, proceed with local cleanup
+  } finally {
+    clearAuth()
+  }
+}
+
 
 /**
  * Store token and user object in local or session storage.

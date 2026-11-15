@@ -10,7 +10,12 @@ Authentication API endpoints:
 from __future__ import annotations
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status
+import time
+from collections import defaultdict
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import get_db
@@ -18,6 +23,8 @@ from backend.app.core.security import (
     create_access_token,
     get_current_user,
     hash_password,
+    revoke_token,
+    security_scheme,
     verify_password,
 )
 from backend.app.models.user import User
@@ -95,20 +102,51 @@ async def register_user(
     )
 
 
+# Brute-force rate limiting tracker for login attempts
+_LOGIN_ATTEMPTS: dict[str, list[float]] = defaultdict(list)
+RATE_LIMIT_WINDOW = 60.0  # seconds
+MAX_FAILED_ATTEMPTS = 5
+
+
+def _check_login_rate_limit(key: str) -> None:
+    now = time.time()
+    attempts = [t for t in _LOGIN_ATTEMPTS[key] if now - t < RATE_LIMIT_WINDOW]
+    _LOGIN_ATTEMPTS[key] = attempts
+    if len(attempts) >= MAX_FAILED_ATTEMPTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many failed login attempts. Please wait 60 seconds before trying again.",
+        )
+
+
+def _record_failed_login(key: str) -> None:
+    _LOGIN_ATTEMPTS[key].append(time.time())
+
+
+def _reset_login_attempts(key: str) -> None:
+    _LOGIN_ATTEMPTS.pop(key, None)
+
+
 @auth_router.post(
     "/login",
     response_model=TokenResponse,
     status_code=status.HTTP_200_OK,
     summary="User login with email and password",
-    description="Verifies user credentials against stored bcrypt hash and returns a signed JWT access token.",
+    description="Verifies user credentials against stored bcrypt hash, enforces rate-limiting, and returns a signed JWT access token.",
 )
 async def login_user(
+    request: Request,
     payload: UserLoginRequest,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
-    """Authenticate credentials and issue JWT bearer token."""
+    """Authenticate credentials, protect against brute-force attacks, and issue JWT bearer token."""
+    client_ip = request.client.host if request.client else "unknown"
+    rate_key = f"{client_ip}:{payload.email.lower()}"
+    _check_login_rate_limit(rate_key)
+
     user = db_service.get_user_by_email(db, payload.email)
     if user is None:
+        _record_failed_login(rate_key)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password.",
@@ -116,12 +154,14 @@ async def login_user(
         )
 
     if not verify_password(payload.password, user.hashed_password):
+        _record_failed_login(rate_key)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    _reset_login_attempts(rate_key)
     access_token = create_access_token(user_id=user.id, email=user.email)
 
     return TokenResponse(
@@ -129,6 +169,25 @@ async def login_user(
         token_type="bearer",
         user=UserResponse.model_validate(user),
     )
+
+
+@auth_router.post(
+    "/logout",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Revoke active JWT bearer token",
+    description="Registers the active JWT token in PostgreSQL revocation table to permanently invalidate it.",
+)
+async def logout_user(
+    auth: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> MessageResponse:
+    """Explicitly revoke active JWT session token."""
+    if auth and auth.credentials:
+        revoke_token(db, auth.credentials, current_user.id)
+        db.commit()
+    return MessageResponse(message="Session successfully revoked.")
 
 
 @auth_router.get(
@@ -181,10 +240,11 @@ async def update_profile(
 )
 async def change_password(
     payload: ChangePasswordRequest,
+    auth: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> MessageResponse:
-    """Verify current password and set new password securely."""
+    """Verify current password, set new password, and revoke previous token."""
     # 1. Verify current password
     if not verify_password(payload.current_password, current_user.hashed_password):
         raise HTTPException(
@@ -216,9 +276,11 @@ async def change_password(
             detail="Failed to process new password.",
         )
 
-    # 3. Update in database
+    # 5. Update in database and revoke active token
     try:
         db_service.update_user_password(db, current_user, new_hash)
+        if auth and auth.credentials:
+            revoke_token(db, auth.credentials, current_user.id)
         db.commit()
         return MessageResponse(message="Password updated successfully.")
     except Exception as exc:

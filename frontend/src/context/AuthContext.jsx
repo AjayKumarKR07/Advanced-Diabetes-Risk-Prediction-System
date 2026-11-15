@@ -12,6 +12,7 @@ import {
   getStoredToken,
   getStoredUser,
   loginUser,
+  logoutUser,
   registerUser,
   storeAuth,
 } from '../services/auth'
@@ -67,8 +68,12 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  const logout = () => {
-    clearAuth()
+  const logout = async () => {
+    try {
+      await logoutUser()
+    } catch {
+      clearAuth()
+    }
     setUser(null)
     setToken(null)
   }

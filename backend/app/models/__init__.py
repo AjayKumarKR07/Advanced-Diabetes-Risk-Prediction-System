@@ -9,5 +9,6 @@ from backend.app.models.user import User
 from backend.app.models.assessment import Assessment
 from backend.app.models.prediction import Prediction
 from backend.app.models.user_settings import UserSettings
+from backend.app.models.revoked_token import RevokedToken
 
-__all__ = ["User", "Assessment", "Prediction", "UserSettings"]
+__all__ = ["User", "Assessment", "Prediction", "UserSettings", "RevokedToken"]

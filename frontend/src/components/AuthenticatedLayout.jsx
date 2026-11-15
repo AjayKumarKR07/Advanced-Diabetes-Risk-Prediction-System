@@ -101,8 +101,11 @@ export default function AuthenticatedLayout({ children }) {
   }
   const currentTitle = PAGE_TITLES[location.pathname] || 'DiabetesRisk AI'
 
-  // User initials & stored avatar
-  const avatarUrl = user?.id ? localStorage.getItem(`diabetes_ai_avatar_${user.id}`) : null
+  // User initials & server-backed avatar with fallback
+  const [avatarError, setAvatarError] = useState(false)
+  const avatarUrl = !avatarError && (user?.has_avatar || user?.avatar_url
+    ? '/api/profile/avatar'
+    : (user?.id ? localStorage.getItem(`diabetes_ai_avatar_${user.id}`) : null))
   const initials = user?.full_name
     ? user.full_name
         .split(' ')
@@ -200,7 +203,12 @@ export default function AuthenticatedLayout({ children }) {
             <div className="flex items-center gap-3 px-2 py-2 mb-2 rounded-xl bg-white border border-slate-200/80 shadow-xs">
               <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarError(true)}
+                  />
                 ) : (
                   initials
                 )}
@@ -304,7 +312,12 @@ export default function AuthenticatedLayout({ children }) {
             <div className="flex items-center gap-3 px-2 py-2 mb-3 rounded-xl bg-white border border-slate-200">
               <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarError(true)}
+                  />
                 ) : (
                   initials
                 )}
@@ -391,7 +404,12 @@ export default function AuthenticatedLayout({ children }) {
               >
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-600 to-blue-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden">
                   {avatarUrl ? (
-                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                      onError={() => setAvatarError(true)}
+                    />
                   ) : (
                     initials
                   )}
