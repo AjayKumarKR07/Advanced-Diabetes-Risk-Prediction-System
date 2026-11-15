@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.api.analytics_routes import analytics_router
 from backend.app.api.auth_routes import auth_router
+from backend.app.api.insights_routes import insights_router
 from backend.app.core.config import settings
 from backend.app.core.database import check_db_connection, get_db
 from backend.app.core.security import get_current_user, get_optional_user, verify_password
@@ -48,6 +49,9 @@ api_router.include_router(auth_router)
 
 # Mount personal health analytics routes (/api/analytics/*)
 api_router.include_router(analytics_router)
+
+# Mount intelligent health insights routes (/api/insights/*)
+api_router.include_router(insights_router)
 
 
 # ---------------------------------------------------------------------------

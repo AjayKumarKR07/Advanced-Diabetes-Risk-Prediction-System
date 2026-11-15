@@ -81,11 +81,13 @@ import {
   fetchAssessmentTimeline,
   fetchAssessment,
   fetchAssessmentPrediction,
+  fetchHealthInsights,
 } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import MetricCard from '../components/MetricCard'
 import RiskBadge from '../components/RiskBadge'
 import DisclaimerBanner from '../components/DisclaimerBanner'
+import HealthInsightsSection from '../components/HealthInsightsSection'
 import {
   CLASS_LABELS,
   CLASS_COLORS,
@@ -213,6 +215,7 @@ export default function Dashboard() {
   const [healthTrends, setHealthTrends] = useState({ points: [], summary: {} })
   const [indicators, setIndicators] = useState({ total_records: 0, records: [] })
   const [timeline, setTimeline] = useState({ total: 0, items: [] })
+  const [insightsData, setInsightsData] = useState(null)
 
   // State: Loading & Refreshing
   const [loading, setLoading] = useState(true)
@@ -264,14 +267,16 @@ export default function Dashboard() {
       fetchHealthTrends(appliedStartDate, appliedEndDate).catch(() => ({ points: [], summary: {} })),
       fetchIndicatorComparison(appliedStartDate, appliedEndDate).catch(() => ({ total_records: 0, records: [] })),
       fetchAssessmentTimeline(1, 10, appliedStartDate, appliedEndDate).catch(() => ({ total: 0, items: [] })),
+      fetchHealthInsights().catch(() => null),
     ])
-      .then(([ov, dist, bmi, hlth, ind, time]) => {
+      .then(([ov, dist, bmi, hlth, ind, time, ins]) => {
         if (ov) setOverview(ov)
         if (dist) setDistribution(dist)
         if (bmi) setBmiTrends(bmi)
         if (hlth) setHealthTrends(hlth)
         if (ind) setIndicators(ind)
         if (time) setTimeline(time)
+        if (ins) setInsightsData(ins)
       })
       .finally(() => {
         setLoading(false)
@@ -1221,7 +1226,15 @@ export default function Dashboard() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* 9. Model Performance — Research Benchmark (Section 10)              */}
+        {/* 9. Intelligent Health Insights & Recommendations (Phase 6.16)       */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <HealthInsightsSection
+          insightsData={insightsData}
+          onStartAssessment={() => navigate('/assess')}
+        />
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* 10. Model Performance — Research Benchmark (Section 10)             */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
           <div className="mb-6 space-y-1">

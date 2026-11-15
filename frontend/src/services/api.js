@@ -189,4 +189,34 @@ export async function fetchAssessmentTimeline(page = 1, pageSize = 20, startDate
   return data
 }
 
+// ---------------------------------------------------------------------------
+// Intelligent Health Insights Endpoints (Phase 6.16)
+// ---------------------------------------------------------------------------
+
+/**
+ * GET /api/insights
+ */
+export async function fetchHealthInsights(assessmentId = null) {
+  const params = {}
+  if (assessmentId) params.assessment_id = assessmentId
+  const { data } = await apiClient.get('/insights', { params })
+  return data
+}
+
+/**
+ * GET /api/insights/summary
+ */
+export async function fetchInsightsSummary() {
+  const { data } = await apiClient.get('/insights/summary')
+  return data
+}
+
+/**
+ * GET /api/insights/history
+ */
+export async function fetchInsightsHistory() {
+  const { data } = await apiClient.get('/insights/history')
+  return data
+}
+
 export default apiClient
