@@ -119,4 +119,74 @@ export async function fetchPrediction(id) {
   return data
 }
 
+// ---------------------------------------------------------------------------
+// Personal Health Analytics Endpoints (Phase 6.15)
+// ---------------------------------------------------------------------------
+
+/**
+ * GET /api/analytics/overview
+ */
+export async function fetchAnalyticsOverview(startDate = null, endDate = null) {
+  const params = {}
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/overview', { params })
+  return data
+}
+
+/**
+ * GET /api/analytics/prediction-distribution
+ */
+export async function fetchPredictionDistribution(startDate = null, endDate = null) {
+  const params = {}
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/prediction-distribution', { params })
+  return data
+}
+
+/**
+ * GET /api/analytics/bmi-trends
+ */
+export async function fetchBmiTrends(startDate = null, endDate = null) {
+  const params = {}
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/bmi-trends', { params })
+  return data
+}
+
+/**
+ * GET /api/analytics/health-trends
+ */
+export async function fetchHealthTrends(startDate = null, endDate = null) {
+  const params = {}
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/health-trends', { params })
+  return data
+}
+
+/**
+ * GET /api/analytics/indicators
+ */
+export async function fetchIndicatorComparison(startDate = null, endDate = null) {
+  const params = {}
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/indicators', { params })
+  return data
+}
+
+/**
+ * GET /api/analytics/timeline
+ */
+export async function fetchAssessmentTimeline(page = 1, pageSize = 20, startDate = null, endDate = null) {
+  const params = { page, page_size: pageSize }
+  if (startDate) params.start_date = startDate
+  if (endDate) params.end_date = endDate
+  const { data } = await apiClient.get('/analytics/timeline', { params })
+  return data
+}
+
 export default apiClient
