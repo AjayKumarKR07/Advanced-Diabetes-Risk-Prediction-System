@@ -611,3 +611,663 @@ export function generateAssessmentReportPdf({
   doc.save(filename)
 }
 
+/**
+ * Generates a comprehensive Personal Health Analytics PDF Report (Phase 6.15)
+ * covering all 11 required sections:
+ * 1. DiabetesRisk AI branding
+ * 2. User name and report generation date
+ * 3. Total assessment count
+ * 4. Latest assessment summary
+ * 5. Historical predicted-class distribution
+ * 6. BMI history
+ * 7. General Health history
+ * 8. Selected health indicator comparisons
+ * 9. Assessment timeline
+ * 10. Research model performance benchmark
+ * 11. Research limitations and medical disclaimer
+ */
+export function generatePersonalAnalyticsReportPdf({
+  user,
+  overview,
+  bmiTrends,
+  healthTrends,
+  indicators,
+  timeline,
+}) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  const pageWidth = doc.internal.pageSize.getWidth() // 210mm
+  const pageHeight = doc.internal.pageSize.getHeight() // 297mm
+  const margin = 14
+  const contentWidth = pageWidth - margin * 2 // 182mm
+
+  const userName = user?.full_name || 'Patient'
+  const userEmail = user?.email || 'N/A'
+  const reportDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  // Palette
+  const colorNavy = [15, 23, 42]
+  const colorBlue = [37, 99, 235]
+  const colorTeal = [13, 148, 136]
+  const colorSlate = [100, 116, 139]
+  const colorLightBg = [248, 250, 252]
+  const colorBorder = [226, 232, 240]
+
+  // Helper for pagination
+  const totalPages = 3
+  const addFooter = (pageNum) => {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(...colorSlate)
+    doc.text(
+      `DiabetesRisk AI • Personal Health Analytics Report • Page ${pageNum} of ${totalPages}`,
+      margin,
+      pageHeight - 8
+    )
+    doc.text('Academic Research Prototype • Non-Diagnostic', pageWidth - margin, pageHeight - 8, {
+      align: 'right',
+    })
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // PAGE 1: Overview, Latest Assessment, Distribution
+  // ═════════════════════════════════════════════════════════════════════════
+
+  // Top accent banner
+  doc.setFillColor(...colorBlue)
+  doc.rect(0, 0, pageWidth, 5, 'F')
+
+  // Header Title
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(18)
+  doc.setTextColor(...colorNavy)
+  doc.text('DiabetesRisk AI', margin, 18)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(...colorTeal)
+  doc.text('COMPREHENSIVE PERSONAL HEALTH ANALYTICS REPORT', margin, 23)
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('LONGITUDINAL EVALUATION', pageWidth - margin, 18, { align: 'right' })
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorSlate)
+  doc.text(`Generated: ${reportDate}`, pageWidth - margin, 23, { align: 'right' })
+
+  doc.setDrawColor(...colorBorder)
+  doc.setLineWidth(0.5)
+  doc.line(margin, 27, pageWidth - margin, 27)
+
+  // Account & Metadata Box
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, 31, contentWidth, 22, 2, 2, 'FD')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8.5)
+  doc.setTextColor(...colorNavy)
+  doc.text('Account Holder:', margin + 4, 38)
+  doc.text('Email Address:', margin + 4, 44)
+  doc.text('Total Assessments:', margin + 4, 49)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(51, 65, 85)
+  doc.text(userName, margin + 35, 38)
+  doc.text(userEmail, margin + 35, 44)
+  doc.text(`${overview?.total_assessments ?? 0} completed evaluations`, margin + 35, 49)
+
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...colorNavy)
+  doc.text('Monthly Activity:', margin + 100, 38)
+  doc.text('Evaluation Window:', margin + 100, 44)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(51, 65, 85)
+  doc.text(`${overview?.assessments_this_month ?? 0} assessments this month`, margin + 132, 38)
+  doc.text(
+    overview?.filter_applied?.start_date
+      ? `${overview.filter_applied.start_date.substring(0, 10)} to ${overview.filter_applied.end_date?.substring(0, 10) || 'Now'}`
+      : 'All Time Records',
+    margin + 132,
+    44
+  )
+
+  // Section 2: Key Analytics Overview (KPI Cards)
+  let y = 60
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('1. Personal Health Analytics Overview', margin, y)
+
+  y += 5
+  const cardW = (contentWidth - 9) / 4
+  const cardH = 26
+
+  // KPI 1: Completed Assessments
+  doc.setFillColor(255, 255, 255)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, cardW, cardH, 2, 2, 'FD')
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorSlate)
+  doc.text('TOTAL ASSESSMENTS', margin + 3, y + 6)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(14)
+  doc.setTextColor(...colorNavy)
+  doc.text(String(overview?.total_assessments ?? 0), margin + 3, y + 16)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text('Saved in PostgreSQL', margin + 3, y + 22)
+
+  // KPI 2: Latest Classification
+  const kpi2X = margin + cardW + 3
+  doc.roundedRect(kpi2X, y, cardW, cardH, 2, 2, 'FD')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorSlate)
+  doc.text('LATEST CLASSIFICATION', kpi2X + 3, y + 6)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  const predCls = overview?.latest_predicted_class
+  const clsColor = predCls === 2 ? [225, 29, 72] : predCls === 1 ? [217, 119, 6] : [16, 185, 129]
+  doc.setTextColor(...clsColor)
+  doc.text(overview?.latest_predicted_label || 'None Recorded', kpi2X + 3, y + 15)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text(overview?.latest_assessment_date || 'Awaiting evaluation', kpi2X + 3, y + 22)
+
+  // KPI 3: Latest BMI
+  const kpi3X = margin + (cardW + 3) * 2
+  doc.roundedRect(kpi3X, y, cardW, cardH, 2, 2, 'FD')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorSlate)
+  doc.text('LATEST BMI', kpi3X + 3, y + 6)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(13)
+  doc.setTextColor(...colorNavy)
+  doc.text(overview?.latest_bmi ? String(overview.latest_bmi) : '—', kpi3X + 3, y + 16)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text(overview?.latest_bmi_category || 'Screening metric', kpi3X + 3, y + 22)
+
+  // KPI 4: Latest Confidence
+  const kpi4X = margin + (cardW + 3) * 3
+  doc.roundedRect(kpi4X, y, cardW, cardH, 2, 2, 'FD')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorSlate)
+  doc.text('MODEL PROBABILITY', kpi4X + 3, y + 6)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(13)
+  doc.setTextColor(...colorNavy)
+  doc.text(
+    overview?.latest_confidence ? `${(overview.latest_confidence * 100).toFixed(1)}%` : '—',
+    kpi4X + 3,
+    y + 16
+  )
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text('Model-estimated class prob.', kpi4X + 3, y + 22)
+
+  // Section 3: Latest Assessment Summary
+  y += 33
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('2. Latest Assessment Summary', margin, y)
+
+  y += 5
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 38, 2, 2, 'FD')
+
+  if (overview?.latest_assessment_id) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8.5)
+    doc.setTextColor(...colorNavy)
+    doc.text(`Assessment #${overview.latest_assessment_id} (Prediction #${overview.latest_prediction_id || '—'})`, margin + 4, y + 7)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(...colorSlate)
+    doc.text(`Conducted: ${overview.latest_assessment_date || 'N/A'}`, margin + 110, y + 7)
+
+    // Class probabilities table
+    const probs = overview.latest_probabilities || {}
+    const pND = probs.no_diabetes != null ? `${(probs.no_diabetes * 100).toFixed(1)}%` : '—'
+    const pPre = probs.prediabetes != null ? `${(probs.prediabetes * 100).toFixed(1)}%` : '—'
+    const pDM = probs.diabetes != null ? `${(probs.diabetes * 100).toFixed(1)}%` : '—'
+
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...colorNavy)
+    doc.text('Model Posterior Probabilities:', margin + 4, y + 16)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(16, 185, 129)
+    doc.text(`• Class 0 (No Diabetes): ${pND}`, margin + 6, y + 23)
+    doc.setTextColor(217, 119, 6)
+    doc.text(`• Class 1 (Prediabetes): ${pPre}`, margin + 65, y + 23)
+    doc.setTextColor(225, 29, 72)
+    doc.text(`• Class 2 (Diabetes): ${pDM}`, margin + 125, y + 23)
+
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...colorNavy)
+    doc.text('Reported Indicators at Evaluation:', margin + 4, y + 31)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(51, 65, 85)
+    doc.text(`BMI: ${overview.latest_bmi} (${overview.latest_bmi_category})`, margin + 65, y + 31)
+    doc.text(`General Health: ${overview.latest_gen_hlth_label || 'N/A'}`, margin + 125, y + 31)
+  } else {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8.5)
+    doc.setTextColor(...colorSlate)
+    doc.text('No completed assessments found for this user account. Start an assessment to see results.', margin + 6, y + 20)
+  }
+
+  // Section 4: Historical Prediction Distribution
+  y += 45
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('3. Historical Model Classifications Distribution', margin, y)
+
+  y += 5
+  doc.setFillColor(255, 255, 255)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 36, 2, 2, 'FD')
+
+  const dist = overview?.class_distribution || { '0': 0, '1': 0, '2': 0 }
+  const c0 = dist['0'] || 0
+  const c1 = dist['1'] || 0
+  const c2 = dist['2'] || 0
+  const totalD = c0 + c1 + c2
+  const pct0 = totalD > 0 ? ((c0 / totalD) * 100).toFixed(1) : '0.0'
+  const pct1 = totalD > 0 ? ((c1 / totalD) * 100).toFixed(1) : '0.0'
+  const pct2 = totalD > 0 ? ((c2 / totalD) * 100).toFixed(1) : '0.0'
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorNavy)
+  doc.text(`Total Saved Predictions: ${totalD}`, margin + 4, y + 7)
+
+  // Distribution row 1: Class 0
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(16, 185, 129)
+  doc.text(`• Class 0 — No Diabetes:`, margin + 6, y + 16)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...colorNavy)
+  doc.text(`${c0} evaluations (${pct0}%)`, margin + 50, y + 16)
+
+  // Distribution row 2: Class 1
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(217, 119, 6)
+  doc.text(`• Class 1 — Prediabetes:`, margin + 6, y + 23)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...colorNavy)
+  doc.text(`${c1} evaluations (${pct1}%)`, margin + 50, y + 23)
+
+  // Distribution row 3: Class 2
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(225, 29, 72)
+  doc.text(`• Class 2 — Diabetes:`, margin + 6, y + 30)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...colorNavy)
+  doc.text(`${c2} evaluations (${pct2}%)`, margin + 50, y + 30)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text(
+    '* Scientific Note: Historical classifications reflect mathematical outputs of the frozen Logistic Regression model across self-reported survey indicators and do NOT represent clinical disease prevalence or confirmed medical diagnosis.',
+    margin + 90,
+    y + 16,
+    { maxWidth: contentWidth - 94 }
+  )
+
+  addFooter(1)
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // PAGE 2: BMI Trends, General Health Trends, Indicator Comparison
+  // ═════════════════════════════════════════════════════════════════════════
+  doc.addPage()
+
+  doc.setFillColor(...colorBlue)
+  doc.rect(0, 0, pageWidth, 5, 'F')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(14)
+  doc.setTextColor(...colorNavy)
+  doc.text('Longitudinal Trends & Indicator Comparison', margin, 18)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorSlate)
+  doc.text('DiabetesRisk AI • Personal Health Trajectory Analysis', margin, 23)
+
+  doc.setDrawColor(...colorBorder)
+  doc.setLineWidth(0.5)
+  doc.line(margin, 26, pageWidth - margin, 26)
+
+  // Section 5: BMI Trend Summary
+  y = 32
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('4. Longitudinal BMI History & Trajectory', margin, y)
+
+  y += 5
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 32, 2, 2, 'FD')
+
+  const bmiSum = bmiTrends?.summary || overview?.bmi_summary || {}
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorNavy)
+  doc.text(`Latest BMI: ${bmiSum.latest ?? '—'} (${bmiSum.category || 'N/A'})`, margin + 4, y + 7)
+  doc.text(`Previous BMI: ${bmiSum.previous ?? '—'}`, margin + 80, y + 7)
+  doc.text(
+    `Change: ${bmiSum.change != null ? (bmiSum.change > 0 ? `+${bmiSum.change}` : String(bmiSum.change)) : 'N/A (Requires ≥ 2 assessments)'}`,
+    margin + 130,
+    y + 7
+  )
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorSlate)
+  doc.text('Recent BMI Data Points (Oldest to Newest):', margin + 4, y + 14)
+
+  const pts = bmiTrends?.points || []
+  let ptStr = pts.length > 0
+    ? pts.slice(-6).map((p) => `${p.date}: ${p.bmi}`).join('  |  ')
+    : 'No longitudinal data recorded yet.'
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.5)
+  doc.setTextColor(51, 65, 85)
+  doc.text(ptStr, margin + 4, y + 20)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text(
+    'Reference screening ranges: Underweight (<18.5) • Normal (18.5–24.9) • Overweight (25.0–29.9) • Obesity (≥30.0). BMI is a screening classification, not an individual diagnosis.',
+    margin + 4,
+    y + 27
+  )
+
+  // Section 6: General Health Trends
+  y += 38
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('5. General Health & Well-being Trends (Self-Reported)', margin, y)
+
+  y += 5
+  doc.setFillColor(255, 255, 255)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 28, 2, 2, 'FD')
+
+  const hlthSum = healthTrends?.summary || overview?.gen_hlth_summary || {}
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorNavy)
+  doc.text(`Latest GenHlth: ${hlthSum.latest_label || hlthSum.latest || '—'}`, margin + 4, y + 7)
+  doc.text(`Previous Rating: ${hlthSum.previous ?? '—'}`, margin + 80, y + 7)
+  doc.text(
+    `Rating Change: ${hlthSum.change != null ? (hlthSum.change > 0 ? `+${hlthSum.change}` : String(hlthSum.change)) : 'N/A'}`,
+    margin + 130,
+    y + 7
+  )
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.8)
+  doc.setTextColor(...colorSlate)
+  doc.text(
+    'CDC Scale: 1 = Excellent, 2 = Very Good, 3 = Good, 4 = Fair, 5 = Poor. These values represent self-reported survey responses and must not be described as medically verified improvement or deterioration.',
+    margin + 4,
+    y + 15,
+    { maxWidth: contentWidth - 8 }
+  )
+
+  // Section 7: Key Health Indicator Comparison Table
+  y += 35
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('6. Key Health Indicator Comparison (Recent Assessments)', margin, y)
+
+  y += 5
+  // Table headers
+  const colW = [16, 22, 16, 16, 16, 16, 18, 18, 18, 26]
+  const colHeaders = ['ID', 'Date', 'BMI', 'HighBP', 'HighChol', 'PhysAct', 'Smoker', 'GenHlth', 'DiffWalk', 'Class']
+
+  doc.setFillColor(241, 245, 249)
+  doc.rect(margin, y, contentWidth, 6, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorNavy)
+
+  let curX = margin
+  colHeaders.forEach((h, i) => {
+    doc.text(h, curX + 2, y + 4.2)
+    curX += colW[i]
+  })
+
+  y += 6
+  const recs = (indicators?.records || []).slice(0, 6)
+  if (recs.length === 0) {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(...colorSlate)
+    doc.text('No historical assessments to compare.', margin + 4, y + 8)
+    y += 12
+  } else {
+    recs.forEach((r, idx) => {
+      const rowY = y + idx * 6.5
+      if (idx % 2 === 1) {
+        doc.setFillColor(250, 250, 250)
+        doc.rect(margin, rowY, contentWidth, 6.5, 'F')
+      }
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(6.5)
+      doc.setTextColor(51, 65, 85)
+
+      let rx = margin
+      doc.text(`#${r.assessment_id}`, rx + 2, rowY + 4.5); rx += colW[0]
+      doc.text(r.date.substring(0, 10), rx + 2, rowY + 4.5); rx += colW[1]
+      doc.text(String(r.bmi), rx + 2, rowY + 4.5); rx += colW[2]
+      doc.text(r.high_bp === 1 ? 'Yes' : 'No', rx + 2, rowY + 4.5); rx += colW[3]
+      doc.text(r.high_chol === 1 ? 'Yes' : 'No', rx + 2, rowY + 4.5); rx += colW[4]
+      doc.text(r.phys_activity === 1 ? 'Yes' : 'No', rx + 2, rowY + 4.5); rx += colW[5]
+      doc.text(r.smoker === 1 ? 'Yes' : 'No', rx + 2, rowY + 4.5); rx += colW[6]
+      doc.text(String(r.gen_hlth), rx + 2, rowY + 4.5); rx += colW[7]
+      doc.text(r.diff_walk === 1 ? 'Yes' : 'No', rx + 2, rowY + 4.5); rx += colW[8]
+      doc.text(r.predicted_label || '—', rx + 2, rowY + 4.5); rx += colW[9]
+    })
+    y += recs.length * 6.5 + 4
+  }
+
+  addFooter(2)
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // PAGE 3: Assessment Timeline, Research Model Benchmark & Disclaimers
+  // ═════════════════════════════════════════════════════════════════════════
+  doc.addPage()
+
+  doc.setFillColor(...colorBlue)
+  doc.rect(0, 0, pageWidth, 5, 'F')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(14)
+  doc.setTextColor(...colorNavy)
+  doc.text('Assessment Activity & Model Research Benchmarks', margin, 18)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(...colorSlate)
+  doc.text('DiabetesRisk AI • Phase 5 Model Evaluation & Disclaimers', margin, 23)
+
+  doc.setDrawColor(...colorBorder)
+  doc.setLineWidth(0.5)
+  doc.line(margin, 26, pageWidth - margin, 26)
+
+  // Section 8: Assessment Activity Timeline
+  y = 32
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('7. Assessment Activity Timeline (Recent Evaluations)', margin, y)
+
+  y += 5
+  const timelineItems = (timeline?.items || []).slice(0, 5)
+  if (timelineItems.length === 0) {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(...colorSlate)
+    doc.text('No assessment activity recorded yet.', margin + 4, y + 8)
+    y += 14
+  } else {
+    timelineItems.forEach((t) => {
+      doc.setFillColor(...colorLightBg)
+      doc.setDrawColor(...colorBorder)
+      doc.roundedRect(margin, y, contentWidth, 12, 1.5, 1.5, 'FD')
+
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(7.5)
+      doc.setTextColor(...colorNavy)
+      doc.text(`Assessment #${t.assessment_id}`, margin + 4, y + 5)
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(...colorSlate)
+      doc.text(`${t.date}`, margin + 35, y + 5)
+
+      const tCls = t.predicted_class
+      const tColor = tCls === 2 ? [225, 29, 72] : tCls === 1 ? [217, 119, 6] : [16, 185, 129]
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(...tColor)
+      doc.text(`${t.predicted_label || 'Evaluated'}`, margin + 70, y + 5)
+
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(51, 65, 85)
+      doc.text(`Model Probability: ${t.confidence ? `${(t.confidence * 100).toFixed(1)}%` : '—'}`, margin + 115, y + 5)
+      doc.text(`BMI: ${t.bmi} | GenHlth: ${t.gen_hlth}`, margin + 4, y + 9.5)
+
+      y += 14
+    })
+  }
+
+  // Section 9: Model Performance — Research Benchmark (Phase 5 Frozen Metrics)
+  y += 2
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(...colorNavy)
+  doc.text('8. Model Performance — Research Benchmark', margin, y)
+
+  y += 4
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.8)
+  doc.setTextColor(...colorSlate)
+  doc.text(
+    'Frozen Phase 5 held-out test evaluation (CDC BRFSS 2015, 50,736 rows). This represents population-level research metrics and NOT personal health diagnoses.',
+    margin,
+    y
+  )
+
+  y += 4
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 38, 2, 2, 'FD')
+
+  // Global metrics row
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(7.5)
+  doc.setTextColor(...colorNavy)
+  doc.text('Frozen Global Evaluation Benchmarks:', margin + 4, y + 6)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7)
+  doc.setTextColor(51, 65, 85)
+  doc.text('• Macro F1: 0.4246', margin + 6, y + 13)
+  doc.text('• Weighted F1: 0.7187', margin + 50, y + 13)
+  doc.text('• Balanced Accuracy: 0.5172', margin + 95, y + 13)
+  doc.text('• Accuracy: 0.6433', margin + 140, y + 13)
+  doc.text('• ROC-AUC OvR Macro: 0.7707', margin + 6, y + 19)
+  doc.text('• ROC-AUC OvR Weighted: 0.8112', margin + 65, y + 19)
+
+  // Class-wise metrics
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(7.5)
+  doc.setTextColor(...colorNavy)
+  doc.text('Class-Wise Metrics (Precision / Recall / F1):', margin + 4, y + 26)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7)
+  doc.setTextColor(16, 185, 129)
+  doc.text('Class 0 (No Diabetes): P 0.9501 | R 0.6606 | F1 0.7793', margin + 6, y + 33)
+  doc.setTextColor(217, 119, 6)
+  doc.text('Class 1 (Prediabetes): P 0.0307 | R 0.3089 | F1 0.0558', margin + 70, y + 33)
+  doc.setTextColor(225, 29, 72)
+  doc.text('Class 2 (Diabetes): P 0.3520 | R 0.5823 | F1 0.4387', margin + 132, y + 33)
+
+  // Disclaimers & Limitations
+  y += 42
+  doc.setFillColor(254, 243, 199) // amber-100
+  doc.setDrawColor(245, 158, 11) // amber-500
+  doc.roundedRect(margin, y, contentWidth, 18, 1.5, 1.5, 'FD')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(7)
+  doc.setTextColor(180, 83, 9)
+  doc.text('Prediabetes (Class 1) Research Limitation Disclosure:', margin + 3, y + 4.5)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(146, 64, 14)
+  const lim =
+    'Due to heavy class imbalance in the general survey population (~1.8% prediabetes representation), Class 1 achieves a precision of 0.0307 and recall of 0.3089. The model is intentionally configured with balanced class weights to maximize sensitivity to early metabolic risk, but individual predictions in Class 1 carry substantial uncertainty.'
+  doc.text(doc.splitTextToSize(lim, contentWidth - 6), margin + 3, y + 8.5)
+
+  y += 21
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.roundedRect(margin, y, contentWidth, 22, 1.5, 1.5, 'FD')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(7)
+  doc.setTextColor(...colorNavy)
+  doc.text('Mandatory Academic Research & Medical Disclaimer:', margin + 3, y + 4.5)
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.2)
+  doc.setTextColor(...colorSlate)
+  const disc =
+    'DiabetesRisk AI is an academic research engineering demonstration. It is not an FDA-cleared diagnostic tool. Model-estimated probabilities are statistical survey approximations and must never be interpreted as clinical risk percentages or confirmed medical diagnoses. Do not make healthcare or medication decisions based on this report. Always consult a licensed physician or endocrinologist for clinical laboratory testing (HbA1c or Fasting Plasma Glucose).'
+  doc.text(doc.splitTextToSize(disc, contentWidth - 6), margin + 3, y + 8.5)
+
+  addFooter(3)
+
+  // Save PDF
+  const filename = `DiabetesRisk_AI_Personal_Analytics_${user?.id || 'Report'}.pdf`
+  doc.save(filename)
+}
+
+

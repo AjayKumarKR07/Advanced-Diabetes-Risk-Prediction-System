@@ -138,3 +138,4 @@ class AnalyticsOverviewResponse(BaseModel):
     gen_hlth_summary: HealthTrendSummary
     class_distribution: Dict[str, int]
     filter_applied: Dict[str, Optional[str]]
+
