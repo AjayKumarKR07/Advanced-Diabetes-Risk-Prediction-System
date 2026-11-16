@@ -1,0 +1,74 @@
+version: '3.8'
+
+# =============================================================================
+# DiabetesRisk AI — Production Docker Compose Deployment
+# =============================================================================
+
+services:
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: diabetes_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diabetes_prod_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-diabetes_risk_prod}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diabetes_prod_user} -d ${POSTGRES_DB:-diabetes_risk_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.backend
+    container_name: diabetes_backend_prod
+    restart: always
+    env_file:
+      - ../backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - avatar_storage:/app/uploads/avatars
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Nginx Reverse Proxy & Frontend ─────────────────────────────────────────
+  nginx:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.frontend
+    container_name: diabetes_nginx_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ssl_certs:/etc/nginx/ssl
+      - /var/log/nginx:/var/log/nginx
+    networks:
+      - internal_net
+
+volumes:
+  pgdata:
+  avatar_storage:
+  ssl_certs:
+
+networks:
+  internal_net:
+    driver: bridge

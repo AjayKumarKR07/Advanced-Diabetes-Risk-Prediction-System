@@ -29,11 +29,12 @@ logger = logging.getLogger(__name__)
 
 engine = create_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,          # validates connection liveness before use
-    pool_size=5,
-    max_overflow=10,
-    pool_recycle=1800,           # recycle connections every 30 min
-    echo=False,                  # set True for SQL debug output
+    pool_pre_ping=True,                     # validates connection liveness before use
+    pool_size=settings.DB_POOL_SIZE,        # configurable base connection pool
+    max_overflow=settings.DB_MAX_OVERFLOW,  # configurable burst connection limit
+    pool_timeout=settings.DB_POOL_TIMEOUT,  # wait seconds before timing out
+    pool_recycle=settings.DB_POOL_RECYCLE,  # recycle connections periodically
+    echo=False,                             # set True for SQL debug output
 )
 
 SessionLocal = sessionmaker(
@@ -115,4 +116,14 @@ def init_db() -> None:
     from backend.app.models import assessment, prediction, user  # noqa: F401
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created/verified.")
+
+
+def dispose_db() -> None:
+    """Safely dispose of connection pool during application shutdown."""
+    try:
+        engine.dispose()
+        logger.info("Database connection pool cleanly disposed.")
+    except Exception as exc:
+        logger.warning("Error disposing database pool: %s", exc)
+
 

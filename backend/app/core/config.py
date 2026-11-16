@@ -1,7 +1,7 @@
 """
 backend/app/core/config.py
 ==========================
-Unified configuration settings — extended with database URL for Phase 6.6.
+Unified configuration settings with environment separation and production validation (Phase 6.17).
 """
 
 from pathlib import Path
@@ -9,6 +9,11 @@ from typing import List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
+
+# Default development fallback key (NEVER permit in production)
+DEV_FALLBACK_SECRET_KEY = (
+    "cf745891ff96d18a97d549ea13ef05bd08201743fbb5fb870019781960a0e337"
+)
 
 
 class Settings(BaseSettings):
@@ -20,6 +25,10 @@ class Settings(BaseSettings):
         "risk prediction pipeline (Logistic Regression with balanced class weighting). "
         "Strictly an academic research prototype; NOT a clinical diagnostic device."
     )
+
+    # ── Environment & Logging ────────────────────────────────────────────────
+    ENVIRONMENT: str = "development"  # "development", "staging", "production", "test"
+    LOG_LEVEL: str = "INFO"
 
     # ── Model & Artifact paths ───────────────────────────────────────────────
     MODEL_PATH: Path = (
@@ -39,11 +48,13 @@ class Settings(BaseSettings):
         "postgresql+psycopg://postgres:postgres@localhost:5432/diabetes_risk_db"
     )
     TEST_DATABASE_URL: Optional[str] = None
+    DB_POOL_SIZE: int = 10
+    DB_MAX_OVERFLOW: int = 20
+    DB_POOL_TIMEOUT: int = 30
+    DB_POOL_RECYCLE: int = 1800  # 30 minutes
 
     # ── Authentication & Security ────────────────────────────────────────────
-    SECRET_KEY: str = (
-        "cf745891ff96d18a97d549ea13ef05bd08201743fbb5fb870019781960a0e337"
-    )
+    SECRET_KEY: str = DEV_FALLBACK_SECRET_KEY
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
 
@@ -70,6 +81,42 @@ class Settings(BaseSettings):
         env_file="backend/.env",
         extra="ignore",
     )
+
+    def validate_production_settings(self) -> List[str]:
+        """
+        Validate critical security and infrastructure settings when running in production.
+        Returns a list of validation error messages. An empty list means validation passed.
+        """
+        errors: List[str] = []
+        is_prod = self.ENVIRONMENT.lower() in ("production", "prod")
+
+        if is_prod:
+            # 1. Secret Key Security
+            if self.SECRET_KEY == DEV_FALLBACK_SECRET_KEY:
+                errors.append(
+                    "FATAL: In production, SECRET_KEY must be set to a cryptographically secure random value via environment variable. Default development secret is prohibited."
+                )
+            if len(self.SECRET_KEY) < 32:
+                errors.append(
+                    f"FATAL: In production, SECRET_KEY must be at least 32 characters long (current length: {len(self.SECRET_KEY)})."
+                )
+
+            # 2. CORS Restriction
+            if "*" in self.CORS_ORIGINS:
+                errors.append(
+                    "FATAL: Wildcard origin ('*') in CORS_ORIGINS is prohibited in production when credentials are permitted."
+                )
+
+            # 3. Database URL Integrity
+            if "localhost" in self.DATABASE_URL and not self.TEST_DATABASE_URL:
+                # Warning rather than fatal error if running backend on same host as DB in single-node setup
+                pass
+            if "postgres:postgres@" in self.DATABASE_URL:
+                errors.append(
+                    "FATAL: Default PostgreSQL credentials ('postgres:postgres') must not be used in production."
+                )
+
+        return errors
 
 
 settings = Settings()
