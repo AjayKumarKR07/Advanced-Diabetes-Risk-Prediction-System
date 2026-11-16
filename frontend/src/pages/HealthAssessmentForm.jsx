@@ -546,16 +546,54 @@ export default function HealthAssessmentForm() {
       ? { label: 'Enter BMI (10.0–100.0)', color: 'slate' }
       : getBmiCategory(form.BMI)
 
+  const getToggleBtnClass = (fieldKey, optVal) => {
+    const isSelected = form[fieldKey] === optVal
+    const hasError = errors[fieldKey]
+    if (isSelected) {
+      return optVal === 1
+        ? 'bg-blue-600 text-white shadow-sm font-bold ring-2 ring-blue-500/20'
+        : 'bg-slate-800 text-white shadow-sm font-bold ring-2 ring-slate-700/20'
+    }
+    if (hasError) {
+      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+    }
+    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+  }
+
+  const getSexBtnClass = (optVal) => {
+    const isSelected = personal.sex === optVal
+    const hasError = errors.sex
+    if (isSelected) {
+      return 'bg-blue-600 text-white shadow-sm font-bold ring-2 ring-blue-500/20'
+    }
+    if (hasError) {
+      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+    }
+    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+  }
+
+  const getGenHlthBtnClass = (optValue) => {
+    const isSelected = form.GenHlth === optValue
+    const hasError = errors.GenHlth
+    if (isSelected) {
+      return 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-500/20 font-bold'
+    }
+    if (hasError) {
+      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+    }
+    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+  }
+
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
+      <div>
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-3">
             <Activity className="w-3.5 h-3.5 text-blue-600" />
             <span>CDC BRFSS Health Indicator Protocol</span>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">New Health Assessment</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">New Health Assessment</h1>
           <p className="text-sm text-slate-600 mt-2 max-w-xl mx-auto">
             Provide the 21 health and demographic indicators evaluated by our research machine learning model.
             All responses remain private and confidential.
@@ -563,7 +601,7 @@ export default function HealthAssessmentForm() {
         </div>
 
         {/* Stepper Progress Bar */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 sm:p-6 mb-8">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-6 gap-2 text-center">
             {STEPS.map((s) => {
               const Icon = s.icon
@@ -576,10 +614,10 @@ export default function HealthAssessmentForm() {
                   onClick={() => handleStepClick(s.num)}
                   className={`flex flex-col items-center group transition-colors ${
                     isCurrent
-                      ? 'text-blue-600 font-semibold'
+                      ? 'text-blue-600 font-bold'
                       : isDone
-                      ? 'text-teal-600'
-                      : 'text-slate-400'
+                      ? 'text-teal-600 font-semibold'
+                      : 'text-slate-400 font-medium'
                   }`}
                   title={`Step ${s.num}: ${s.title}`}
                 >
@@ -610,7 +648,7 @@ export default function HealthAssessmentForm() {
 
         {/* Top Validation Error Banner */}
         {validationError && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm animate-shake shadow-xs">
+          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm animate-shake shadow-xs">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
             <div>
               <p className="font-bold text-red-800">Incomplete Assessment</p>
@@ -621,7 +659,7 @@ export default function HealthAssessmentForm() {
 
         {/* API Error Banner */}
         {apiError && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-sm">
+          <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-sm">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
             <div>
               <p className="font-semibold">Assessment Inference Failed</p>
@@ -631,7 +669,7 @@ export default function HealthAssessmentForm() {
         )}
 
         {/* Step Forms */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 mb-8">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-6">
           {/* ═════════════════════════════════════════════════════════════════ */}
           {/* STEP 1: Personal Information                                      */}
           {/* ═════════════════════════════════════════════════════════════════ */}
@@ -743,13 +781,7 @@ export default function HealthAssessmentForm() {
                         key={opt.val}
                         type="button"
                         onClick={() => handlePersonalChange('sex', opt.val)}
-                        className={`py-2.5 px-4 rounded-xl border text-sm font-medium transition-all ${
-                          personal.sex === opt.val
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                            : errors.sex
-                            ? 'bg-red-50/30 border-red-300 text-slate-700 hover:bg-red-50'
-                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                        }`}
+                        className={`py-2.5 px-4 rounded-xl border text-sm transition-all ${getSexBtnClass(opt.val)}`}
                       >
                         {opt.label}
                       </button>
@@ -851,15 +883,7 @@ export default function HealthAssessmentForm() {
                           key={opt.val}
                           type="button"
                           onClick={() => setVal(item.key, opt.val)}
-                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
-                            form[item.key] === opt.val
-                              ? opt.val === 1
-                                ? 'bg-blue-600 text-white shadow-sm'
-                                : 'bg-slate-700 text-white shadow-sm'
-                              : errors[item.key]
-                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
+                          className={`w-16 py-2 rounded-lg text-xs transition-all ${getToggleBtnClass(item.key, opt.val)}`}
                         >
                           {opt.label}
                         </button>
@@ -1018,15 +1042,7 @@ export default function HealthAssessmentForm() {
                           key={opt.val}
                           type="button"
                           onClick={() => setVal(item.key, opt.val)}
-                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
-                            form[item.key] === opt.val
-                              ? opt.val === 1
-                                ? 'bg-teal-600 text-white shadow-sm'
-                                : 'bg-slate-700 text-white shadow-sm'
-                              : errors[item.key]
-                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
+                          className={`w-16 py-2 rounded-lg text-xs transition-all ${getToggleBtnClass(item.key, opt.val)}`}
                         >
                           {opt.label}
                         </button>
@@ -1063,13 +1079,7 @@ export default function HealthAssessmentForm() {
                       key={opt.value}
                       type="button"
                       onClick={() => setVal('GenHlth', opt.value)}
-                      className={`p-3 rounded-xl border text-center transition-all ${
-                        form.GenHlth === opt.value
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-100'
-                          : errors.GenHlth
-                          ? 'bg-red-50/30 border-red-300 text-slate-700 hover:bg-red-50'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                      }`}
+                      className={`p-3 rounded-xl border text-center transition-all ${getGenHlthBtnClass(opt.value)}`}
                     >
                       <div className="text-xs font-bold">{opt.label.split('—')[1]?.trim()}</div>
                       <div className={`text-[10px] mt-1 ${form.GenHlth === opt.value ? 'text-blue-100' : 'text-slate-400'}`}>
@@ -1249,15 +1259,7 @@ export default function HealthAssessmentForm() {
                       key={opt.val}
                       type="button"
                       onClick={() => setVal('DiffWalk', opt.val)}
-                      className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
-                        form.DiffWalk === opt.val
-                          ? opt.val === 1
-                            ? 'bg-rose-600 text-white shadow-sm'
-                            : 'bg-slate-700 text-white shadow-sm'
-                          : errors.DiffWalk
-                          ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
+                      className={`w-16 py-2 rounded-lg text-xs transition-all ${getToggleBtnClass('DiffWalk', opt.val)}`}
                     >
                       {opt.label}
                     </button>
@@ -1325,13 +1327,7 @@ export default function HealthAssessmentForm() {
                           key={opt.val}
                           type="button"
                           onClick={() => setVal(item.key, opt.val)}
-                          className={`w-16 py-2 rounded-lg text-xs font-bold transition-all ${
-                            form[item.key] === opt.val
-                              ? 'bg-blue-600 text-white shadow-sm'
-                              : errors[item.key]
-                              ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
+                          className={`w-16 py-2 rounded-lg text-xs transition-all ${getToggleBtnClass(item.key, opt.val)}`}
                         >
                           {opt.label}
                         </button>
@@ -1469,7 +1465,7 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* Medical History */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <Heart className="w-3.5 h-3.5 text-red-500" /> Clinical Indicators
@@ -1517,7 +1513,7 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* Lifestyle */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <Activity className="w-3.5 h-3.5 text-teal-600" /> Lifestyle &amp; Body
@@ -1565,7 +1561,7 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* General Health & Demographics */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <Smile className="w-3.5 h-3.5 text-amber-500" /> General &amp; Demographics
@@ -1632,7 +1628,7 @@ export default function HealthAssessmentForm() {
               type="button"
               onClick={handlePrev}
               disabled={submitting}
-              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 text-sm font-semibold flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-sm font-semibold flex items-center gap-2 transition-colors shadow-2xs disabled:opacity-50"
             >
               <ChevronLeft className="w-4 h-4" /> Previous
             </button>
@@ -1644,7 +1640,7 @@ export default function HealthAssessmentForm() {
             <button
               type="button"
               onClick={handleNext}
-              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition-all shadow-md shadow-blue-500/20"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-500/20"
             >
               Next Step <ChevronRight className="w-4 h-4" />
             </button>
@@ -1653,7 +1649,7 @@ export default function HealthAssessmentForm() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold flex items-center gap-2 transition-all shadow-sm shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

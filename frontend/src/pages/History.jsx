@@ -249,8 +249,8 @@ export default function History() {
   const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/20 to-slate-100 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+      <div className="space-y-6">
         
         {/* ═════════════════════════════════════════════════════════════════ */}
         {/* PAGE HEADER                                                       */}
@@ -272,13 +272,13 @@ export default function History() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/assess')}
-              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm shadow-blue-500/20 flex items-center gap-1.5"
             >
               <span>+ New Assessment</span>
             </button>
             <button
               onClick={() => loadHistory(page)}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+              className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-2xs"
               title="Refresh History"
             >
               <RefreshCw className="w-4 h-4" />
@@ -291,21 +291,21 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col justify-between">
               <span className="text-[11px] text-slate-400 uppercase font-semibold">Total Assessed</span>
-              <p className="text-xl font-bold text-slate-900 mt-0.5">{stats.total_assessments}</p>
+              <p className="text-2xl font-extrabold text-slate-900 mt-0.5">{stats.total_assessments}</p>
             </div>
             {[
               { key: 0, label: 'No Diabetes' },
               { key: 1, label: 'Prediabetes' },
               { key: 2, label: 'Diabetes' },
             ].map(({ key, label }) => (
-              <div key={key} className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-sm">
+              <div key={key} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col justify-between">
                 <span className="text-[11px] text-slate-400 uppercase font-semibold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CLASS_COLORS[key] }} />
                   {label}
                 </span>
-                <p className="text-xl font-bold text-slate-900 mt-0.5">
+                <p className="text-2xl font-extrabold text-slate-900 mt-0.5">
                   {stats.class_distribution?.[key] ?? 0}
                 </p>
               </div>
@@ -354,7 +354,7 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         {/* MAIN RECORDS TABLE CARD                                           */}
         {/* ═════════════════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
           {loading && !error && (
             <div className="py-16 text-center text-slate-400 flex flex-col items-center justify-center">
               <RefreshCw className="w-6 h-6 animate-spin text-blue-600 mb-2" />

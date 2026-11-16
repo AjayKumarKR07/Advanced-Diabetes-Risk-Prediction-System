@@ -261,7 +261,7 @@ export default function Profile() {
     : 'None recorded yet'
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -273,7 +273,7 @@ export default function Profile() {
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <Link
             to="/settings"
-            className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors shadow-2xs"
           >
             <KeyRound className="w-3.5 h-3.5 text-blue-600" />
             <span>Security Settings</span>

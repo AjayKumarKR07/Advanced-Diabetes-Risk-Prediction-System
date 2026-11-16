@@ -249,7 +249,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
       {/* Page Title */}
       <div>
         <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Account &amp; Security Settings</h1>

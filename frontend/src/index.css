@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     scroll-behavior: smooth;
   }
 
@@ -14,6 +14,66 @@
 }
 
 @layer components {
+  /* Unified Clinical Design Tokens (Phase 6.18) */
+
+  /* Main Card Containers */
+  .clinical-card {
+    @apply bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 transition-colors;
+  }
+
+  .clinical-card-dark {
+    @apply bg-[#162032] rounded-3xl border border-slate-700/60 shadow-xl p-6 sm:p-8 text-white;
+  }
+
+  .clinical-card-sub {
+    @apply bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors;
+  }
+
+  /* Metric KPI Sub-Cards */
+  .clinical-kpi-card {
+    @apply bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-colors;
+  }
+
+  /* Buttons */
+  .clinical-btn-primary {
+    @apply bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl px-5 py-2.5 transition-all shadow-sm shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
+  }
+
+  .clinical-btn-secondary {
+    @apply border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl px-4 py-2.5 transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50;
+  }
+
+  .clinical-btn-danger {
+    @apply bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl px-5 py-2.5 transition-all shadow-sm shadow-rose-500/20 disabled:opacity-50 inline-flex items-center justify-center gap-2;
+  }
+
+  /* Inputs & Form Fields */
+  .clinical-input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400;
+  }
+
+  .clinical-input-dark {
+    @apply w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-500;
+  }
+
+  /* Status Badges & Pills */
+  .clinical-pill-emerald {
+    @apply bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+  }
+
+  .clinical-pill-amber {
+    @apply bg-amber-50 text-amber-900 border border-amber-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+  }
+
+  .clinical-pill-rose {
+    @apply bg-rose-50 text-rose-800 border border-rose-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+  }
+
+  .clinical-pill-blue {
+    @apply bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+  }
+
+  /* Legacy utility classes preserved for backwards compatibility */
   .card {
     @apply bg-white rounded-2xl shadow-sm border border-slate-100 p-6;
   }

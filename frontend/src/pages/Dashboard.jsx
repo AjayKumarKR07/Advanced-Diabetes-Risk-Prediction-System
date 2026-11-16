@@ -383,7 +383,7 @@ export default function Dashboard() {
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
               Track your longitudinal metabolic health assessments, review model-predicted risk classifications,
-              analyze BMI and well-being trajectories, or run a new clinical evaluation.
+              analyze BMI and well-being trajectories, or run a new health risk assessment.
             </p>
           </div>
 
