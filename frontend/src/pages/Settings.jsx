@@ -252,23 +252,23 @@ export default function SettingsPage() {
     <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Account &amp; Security Settings</h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Account &amp; Security Settings</h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
           Configure security credentials, notifications, appearance themes, session details, and privacy controls.
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto">
         <button
           onClick={() => setActiveTab('security')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === 'security'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
           }`}
         >
-          <KeyRound className="w-3.5 h-3.5 text-teal-600" />
+          <KeyRound className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
           <span>Security &amp; Password</span>
         </button>
 
@@ -276,11 +276,11 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('notifications')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === 'notifications'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
           }`}
         >
-          <Bell className="w-3.5 h-3.5 text-blue-600" />
+          <Bell className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span>Notifications</span>
         </button>
 
@@ -288,11 +288,11 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('appearance')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === 'appearance'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
           }`}
         >
-          <Sun className="w-3.5 h-3.5 text-amber-500" />
+          <Sun className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
           <span>Appearance</span>
         </button>
 
@@ -300,11 +300,11 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('session')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === 'session'
-              ? 'bg-white text-slate-900 shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
           }`}
         >
-          <Shield className="w-3.5 h-3.5 text-indigo-600" />
+          <Shield className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
           <span>Session Info</span>
         </button>
 
@@ -312,8 +312,8 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('danger')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === 'danger'
-              ? 'bg-rose-50 text-rose-700 border border-rose-200'
-              : 'text-rose-600 hover:text-rose-800 hover:bg-rose-50/50'
+              ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+              : 'text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-300 hover:bg-rose-50/50 dark:hover:bg-rose-950/40'
           }`}
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -323,24 +323,24 @@ export default function SettingsPage() {
 
       {/* Global Banners */}
       {settingsSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <span>{settingsSuccess}</span>
           </div>
-          <button onClick={() => setSettingsSuccess('')} className="text-emerald-700 hover:text-emerald-900">
+          <button onClick={() => setSettingsSuccess('')} className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {settingsError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0" />
             <span>{settingsError}</span>
           </div>
-          <button onClick={() => setSettingsError('')} className="text-rose-700 hover:text-rose-900">
+          <button onClick={() => setSettingsError('')} className="text-rose-700 dark:text-rose-400 hover:text-rose-900 dark:hover:text-rose-200">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -351,26 +351,26 @@ export default function SettingsPage() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'security' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
-            <div className="pb-4 mb-6 border-b border-slate-100">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <KeyRound className="w-5 h-5 text-teal-600" /> Change Account Password
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8">
+            <div className="pb-4 mb-6 border-b border-slate-100 dark:border-slate-700">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-teal-600 dark:text-teal-400" /> Change Account Password
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Passwords are salted and cryptographically hashed with 12-round Bcrypt before persisting to PostgreSQL.
               </p>
             </div>
 
             {passwordSuccess && (
-              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                 <span>{passwordSuccess}</span>
               </div>
             )}
 
             {passwordError && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0" />
                 <span>{passwordError}</span>
               </div>
             )}
@@ -378,7 +378,7 @@ export default function SettingsPage() {
             <form onSubmit={handlePasswordSubmit} className="space-y-5 max-w-lg">
               {/* Current Password */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Current Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -388,12 +388,12 @@ export default function SettingsPage() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="Enter current password"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -402,7 +402,7 @@ export default function SettingsPage() {
 
               {/* New Password */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   New Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -412,12 +412,12 @@ export default function SettingsPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 8 characters"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -427,10 +427,10 @@ export default function SettingsPage() {
                 {newPassword && (
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Strength:</span>
-                      <span className="font-bold text-slate-700">{strengthLabels[pwStrength]}</span>
+                      <span className="text-slate-500 dark:text-slate-400">Strength:</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-200">{strengthLabels[pwStrength]}</span>
                     </div>
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex gap-0.5">
+                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex gap-0.5">
                       <div className={`h-full transition-all duration-300 ${pwStrength >= 1 ? strengthColors[pwStrength] : 'bg-transparent'}`} style={{ width: '25%' }} />
                       <div className={`h-full transition-all duration-300 ${pwStrength >= 2 ? strengthColors[pwStrength] : 'bg-transparent'}`} style={{ width: '25%' }} />
                       <div className={`h-full transition-all duration-300 ${pwStrength >= 3 ? strengthColors[pwStrength] : 'bg-transparent'}`} style={{ width: '25%' }} />
@@ -438,12 +438,12 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 )}
-                <p className="text-[11px] text-slate-400 mt-1">Minimum 8 characters. Must differ from current password.</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Minimum 8 characters. Must differ from current password.</p>
               </div>
 
               {/* Confirm New Password */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Confirm New Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -453,12 +453,12 @@ export default function SettingsPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Re-enter your new password"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -490,22 +490,22 @@ export default function SettingsPage() {
       {/* TAB 2: NOTIFICATION PREFERENCES                                     */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'notifications' && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
-          <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Bell className="w-5 h-5 text-blue-600" /> Notification Preferences
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="pb-4 border-b border-slate-100 dark:border-slate-700">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Notification Preferences
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Select which clinical notifications and automated alerts you wish to receive. Preferences are saved to PostgreSQL.
             </p>
           </div>
 
           <div className="space-y-4">
             {/* Assessment Completion */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
               <div className="space-y-0.5 max-w-md">
-                <p className="text-xs font-bold text-slate-900">Assessment Completion Notifications</p>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Assessment Completion Notifications</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Receive notification summaries whenever a 21-feature health assessment evaluation is processed.
                 </p>
               </div>
@@ -516,15 +516,15 @@ export default function SettingsPage() {
                   onChange={(e) => setNotifyAssessmentReady(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
             {/* Security Alerts */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
               <div className="space-y-0.5 max-w-md">
-                <p className="text-xs font-bold text-slate-900">Security &amp; Account Alerts</p>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Security &amp; Account Alerts</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Critical security notifications regarding password changes, credential updates, or session activities.
                 </p>
               </div>
@@ -535,15 +535,15 @@ export default function SettingsPage() {
                   onChange={(e) => setNotifySecurityAlerts(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
             {/* Product & Research Updates */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
               <div className="space-y-0.5 max-w-md">
-                <p className="text-xs font-bold text-slate-900">Methodology &amp; Model Version Updates</p>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Methodology &amp; Model Version Updates</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Quarterly announcements regarding machine learning model releases and CDC BRFSS research findings.
                 </p>
               </div>
@@ -554,13 +554,13 @@ export default function SettingsPage() {
                   onChange={(e) => setNotifyProductUpdates(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
           </div>
 
-          <div className="pt-2 flex items-center justify-between flex-wrap gap-4 border-t border-slate-100">
-            <p className="text-[11px] text-slate-400">
+          <div className="pt-2 flex items-center justify-between flex-wrap gap-4 border-t border-slate-100 dark:border-slate-700">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
               * Preferences are stored securely. External email dispatch is configured in production deployment.
             </p>
             <button
@@ -586,12 +586,12 @@ export default function SettingsPage() {
       {/* TAB 3: APPEARANCE PREFERENCES                                       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'appearance' && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
-          <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="pb-4 border-b border-slate-100 dark:border-slate-700">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Sun className="w-5 h-5 text-amber-500" /> Interface Appearance Theme
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Select your preferred visual style. Setting is persisted to your account and applied instantly.
             </p>
           </div>
@@ -603,19 +603,19 @@ export default function SettingsPage() {
               onClick={() => handleThemeChange('light')}
               className={`p-5 rounded-2xl border text-left transition-all ${
                 themePreference === 'light'
-                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40'
-                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40 dark:bg-blue-950/40'
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
                 <Sun className="w-5 h-5" />
               </div>
-              <p className="text-xs font-bold text-slate-900">Light Theme</p>
-              <p className="text-[11px] text-slate-500 mt-1">
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Light Theme</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                 High-contrast clean clinical white interface with standard typography.
               </p>
               {themePreference === 'light' && (
-                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
                   Active
                 </span>
               )}
@@ -627,19 +627,19 @@ export default function SettingsPage() {
               onClick={() => handleThemeChange('dark')}
               className={`p-5 rounded-2xl border text-left transition-all ${
                 themePreference === 'dark'
-                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40'
-                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40 dark:bg-blue-950/40'
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-slate-100 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-slate-950 text-slate-100 flex items-center justify-center mb-3">
                 <Moon className="w-5 h-5" />
               </div>
-              <p className="text-xs font-bold text-slate-900">Dark Theme</p>
-              <p className="text-[11px] text-slate-500 mt-1">
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Dark Theme</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                 Low-glare dark slate background optimized for clinical and night environments.
               </p>
               {themePreference === 'dark' && (
-                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
                   Active
                 </span>
               )}
@@ -651,19 +651,19 @@ export default function SettingsPage() {
               onClick={() => handleThemeChange('system')}
               className={`p-5 rounded-2xl border text-left transition-all ${
                 themePreference === 'system'
-                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40'
-                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                  ? 'border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/40 dark:bg-blue-950/40'
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-3">
                 <Laptop className="w-5 h-5" />
               </div>
-              <p className="text-xs font-bold text-slate-900">System Default</p>
-              <p className="text-[11px] text-slate-500 mt-1">
+              <p className="text-xs font-bold text-slate-900 dark:text-white">System Default</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                 Synchronizes automatically with your operating system light / dark preferences.
               </p>
               {themePreference === 'system' && (
-                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                <span className="mt-3 inline-block text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
                   Active
                 </span>
               )}
@@ -677,40 +677,40 @@ export default function SettingsPage() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'session' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
-            <div className="pb-4 border-b border-slate-100">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-indigo-600" /> Active Session &amp; Security Architecture
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-6">
+            <div className="pb-4 border-b border-slate-100 dark:border-slate-700">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Active Session &amp; Security Architecture
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Cryptographic parameters and authentication state governing your active connection.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                <Cpu className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 flex items-start gap-3">
+                <Cpu className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-slate-900">JWT Bearer Token (HS256)</p>
-                  <p className="text-slate-500 text-[11px] mt-0.5">
+                  <p className="font-bold text-slate-900 dark:text-white">JWT Bearer Token (HS256)</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
                     Stateless token cryptographically signed with server HMAC secret. Verified on every protected endpoint.
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                <Server className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 flex items-start gap-3">
+                <Server className="w-4 h-4 text-teal-600 dark:text-teal-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-slate-900">Session Validity Duration</p>
-                  <p className="text-slate-500 text-[11px] mt-0.5">
+                  <p className="font-bold text-slate-900 dark:text-white">Session Validity Duration</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
                     Configured for 1,440 minutes (24 hours). Token automatically expires if left unused.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-xs text-blue-900 flex items-start gap-3">
-              <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-3">
+              <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <p className="leading-relaxed">
                 <strong>Session Revocation Architecture:</strong> DiabetesRisk AI utilizes stateless JWTs. Signing out clears
                 your credentials from browser storage. Immediate cross-device token revocation requires distributed token
@@ -718,15 +718,15 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+            <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
               <div>
-                <p className="text-xs font-bold text-slate-900">Revoke Session</p>
-                <p className="text-[11px] text-slate-500">Sign out and purge local authorization tokens.</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Revoke Session</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Sign out and purge local authorization tokens.</p>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-bold text-xs text-slate-700 flex items-center gap-1.5 transition-colors"
+                className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold text-xs text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-colors"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out Now</span>
@@ -740,26 +740,26 @@ export default function SettingsPage() {
       {/* TAB 5: DANGER ZONE (ACCOUNT DELETION)                               */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'danger' && (
-        <div className="bg-white rounded-3xl border border-rose-300 shadow-sm p-6 sm:p-8 space-y-6">
-          <div className="pb-4 border-b border-rose-100">
-            <h2 className="text-base font-bold text-rose-800 flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-rose-600" /> Danger Zone: Permanent Account Deletion
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-rose-300 dark:border-rose-900/60 shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="pb-4 border-b border-rose-100 dark:border-rose-900/40">
+            <h2 className="text-base font-bold text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400" /> Danger Zone: Permanent Account Deletion
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Actions in this section are permanent and irreversible. Please proceed with caution.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-rose-50/80 border border-rose-200 space-y-3">
-            <h3 className="text-xs font-bold text-rose-900 flex items-center gap-1.5">
-              <AlertTriangle className="w-4 h-4 text-rose-600" />
+          <div className="p-5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-3">
+            <h3 className="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               <span>Permanent Erasure of Personal Health Records</span>
             </h3>
-            <p className="text-xs text-rose-800 leading-relaxed">
+            <p className="text-xs text-rose-800 dark:text-rose-300 leading-relaxed">
               Deleting your account permanently destroys your user profile, authentication credentials, and all
               associated health assessments and model prediction records stored in PostgreSQL.
             </p>
-            <ul className="text-[11px] text-rose-700 list-disc list-inside space-y-1">
+            <ul className="text-[11px] text-rose-700 dark:text-rose-400 list-disc list-inside space-y-1">
               <li>All 21 CDC health indicator entries will be permanently removed.</li>
               <li>Generated prediction results and probability records will be cascade deleted.</li>
               <li>You will immediately be logged out and cannot recover this data.</li>
@@ -768,8 +768,8 @@ export default function SettingsPage() {
 
           <div className="flex items-center justify-between pt-2">
             <div>
-              <p className="text-xs font-bold text-slate-900">Delete My Account</p>
-              <p className="text-[11px] text-slate-400">Requires password verification and explicit typed confirmation.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Delete My Account</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">Requires password verification and explicit typed confirmation.</p>
             </div>
             <button
               type="button"
@@ -792,30 +792,30 @@ export default function SettingsPage() {
       {/* ACCOUNT DELETION CONFIRMATION MODAL                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-5 animate-scaleUp">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2 text-rose-700">
-                <AlertTriangle className="w-5 h-5 text-rose-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-5 animate-scaleUp">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
+                <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                 <h3 className="font-extrabold text-base">Confirm Account Deletion</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              This action is <strong className="text-rose-700 font-bold">strictly permanent and irreversible</strong>.
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              This action is <strong className="text-rose-700 dark:text-rose-400 font-bold">strictly permanent and irreversible</strong>.
               All your saved diabetes assessments, prediction probabilities, and personal account data in PostgreSQL will be purged immediately.
             </p>
 
             {deleteError && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0" />
                 <span>{deleteError}</span>
               </div>
             )}
@@ -823,7 +823,7 @@ export default function SettingsPage() {
             <form onSubmit={handleDeleteAccountSubmit} className="space-y-4">
               {/* Password Re-authentication */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                   Re-enter Password <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -831,31 +831,31 @@ export default function SettingsPage() {
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
                   placeholder="Your account password"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-semibold text-slate-800"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-semibold text-slate-800 dark:text-white"
                   autoFocus
                 />
               </div>
 
               {/* Explicit Confirmation Token */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                  Type <span className="text-rose-700 font-mono font-bold">DELETE</span> to confirm <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                  Type <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">DELETE</span> to confirm <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={deleteConfirmation}
                   onChange={(e) => setDeleteConfirmation(e.target.value)}
                   placeholder="Type DELETE"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-semibold text-slate-800 uppercase"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-semibold text-slate-800 dark:text-white uppercase"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
                   disabled={deleteLoading}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-colors"
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>

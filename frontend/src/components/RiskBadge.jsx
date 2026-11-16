@@ -25,21 +25,21 @@ import { CheckCircle2, AlertTriangle, Flame } from 'lucide-react'
 const CLASS_CONFIG = {
   0: {
     label: 'Class 0 — No Diabetes',
-    className: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    className: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
     Icon: CheckCircle2,
-    iconColor: 'text-emerald-600',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
   },
   1: {
     label: 'Class 1 — Prediabetes',
-    className: 'bg-amber-50 text-amber-800 border-amber-200',
+    className: 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800',
     Icon: AlertTriangle,
-    iconColor: 'text-amber-600',
+    iconColor: 'text-amber-600 dark:text-amber-400',
   },
   2: {
     label: 'Class 2 — Diabetes',
-    className: 'bg-rose-50 text-rose-800 border-rose-200',
+    className: 'bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800',
     Icon: Flame,
-    iconColor: 'text-rose-600',
+    iconColor: 'text-rose-600 dark:text-rose-400',
   },
 }
 

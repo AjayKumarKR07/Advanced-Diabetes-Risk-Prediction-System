@@ -18,7 +18,7 @@
 
   /* Main Card Containers */
   .clinical-card {
-    @apply bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 transition-colors;
+    @apply bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 text-slate-900 dark:text-white transition-colors;
   }
 
   .clinical-card-dark {
@@ -26,12 +26,12 @@
   }
 
   .clinical-card-sub {
-    @apply bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors;
+    @apply bg-slate-50/70 dark:bg-slate-900/50 rounded-2xl p-4 sm:p-5 border border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white transition-colors;
   }
 
   /* Metric KPI Sub-Cards */
   .clinical-kpi-card {
-    @apply bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-colors;
+    @apply bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 sm:p-5 shadow-xs flex flex-col justify-between text-slate-900 dark:text-white transition-colors;
   }
 
   /* Buttons */
@@ -40,7 +40,7 @@
   }
 
   .clinical-btn-secondary {
-    @apply border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl px-4 py-2.5 transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50;
+    @apply border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl px-4 py-2.5 transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50;
   }
 
   .clinical-btn-danger {
@@ -49,7 +49,7 @@
 
   /* Inputs & Form Fields */
   .clinical-input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400;
+    @apply w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-4 py-2.5 text-sm text-slate-900 dark:text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500;
   }
 
   .clinical-input-dark {
@@ -58,19 +58,19 @@
 
   /* Status Badges & Pills */
   .clinical-pill-emerald {
-    @apply bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+    @apply bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
   }
 
   .clinical-pill-amber {
-    @apply bg-amber-50 text-amber-900 border border-amber-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+    @apply bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
   }
 
   .clinical-pill-rose {
-    @apply bg-rose-50 text-rose-800 border border-rose-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+    @apply bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
   }
 
   .clinical-pill-blue {
-    @apply bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
+    @apply bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold rounded-full px-3 py-1 text-xs inline-flex items-center gap-1.5;
   }
 
   /* Legacy utility classes preserved for backwards compatibility */

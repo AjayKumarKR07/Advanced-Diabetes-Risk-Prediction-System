@@ -555,9 +555,9 @@ export default function HealthAssessmentForm() {
         : 'bg-slate-800 text-white shadow-sm font-bold ring-2 ring-slate-700/20'
     }
     if (hasError) {
-      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+      return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800 hover:bg-red-100 font-semibold'
     }
-    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+    return 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold shadow-2xs'
   }
 
   const getSexBtnClass = (optVal) => {
@@ -567,9 +567,9 @@ export default function HealthAssessmentForm() {
       return 'bg-blue-600 text-white shadow-sm font-bold ring-2 ring-blue-500/20'
     }
     if (hasError) {
-      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+      return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800 hover:bg-red-100 font-semibold'
     }
-    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+    return 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold shadow-2xs'
   }
 
   const getGenHlthBtnClass = (optValue) => {
@@ -579,9 +579,9 @@ export default function HealthAssessmentForm() {
       return 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-500/20 font-bold'
     }
     if (hasError) {
-      return 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 font-semibold'
+      return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800 hover:bg-red-100 font-semibold'
     }
-    return 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold shadow-2xs'
+    return 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold shadow-2xs'
   }
 
   return (
@@ -589,19 +589,19 @@ export default function HealthAssessmentForm() {
       <div>
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-3">
-            <Activity className="w-3.5 h-3.5 text-blue-600" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/60 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-3">
+            <Activity className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>CDC BRFSS Health Indicator Protocol</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">New Health Assessment</h1>
-          <p className="text-sm text-slate-600 mt-2 max-w-xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">New Health Assessment</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-xl mx-auto">
             Provide the 21 health and demographic indicators evaluated by our research machine learning model.
             All responses remain private and confidential.
           </p>
         </div>
 
         {/* Stepper Progress Bar */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-6 mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-4 sm:p-6 mb-6 text-slate-900 dark:text-white transition-colors">
           <div className="grid grid-cols-6 gap-2 text-center">
             {STEPS.map((s) => {
               const Icon = s.icon
@@ -614,23 +614,23 @@ export default function HealthAssessmentForm() {
                   onClick={() => handleStepClick(s.num)}
                   className={`flex flex-col items-center group transition-colors ${
                     isCurrent
-                      ? 'text-blue-600 font-bold'
+                      ? 'text-blue-600 dark:text-blue-400 font-bold'
                       : isDone
-                      ? 'text-teal-600 font-semibold'
-                      : 'text-slate-400 font-medium'
+                      ? 'text-teal-600 dark:text-teal-400 font-semibold'
+                      : 'text-slate-400 dark:text-slate-500 font-medium'
                   }`}
                   title={`Step ${s.num}: ${s.title}`}
                 >
                   <div
                     className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all mb-1.5 ${
                       isCurrent
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 ring-4 ring-blue-50'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 ring-4 ring-blue-50 dark:ring-blue-950/60'
                         : isDone
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'bg-slate-100 text-slate-500 border border-slate-200'
+                        ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
+                        : 'bg-slate-100 dark:bg-slate-700/60 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600'
                     }`}
                   >
-                    {isDone ? <CheckCircle2 className="w-5 h-5 text-teal-600" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
+                    {isDone ? <CheckCircle2 className="w-5 h-5 text-teal-600 dark:text-teal-400" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </div>
                   <span className="text-xs hidden md:inline truncate max-w-[100px]">{s.title}</span>
                 </button>
@@ -638,7 +638,7 @@ export default function HealthAssessmentForm() {
             })}
           </div>
 
-          <div className="w-full bg-slate-100 h-2 rounded-full mt-4 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-slate-700/60 h-2 rounded-full mt-4 overflow-hidden">
             <div
               className="bg-gradient-to-r from-blue-600 to-teal-500 h-full rounded-full transition-all duration-300"
               style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
@@ -669,17 +669,17 @@ export default function HealthAssessmentForm() {
         )}
 
         {/* Step Forms */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 mb-6 text-slate-900 dark:text-white transition-colors">
           {/* ═════════════════════════════════════════════════════════════════ */}
           {/* STEP 1: Personal Information                                      */}
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 1 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <User className="w-5 h-5 text-blue-600" /> Personal Information
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <User className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Personal Information
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Demographic baseline. Your age will be automatically mapped to the CDC BRFSS model category.
                 </p>
               </div>
@@ -687,11 +687,11 @@ export default function HealthAssessmentForm() {
               <div className="grid sm:grid-cols-2 gap-5">
                 {/* Full Name */}
                 <div id="field-fullName">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <User className={`absolute left-3.5 top-3.5 w-4 h-4 ${errors.fullName ? 'text-red-500' : 'text-slate-400'}`} />
+                    <User className={`absolute left-3.5 top-3.5 w-4 h-4 ${errors.fullName ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}`} />
                     <input
                       type="text"
                       value={personal.fullName}
@@ -699,8 +699,8 @@ export default function HealthAssessmentForm() {
                       placeholder="Jane Doe"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none ${
                         errors.fullName
-                          ? 'border-red-500 bg-red-50/20 text-red-900 focus:ring-2 focus:ring-red-300'
-                          : 'border-slate-200 focus:ring-2 focus:ring-blue-500 text-slate-800'
+                          ? 'border-red-500 bg-red-50/20 text-red-900 dark:text-red-300 focus:ring-2 focus:ring-red-300'
+                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500'
                       }`}
                     />
                   </div>
@@ -710,31 +710,31 @@ export default function HealthAssessmentForm() {
                       <span>{errors.fullName}</span>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400 mt-1">Prefilled from your account profile; editable for this assessment.</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Prefilled from your account profile; editable for this assessment.</p>
                   )}
                 </div>
 
                 {/* Email (Read-only) */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Account Email (Verified)
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+                    <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <input
                       type="email"
                       value={personal.email}
                       readOnly
                       disabled
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm cursor-not-allowed"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-sm cursor-not-allowed"
                     />
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">Linked directly to your authenticated user account.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Linked directly to your authenticated user account.</p>
                 </div>
 
                 {/* Age (Years) with Live CDC Bracket Conversion */}
                 <div id="field-rawAge">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Age (Years) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -745,8 +745,8 @@ export default function HealthAssessmentForm() {
                     placeholder="e.g. 45"
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all focus:outline-none ${
                       errors.rawAge
-                        ? 'border-red-500 bg-red-50/20 text-red-900 focus:ring-2 focus:ring-red-300'
-                        : 'border-slate-200 focus:ring-2 focus:ring-blue-500 text-slate-800'
+                        ? 'border-red-500 bg-red-50/20 text-red-900 dark:text-red-300 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500'
                     }`}
                   />
                   {errors.rawAge && (
@@ -756,20 +756,20 @@ export default function HealthAssessmentForm() {
                     </p>
                   )}
 
-                  <div className="mt-2 p-2.5 rounded-lg bg-blue-50/70 border border-blue-200 text-xs text-blue-800 flex items-center justify-between">
+                  <div className="mt-2 p-2.5 rounded-lg bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-800 dark:text-blue-300 flex items-center justify-between">
                     <span className="font-medium">CDC Model Bracket:</span>
-                    <span className="font-bold bg-white px-2.5 py-0.5 rounded border border-blue-200 text-blue-700">
+                    <span className="font-bold bg-white dark:bg-slate-800 px-2.5 py-0.5 rounded border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">
                       {calculatedAgeCat ? CDC_AGE_CATEGORIES[calculatedAgeCat]?.bracket : 'Enter age (18–120)'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                     CDC BRFSS uses 13 discrete age brackets. Our system automatically converts chronological age.
                   </p>
                 </div>
 
                 {/* Biological Sex */}
                 <div id="field-sex">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Sex <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 gap-3 mt-1">
@@ -793,18 +793,18 @@ export default function HealthAssessmentForm() {
                       <span>{errors.sex}</span>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400 mt-2">Encoded according to CDC BRFSS specification (0 = Female, 1 = Male).</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">Encoded according to CDC BRFSS specification (0 = Female, 1 = Male).</p>
                   )}
                 </div>
               </div>
 
               {/* Assessment Timestamp */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
                 <span className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <strong>Assessment Timestamp:</strong>
                 </span>
-                <span className="font-mono bg-white px-3 py-1 rounded-md border border-slate-200 font-medium">
+                <span className="font-mono bg-white dark:bg-slate-800 px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-200">
                   {personal.assessmentDate}
                 </span>
               </div>
@@ -816,11 +816,11 @@ export default function HealthAssessmentForm() {
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 2 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Heart className="w-5 h-5 text-red-500" /> Medical &amp; Clinical History
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Cardiovascular and metabolic clinical indicators diagnosed by a healthcare provider.
                 </p>
               </div>
@@ -859,14 +859,14 @@ export default function HealthAssessmentForm() {
                     className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                       errors[item.key]
                         ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
-                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                        : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 hover:border-blue-200 dark:hover:border-blue-800'
                     }`}
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {item.label} <span className="text-red-500">*</span>
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.desc}</p>
                       {errors[item.key] && (
                         <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
                           <AlertCircle className="w-3.5 h-3.5" />
@@ -900,11 +900,11 @@ export default function HealthAssessmentForm() {
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 3 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-teal-600" /> Lifestyle, Nutrition &amp; Physical Activity
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-teal-600 dark:text-teal-400" /> Lifestyle, Nutrition &amp; Physical Activity
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Anthropometric and behavioral factors that significantly influence diabetes risk.
                 </p>
               </div>
@@ -912,27 +912,27 @@ export default function HealthAssessmentForm() {
               {/* BMI Card */}
               <div
                 id="field-BMI"
-                className={`p-5 rounded-xl border transition-all ${
+                className={`p-5 rounded-2xl border transition-all ${
                   errors.BMI
                     ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
-                    : 'border-slate-200 bg-slate-50/50'
+                    : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40'
                 }`}
               >
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-                  <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-blue-600" /> Body Mass Index (BMI, kg/m²) <span className="text-red-500">*</span>
+                  <label className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Body Mass Index (BMI, kg/m²) <span className="text-red-500">*</span>
                   </label>
                   <span
                     className={`text-xs font-bold px-3 py-1 rounded-full border ${
                       bmiInfo.color === 'emerald'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                         : bmiInfo.color === 'amber'
-                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
                         : bmiInfo.color === 'blue'
-                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                        ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                         : bmiInfo.color === 'rose'
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                        ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                     }`}
                   >
                     {bmiInfo.label}
@@ -950,7 +950,7 @@ export default function HealthAssessmentForm() {
                       onChange={(e) => setVal('BMI', parseFloat(e.target.value))}
                       className="w-full accent-blue-600"
                     />
-                    <div className="flex justify-between text-[11px] text-slate-400 mt-1">
+                    <div className="flex justify-between text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                       <span>10.0 (Min)</span>
                       <span>18.5 (Normal)</span>
                       <span>25.0 (Overweight)</span>
@@ -969,8 +969,8 @@ export default function HealthAssessmentForm() {
                       onChange={(e) => setVal('BMI', e.target.value === '' ? '' : parseFloat(e.target.value))}
                       className={`w-full px-3 py-2 rounded-xl border text-center text-lg font-bold transition-all focus:outline-none ${
                         errors.BMI
-                          ? 'border-red-500 bg-red-50 text-red-900 focus:ring-2 focus:ring-red-300'
-                          : 'border-slate-200 text-blue-700 bg-white focus:ring-2 focus:ring-blue-500'
+                          ? 'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-300 focus:ring-2 focus:ring-red-300'
+                          : 'border-slate-200 dark:border-slate-700 text-blue-700 dark:text-blue-400 bg-white dark:bg-slate-900/80 focus:ring-2 focus:ring-blue-500'
                       }`}
                     />
                   </div>
@@ -1018,14 +1018,14 @@ export default function HealthAssessmentForm() {
                     className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                       errors[item.key]
                         ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
-                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                        : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 hover:border-blue-200 dark:hover:border-blue-800'
                     }`}
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {item.label} <span className="text-red-500">*</span>
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.desc}</p>
                       {errors[item.key] && (
                         <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
                           <AlertCircle className="w-3.5 h-3.5" />
@@ -1059,18 +1059,18 @@ export default function HealthAssessmentForm() {
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 4 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Smile className="w-5 h-5 text-amber-500" /> General Health &amp; Functional Status
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Self-rated general wellness and days of impaired physical or mental health in the past 30 days.
                 </p>
               </div>
 
               {/* General Health Dropdown */}
               <div id="field-GenHlth">
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   General Health Self-Assessment <span className="text-red-500">*</span>
                 </label>
                 <div className="grid sm:grid-cols-5 gap-2.5">
@@ -1082,7 +1082,7 @@ export default function HealthAssessmentForm() {
                       className={`p-3 rounded-xl border text-center transition-all ${getGenHlthBtnClass(opt.value)}`}
                     >
                       <div className="text-xs font-bold">{opt.label.split('—')[1]?.trim()}</div>
-                      <div className={`text-[10px] mt-1 ${form.GenHlth === opt.value ? 'text-blue-100' : 'text-slate-400'}`}>
+                      <div className={`text-[10px] mt-1 ${form.GenHlth === opt.value ? 'text-blue-100' : 'text-slate-400 dark:text-slate-400'}`}>
                         {opt.desc}
                       </div>
                     </button>
@@ -1102,18 +1102,18 @@ export default function HealthAssessmentForm() {
                 <div
                   id="field-PhysHlth"
                   className={`p-4 rounded-xl border transition-all ${
-                    errors.PhysHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200 bg-slate-50/50'
+                    errors.PhysHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Poor Physical Health Days (0–30) <span className="text-red-500">*</span>
                     </label>
-                    <span className="text-sm font-extrabold text-blue-600 font-mono">
+                    <span className="text-sm font-extrabold text-blue-600 dark:text-blue-400 font-mono">
                       {form.PhysHlth === '' ? 'Unset' : `${form.PhysHlth} days`}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mb-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                     Number of days during the past 30 days when physical health (illness, injury) was not good.
                   </p>
                   <div className="flex items-center gap-3">
@@ -1133,8 +1133,8 @@ export default function HealthAssessmentForm() {
                       placeholder="0"
                       value={form.PhysHlth}
                       onChange={(e) => setVal('PhysHlth', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white ${
-                        errors.PhysHlth ? 'border-red-500 text-red-700' : 'border-slate-300 text-slate-800'
+                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white dark:bg-slate-900/80 ${
+                        errors.PhysHlth ? 'border-red-500 text-red-700' : 'border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white'
                       }`}
                     />
                   </div>
@@ -1147,7 +1147,7 @@ export default function HealthAssessmentForm() {
                         className={`text-[10px] px-2 py-0.5 rounded border ${
                           form.PhysHlth === preset
                             ? 'bg-blue-600 text-white border-blue-600'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                         }`}
                       >
                         {preset === 0 ? '0 (None)' : `${preset}d`}
@@ -1166,18 +1166,18 @@ export default function HealthAssessmentForm() {
                 <div
                   id="field-MentHlth"
                   className={`p-4 rounded-xl border transition-all ${
-                    errors.MentHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200 bg-slate-50/50'
+                    errors.MentHlth ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400' : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Poor Mental Health Days (0–30) <span className="text-red-500">*</span>
                     </label>
-                    <span className="text-sm font-extrabold text-purple-600 font-mono">
+                    <span className="text-sm font-extrabold text-purple-600 dark:text-purple-400 font-mono">
                       {form.MentHlth === '' ? 'Unset' : `${form.MentHlth} days`}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mb-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
                     Number of days during the past 30 days when mental health (stress, depression) was not good.
                   </p>
                   <div className="flex items-center gap-3">
@@ -1197,8 +1197,8 @@ export default function HealthAssessmentForm() {
                       placeholder="0"
                       value={form.MentHlth}
                       onChange={(e) => setVal('MentHlth', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white ${
-                        errors.MentHlth ? 'border-red-500 text-red-700' : 'border-slate-300 text-slate-800'
+                      className={`w-16 px-2 py-1 rounded-lg border text-center font-bold text-sm bg-white dark:bg-slate-900/80 ${
+                        errors.MentHlth ? 'border-red-500 text-red-700' : 'border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white'
                       }`}
                     />
                   </div>
@@ -1211,7 +1211,7 @@ export default function HealthAssessmentForm() {
                         className={`text-[10px] px-2 py-0.5 rounded border ${
                           form.MentHlth === preset
                             ? 'bg-purple-600 text-white border-purple-600'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                         }`}
                       >
                         {preset === 0 ? '0 (None)' : `${preset}d`}
@@ -1233,14 +1233,14 @@ export default function HealthAssessmentForm() {
                 className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                   errors.DiffWalk
                     ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
-                    : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                    : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 hover:border-blue-200 dark:hover:border-blue-800'
                 }`}
               >
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                     Difficulty Walking or Climbing Stairs <span className="text-red-500">*</span>
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Do you have serious difficulty walking or climbing stairs due to health issues?
                   </p>
                   {errors.DiffWalk && (
@@ -1274,11 +1274,11 @@ export default function HealthAssessmentForm() {
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 5 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-indigo-600" /> Demographics &amp; Healthcare Access
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Demographics &amp; Healthcare Access
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Socioeconomic and insurance access indicators associated with diabetes screening frequency.
                 </p>
               </div>
@@ -1303,14 +1303,14 @@ export default function HealthAssessmentForm() {
                     className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                       errors[item.key]
                         ? 'border-red-400 bg-red-50/20 ring-1 ring-red-400'
-                        : 'border-slate-200/80 hover:border-blue-200 hover:bg-blue-50/20'
+                        : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 hover:border-blue-200 dark:hover:border-blue-800'
                     }`}
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {item.label} <span className="text-red-500">*</span>
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.desc}</p>
                       {errors[item.key] && (
                         <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
                           <AlertCircle className="w-3.5 h-3.5" />
@@ -1341,21 +1341,21 @@ export default function HealthAssessmentForm() {
               <div className="grid sm:grid-cols-2 gap-5 pt-2">
                 {/* Education */}
                 <div id="field-Education">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Highest Education Level Completed <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={form.Education}
                     onChange={(e) => setVal('Education', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-all ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 dark:text-white focus:outline-none transition-all ${
                       errors.Education
-                        ? 'border-red-500 bg-red-50/20 focus:ring-2 focus:ring-red-300'
-                        : 'border-slate-200 bg-white focus:ring-2 focus:ring-blue-500'
+                        ? 'border-red-500 bg-red-50/20 text-red-900 dark:text-red-300 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 focus:ring-2 focus:ring-blue-500'
                     }`}
                   >
-                    <option value="">-- Select Highest Education Level Completed --</option>
+                    <option value="" className="dark:bg-slate-800 dark:text-white">-- Select Highest Education Level Completed --</option>
                     {CDC_EDUCATION_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
+                      <option key={opt.value} value={opt.value} className="dark:bg-slate-800 dark:text-white">
                         {opt.label}
                       </option>
                     ))}
@@ -1366,27 +1366,27 @@ export default function HealthAssessmentForm() {
                       <span>{errors.Education}</span>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400 mt-1">Standard 6-level CDC education bracket.</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Standard 6-level CDC education bracket.</p>
                   )}
                 </div>
 
                 {/* Income */}
                 <div id="field-Income">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                     Annual Household Income Bracket <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={form.Income}
                     onChange={(e) => setVal('Income', e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 focus:outline-none transition-all ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-800 dark:text-white focus:outline-none transition-all ${
                       errors.Income
-                        ? 'border-red-500 bg-red-50/20 focus:ring-2 focus:ring-red-300'
-                        : 'border-slate-200 bg-white focus:ring-2 focus:ring-blue-500'
+                        ? 'border-red-500 bg-red-50/20 text-red-900 dark:text-red-300 focus:ring-2 focus:ring-red-300'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/80 focus:ring-2 focus:ring-blue-500'
                     }`}
                   >
-                    <option value="">-- Select Annual Household Income Bracket --</option>
+                    <option value="" className="dark:bg-slate-800 dark:text-white">-- Select Annual Household Income Bracket --</option>
                     {CDC_INCOME_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
+                      <option key={opt.value} value={opt.value} className="dark:bg-slate-800 dark:text-white">
                         {opt.label}
                       </option>
                     ))}
@@ -1397,7 +1397,7 @@ export default function HealthAssessmentForm() {
                       <span>{errors.Income}</span>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400 mt-1">Standard 8-level CDC household income bracket.</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Standard 8-level CDC household income bracket.</p>
                   )}
                 </div>
               </div>
@@ -1409,11 +1409,11 @@ export default function HealthAssessmentForm() {
           {/* ═════════════════════════════════════════════════════════════════ */}
           {currentStep === 6 && (
             <div className="space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <FileCheck2 className="w-5 h-5 text-teal-600" /> Review Your Health Assessment
+              <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileCheck2 className="w-5 h-5 text-teal-600 dark:text-teal-400" /> Review Your Health Assessment
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Please review all 21 parameters below. You can navigate back to modify any values before submitting.
                 </p>
               </div>
@@ -1421,39 +1421,39 @@ export default function HealthAssessmentForm() {
               {/* Review Grid */}
               <div className="grid sm:grid-cols-2 gap-4 text-xs">
                 {/* Personal */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-2xl p-4 sm:p-5 border border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white transition-colors">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-blue-600" /> Personal Baseline
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Personal Baseline
                     </span>
                     <button
                       type="button"
                       onClick={() => handleStepClick(1)}
-                      className="text-blue-600 hover:underline font-semibold"
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-1.5 text-slate-600">
+                  <div className="space-y-1.5 text-slate-600 dark:text-slate-300">
                     <div className="flex justify-between">
                       <span>Full Name:</span>
-                      <strong className={personal.fullName?.trim() ? 'text-slate-900' : 'text-red-600'}>
+                      <strong className={personal.fullName?.trim() ? 'text-slate-900 dark:text-white' : 'text-red-600'}>
                         {personal.fullName?.trim() || 'Missing (Required)'}
                       </strong>
                     </div>
                     <div className="flex justify-between">
                       <span>Email:</span>
-                      <span className="text-slate-700">{personal.email}</span>
+                      <span className="text-slate-700 dark:text-slate-200">{personal.email}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Age:</span>
-                      <strong className={personal.rawAge ? 'text-slate-900' : 'text-red-600'}>
+                      <strong className={personal.rawAge ? 'text-slate-900 dark:text-white' : 'text-red-600'}>
                         {personal.rawAge ? `${personal.rawAge} yrs (${calculatedAgeCat ? CDC_AGE_CATEGORIES[calculatedAgeCat]?.bracket : 'Cat ' + form.Age})` : 'Missing (Required)'}
                       </strong>
                     </div>
                     <div className="flex justify-between">
                       <span>Sex:</span>
-                      <strong className={personal.sex !== null ? 'text-slate-900' : 'text-red-600'}>
+                      <strong className={personal.sex !== null ? 'text-slate-900 dark:text-white' : 'text-red-600'}>
                         {personal.sex === 1 ? 'Male (1)' : personal.sex === 0 ? 'Female (0)' : 'Unselected (Required)'}
                       </strong>
                     </div>
@@ -1465,47 +1465,47 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* Medical History */}
-                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
+                <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-2xl p-4 sm:p-5 border border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white transition-colors">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       <Heart className="w-3.5 h-3.5 text-red-500" /> Clinical Indicators
                     </span>
                     <button
                       type="button"
                       onClick={() => handleStepClick(2)}
-                      className="text-blue-600 hover:underline font-semibold"
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-1.5 text-slate-600">
+                  <div className="space-y-1.5 text-slate-600 dark:text-slate-300">
                     <div className="flex justify-between">
                       <span>High Blood Pressure:</span>
-                      <span className={form.HighBP === null ? 'text-red-600 font-bold' : form.HighBP ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.HighBP === null ? 'text-red-600 font-bold' : form.HighBP ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.HighBP === null ? 'Unanswered (Required)' : form.HighBP ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>High Cholesterol:</span>
-                      <span className={form.HighChol === null ? 'text-red-600 font-bold' : form.HighChol ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.HighChol === null ? 'text-red-600 font-bold' : form.HighChol ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.HighChol === null ? 'Unanswered (Required)' : form.HighChol ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Cholesterol Checked (5 yrs):</span>
-                      <span className={form.CholCheck === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.CholCheck === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.CholCheck === null ? 'Unanswered (Required)' : form.CholCheck ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>History of Stroke:</span>
-                      <span className={form.Stroke === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.Stroke === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.Stroke === null ? 'Unanswered (Required)' : form.Stroke ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Coronary Heart Disease / MI:</span>
-                      <span className={form.HeartDiseaseorAttack === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.HeartDiseaseorAttack === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.HeartDiseaseorAttack === null ? 'Unanswered (Required)' : form.HeartDiseaseorAttack ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
@@ -1513,47 +1513,47 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* Lifestyle */}
-                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
+                <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-2xl p-4 sm:p-5 border border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white transition-colors">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <Activity className="w-3.5 h-3.5 text-teal-600" /> Lifestyle &amp; Body
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" /> Lifestyle &amp; Body
                     </span>
                     <button
                       type="button"
                       onClick={() => handleStepClick(3)}
-                      className="text-blue-600 hover:underline font-semibold"
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-1.5 text-slate-600">
+                  <div className="space-y-1.5 text-slate-600 dark:text-slate-300">
                     <div className="flex justify-between">
                       <span>BMI:</span>
-                      <strong className={form.BMI !== '' ? 'text-slate-900' : 'text-red-600 font-bold'}>
+                      <strong className={form.BMI !== '' ? 'text-slate-900 dark:text-white' : 'text-red-600 font-bold'}>
                         {form.BMI !== '' ? `${form.BMI} kg/m² (${bmiInfo.label})` : 'Missing (Required)'}
                       </strong>
                     </div>
                     <div className="flex justify-between">
                       <span>Smoker (100+ lifetime):</span>
-                      <span className={form.Smoker === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.Smoker === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.Smoker === null ? 'Unanswered (Required)' : form.Smoker ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Physical Activity (30d):</span>
-                      <span className={form.PhysActivity === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.PhysActivity === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.PhysActivity === null ? 'Unanswered (Required)' : form.PhysActivity ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Fruits / Veggies Daily:</span>
-                      <span className={form.Fruits === null || form.Veggies === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.Fruits === null || form.Veggies === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.Fruits === null ? 'Fruits: ?' : form.Fruits ? 'Fruits' : 'No Fruit'} / {form.Veggies === null ? 'Veggies: ?' : form.Veggies ? 'Veggies' : 'No Veggies'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Heavy Alcohol Consumption:</span>
-                      <span className={form.HvyAlcoholConsump === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.HvyAlcoholConsump === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.HvyAlcoholConsump === null ? 'Unanswered (Required)' : form.HvyAlcoholConsump ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
@@ -1561,47 +1561,47 @@ export default function HealthAssessmentForm() {
                 </div>
 
                 {/* General Health & Demographics */}
-                <div className="bg-slate-50/70 rounded-2xl p-4 sm:p-5 border border-slate-100 transition-colors">
+                <div className="bg-slate-50/70 dark:bg-slate-900/50 rounded-2xl p-4 sm:p-5 border border-slate-100 dark:border-slate-700/60 text-slate-900 dark:text-white transition-colors">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       <Smile className="w-3.5 h-3.5 text-amber-500" /> General &amp; Demographics
                     </span>
                     <button
                       type="button"
                       onClick={() => handleStepClick(4)}
-                      className="text-blue-600 hover:underline font-semibold"
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
                       Edit
                     </button>
                   </div>
-                  <div className="space-y-1.5 text-slate-600">
+                  <div className="space-y-1.5 text-slate-600 dark:text-slate-300">
                     <div className="flex justify-between">
                       <span>General Health Self-Rating:</span>
-                      <strong className={form.GenHlth ? 'text-slate-900' : 'text-red-600 font-bold'}>
+                      <strong className={form.GenHlth ? 'text-slate-900 dark:text-white' : 'text-red-600 font-bold'}>
                         {form.GenHlth ? `Level ${form.GenHlth} (1=Exc, 5=Poor)` : 'Unanswered (Required)'}
                       </strong>
                     </div>
                     <div className="flex justify-between">
                       <span>Unhealthy Days (30d):</span>
-                      <span className={form.PhysHlth === '' || form.MentHlth === '' ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.PhysHlth === '' || form.MentHlth === '' ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         Phys: {form.PhysHlth === '' ? '?' : `${form.PhysHlth}d`} | Ment: {form.MentHlth === '' ? '?' : `${form.MentHlth}d`}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Difficulty Walking:</span>
-                      <span className={form.DiffWalk === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.DiffWalk === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.DiffWalk === null ? 'Unanswered (Required)' : form.DiffWalk ? 'Yes (1)' : 'No (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Health Care Coverage:</span>
-                      <span className={form.AnyHealthcare === null ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={form.AnyHealthcare === null ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         {form.AnyHealthcare === null ? 'Unanswered (Required)' : form.AnyHealthcare ? 'Covered (1)' : 'Uninsured (0)'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Education &amp; Income:</span>
-                      <span className={!form.Education || !form.Income ? 'text-red-600 font-bold' : 'text-slate-700'}>
+                      <span className={!form.Education || !form.Income ? 'text-red-600 font-bold' : 'text-slate-700 dark:text-slate-200'}>
                         Edu: {form.Education ? `${form.Education} / 6` : '?'} | Inc: {form.Income ? `${form.Income} / 8` : '?'}
                       </span>
                     </div>
@@ -1610,8 +1610,8 @@ export default function HealthAssessmentForm() {
               </div>
 
               {/* Research Protocol Notice */}
-              <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-800 flex items-start gap-3">
-                <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-800 dark:text-blue-300 flex items-start gap-3">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <p>
                   Upon submission, your responses will be processed by our frozen Phase 5 Logistic Regression model
                   evaluated on 202,944 CDC BRFSS records. Assessment results will be saved to your personal history.
@@ -1628,7 +1628,7 @@ export default function HealthAssessmentForm() {
               type="button"
               onClick={handlePrev}
               disabled={submitting}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-sm font-semibold flex items-center gap-2 transition-colors shadow-2xs disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-semibold flex items-center gap-2 transition-colors shadow-2xs disabled:opacity-50"
             >
               <ChevronLeft className="w-4 h-4" /> Previous
             </button>

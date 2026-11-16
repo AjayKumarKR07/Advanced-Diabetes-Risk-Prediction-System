@@ -58,9 +58,9 @@ import {
 
 function ProbPill({ label, value, color }) {
   const colorMap = {
-    green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    amber: 'bg-amber-50 text-amber-700 border-amber-200',
-    red: 'bg-rose-50 text-rose-700 border-rose-200',
+    green: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    amber: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    red: 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
   }
   return (
     <span
@@ -257,14 +257,14 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/60 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-2">
               <Clock className="w-3.5 h-3.5" />
               <span>PostgreSQL Longitudinal Storage</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Assessment History
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
               All prior diabetes risk evaluations associated with your account ({user?.email}).
             </p>
           </div>
@@ -278,7 +278,7 @@ export default function History() {
             </button>
             <button
               onClick={() => loadHistory(page)}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-2xs"
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-2xs"
               title="Refresh History"
             >
               <RefreshCw className="w-4 h-4" />
@@ -291,21 +291,21 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] text-slate-400 uppercase font-semibold">Total Assessed</span>
-              <p className="text-2xl font-extrabold text-slate-900 mt-0.5">{stats.total_assessments}</p>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 shadow-xs flex flex-col justify-between text-slate-900 dark:text-white transition-colors">
+              <span className="text-[11px] text-slate-400 dark:text-slate-400 uppercase font-semibold">Total Assessed</span>
+              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">{stats.total_assessments}</p>
             </div>
             {[
               { key: 0, label: 'No Diabetes' },
               { key: 1, label: 'Prediabetes' },
               { key: 2, label: 'Diabetes' },
             ].map(({ key, label }) => (
-              <div key={key} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col justify-between">
-                <span className="text-[11px] text-slate-400 uppercase font-semibold flex items-center gap-1.5">
+              <div key={key} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 shadow-xs flex flex-col justify-between text-slate-900 dark:text-white transition-colors">
+                <span className="text-[11px] text-slate-400 dark:text-slate-400 uppercase font-semibold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CLASS_COLORS[key] }} />
                   {label}
                 </span>
-                <p className="text-2xl font-extrabold text-slate-900 mt-0.5">
+                <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">
                   {stats.class_distribution?.[key] ?? 0}
                 </p>
               </div>
@@ -354,10 +354,10 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         {/* MAIN RECORDS TABLE CARD                                           */}
         {/* ═════════════════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm overflow-hidden text-slate-900 dark:text-white transition-colors">
           {loading && !error && (
-            <div className="py-16 text-center text-slate-400 flex flex-col items-center justify-center">
-              <RefreshCw className="w-6 h-6 animate-spin text-blue-600 mb-2" />
+            <div className="py-16 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center">
+              <RefreshCw className="w-6 h-6 animate-spin text-blue-600 dark:text-blue-400 mb-2" />
               <p className="text-xs">Loading records from database...</p>
             </div>
           )}
@@ -365,13 +365,13 @@ export default function History() {
           {!loading && !error && data && (
             <>
               {data.items.length === 0 ? (
-                <div className="py-16 text-center text-slate-400">
-                  <Database className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-                  <p className="text-sm font-semibold text-slate-700">No assessment records found</p>
-                  <p className="text-xs text-slate-400 mt-0.5 mb-4">
+                <div className="py-16 text-center text-slate-400 dark:text-slate-500">
+                  <Database className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">No assessment records found</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 mb-4">
                     Submit your first health assessment to begin tracking your records.
                   </p>
-                  <button onClick={() => navigate('/assess')} className="btn-primary text-xs py-2 px-4">
+                  <button onClick={() => navigate('/assess')} className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm">
                     Take Health Assessment
                   </button>
                 </div>
@@ -381,7 +381,7 @@ export default function History() {
                   <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-semibold uppercase tracking-wider text-left">
+                        <tr className="border-b border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-left">
                           <th className="py-3 px-4">Assessment ID</th>
                           <th className="py-3 px-4">Date &amp; Time</th>
                           <th className="py-3 px-4">User Name</th>
@@ -391,7 +391,7 @@ export default function History() {
                           <th className="py-3 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                         {data.items.map((pred) => {
                           const cls = pred.predicted_class
                           const dateFormatted = new Date(pred.created_at).toLocaleString('en-US', {
@@ -405,15 +405,15 @@ export default function History() {
                           const isRowDownloading = downloadingId === pred.id
 
                           return (
-                            <tr key={pred.id} className="hover:bg-slate-50/80 transition-colors">
-                              <td className="py-3 px-4 font-mono font-medium text-slate-700">
+                            <tr key={pred.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors">
+                              <td className="py-3 px-4 font-mono font-medium text-slate-700 dark:text-slate-300">
                                 <span>A#{pred.assessment_id}</span>
-                                <span className="text-[10px] text-slate-400 block font-normal">
+                                <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-normal">
                                   Pred #{pred.id}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{dateFormatted}</td>
-                              <td className="py-3 px-4 font-medium text-slate-800">{userName}</td>
+                              <td className="py-3 px-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">{dateFormatted}</td>
+                              <td className="py-3 px-4 font-medium text-slate-800 dark:text-white">{userName}</td>
                               <td className="py-3 px-4">
                                 <span
                                   className="inline-flex items-center gap-1.5 font-bold px-2.5 py-1 rounded-full text-[11px]"
@@ -430,7 +430,7 @@ export default function History() {
                                   {CLASS_LABELS[cls]} (Class {cls})
                                 </span>
                               </td>
-                              <td className="py-3 px-4 font-mono font-bold text-slate-800">
+                              <td className="py-3 px-4 font-mono font-bold text-slate-800 dark:text-white">
                                 {(pred.confidence * 100).toFixed(1)}%
                               </td>
                               <td className="py-3 px-4">
@@ -446,10 +446,10 @@ export default function History() {
                                   <button
                                     type="button"
                                     onClick={() => handleViewAssessment(pred)}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 font-semibold transition-colors shadow-2xs"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-200 dark:hover:border-blue-800 font-semibold transition-colors shadow-2xs"
                                     title="View full assessment report and analysis"
                                   >
-                                    <Eye className="w-3.5 h-3.5 text-blue-600" />
+                                    <Eye className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                                     <span>View</span>
                                   </button>
 
@@ -458,13 +458,13 @@ export default function History() {
                                     type="button"
                                     onClick={() => handleDownloadPdf(pred)}
                                     disabled={isRowDownloading}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold transition-colors disabled:opacity-50 shadow-2xs"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 font-semibold transition-colors disabled:opacity-50 shadow-2xs"
                                     title={`Download PDF report for Assessment #${pred.assessment_id}`}
                                   >
                                     {isRowDownloading ? (
-                                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600 dark:text-blue-400" />
                                     ) : (
-                                      <Download className="w-3.5 h-3.5 text-slate-600" />
+                                      <Download className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
                                     )}
                                     <span>{isRowDownloading ? 'PDF...' : 'PDF'}</span>
                                   </button>
@@ -473,7 +473,7 @@ export default function History() {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenDeleteModal(pred)}
-                                    className="inline-flex items-center gap-1 p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 font-semibold transition-colors shadow-2xs"
+                                    className="inline-flex items-center gap-1 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:border-rose-200 dark:hover:border-rose-800 font-semibold transition-colors shadow-2xs"
                                     title={`Delete Assessment #${pred.assessment_id} permanently`}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -488,7 +488,7 @@ export default function History() {
                   </div>
 
                   {/* Mobile Card View (Shown on screens < md) */}
-                  <div className="md:hidden divide-y divide-slate-100">
+                  <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
                     {data.items.map((pred) => {
                       const cls = pred.predicted_class
                       const dateFormatted = new Date(pred.created_at).toLocaleString('en-US', {
@@ -504,13 +504,13 @@ export default function History() {
                       return (
                         <div key={pred.id} className="p-4 space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="font-mono text-xs font-bold text-slate-700">
+                            <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-200">
                               Assessment #{pred.assessment_id}
-                              <span className="text-[10px] text-slate-400 block font-normal">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-normal">
                                 Prediction #{pred.id}
                               </span>
                             </span>
-                            <span className="text-[11px] text-slate-400">{dateFormatted}</span>
+                            <span className="text-[11px] text-slate-400 dark:text-slate-500">{dateFormatted}</span>
                           </div>
 
                           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -528,7 +528,7 @@ export default function History() {
                               />
                               {CLASS_LABELS[cls]} (Class {cls})
                             </span>
-                            <span className="text-xs font-mono font-bold text-slate-800">
+                            <span className="text-xs font-mono font-bold text-slate-800 dark:text-white">
                               Confidence: {(pred.confidence * 100).toFixed(1)}%
                             </span>
                           </div>
@@ -540,11 +540,11 @@ export default function History() {
                           </div>
 
                           {/* Mobile Action Buttons */}
-                          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+                          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                             <button
                               type="button"
                               onClick={() => handleViewAssessment(pred)}
-                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold"
+                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span>View</span>
@@ -553,21 +553,21 @@ export default function History() {
                               type="button"
                               onClick={() => handleDownloadPdf(pred)}
                               disabled={isRowDownloading}
-                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold disabled:opacity-50"
+                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold disabled:opacity-50"
                             >
                               {isRowDownloading ? (
-                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600 dark:text-blue-400" />
                               ) : (
-                                <Download className="w-3.5 h-3.5 text-slate-600" />
+                                <Download className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
                               )}
                               <span>{isRowDownloading ? 'PDF...' : 'PDF'}</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => handleOpenDeleteModal(pred)}
-                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold"
+                              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-semibold"
                             >
-                              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                              <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                               <span>Delete</span>
                             </button>
                           </div>
@@ -580,27 +580,27 @@ export default function History() {
 
               {/* Pagination controls */}
               {totalPages > 1 && (
-                <div className="p-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-600">
+                <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-400">
                   <span>
                     Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, data.total)} of{' '}
-                    <strong>{data.total}</strong> records
+                    <strong className="text-slate-800 dark:text-white">{data.total}</strong> records
                   </span>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="p-1.5 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+                      className="p-1.5 rounded border border-slate-200 dark:border-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
                       title="Previous Page"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="px-3 font-semibold text-slate-800">
+                    <span className="px-3 font-semibold text-slate-800 dark:text-white">
                       {page} / {totalPages}
                     </span>
                     <button
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages}
-                      className="p-1.5 rounded border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50"
+                      className="p-1.5 rounded border border-slate-200 dark:border-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
                       title="Next Page"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -617,22 +617,22 @@ export default function History() {
         {/* ═════════════════════════════════════════════════════════════════ */}
         {deletingRecord && (
           <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 mx-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200 text-slate-900 dark:text-white">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto">
                 <AlertTriangle className="w-6 h-6" />
               </div>
 
               <div className="text-center">
-                <h3 className="text-lg font-bold text-slate-900">Delete Assessment?</h3>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Assessment?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
                   Are you sure you want to permanently delete assessment{' '}
-                  <strong className="text-slate-800">#{deletingRecord.assessment_id}</strong>{' '}
+                  <strong className="text-slate-800 dark:text-white">#{deletingRecord.assessment_id}</strong>{' '}
                   and its associated prediction record? This action cannot be undone.
                 </p>
               </div>
 
               {deleteError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs">
                   {deleteError}
                 </div>
               )}
@@ -642,7 +642,7 @@ export default function History() {
                   type="button"
                   onClick={handleCloseDeleteModal}
                   disabled={isDeleting}
-                  className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs transition-colors disabled:opacity-50"
+                  className="py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-xs transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>

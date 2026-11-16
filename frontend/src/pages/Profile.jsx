@@ -265,17 +265,17 @@ export default function Profile() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Account Profile</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Account Profile</h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Manage your personal clinical profile, avatar photo, and inspect verified account activity.
           </p>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <Link
             to="/settings"
-            className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors shadow-2xs"
+            className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-colors shadow-2xs"
           >
-            <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+            <KeyRound className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Security Settings</span>
           </Link>
         </div>
@@ -283,14 +283,14 @@ export default function Profile() {
 
       {/* Success Notification Banner */}
       {successBanner && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <span>{successBanner}</span>
           </div>
           <button
             onClick={() => setSuccessBanner('')}
-            className="text-emerald-700 hover:text-emerald-900"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200"
           >
             <X className="w-4 h-4" />
           </button>
@@ -299,14 +299,14 @@ export default function Profile() {
 
       {/* Error Notification Banner */}
       {errorBanner && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between gap-3 animate-fadeIn">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0" />
             <span>{errorBanner}</span>
           </div>
           <button
             onClick={() => setErrorBanner('')}
-            className="text-rose-700 hover:text-rose-900"
+            className="text-rose-700 dark:text-rose-400 hover:text-rose-900 dark:hover:text-rose-200"
           >
             <X className="w-4 h-4" />
           </button>
@@ -316,12 +316,12 @@ export default function Profile() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* 1. Profile Overview & Photo Management Card                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-100 dark:border-slate-700">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
             {/* Avatar Display / Preview */}
             <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-200/80 shadow-md flex items-center justify-center bg-gradient-to-tr from-teal-600 to-blue-600 text-white font-extrabold text-2xl">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-200/80 dark:border-slate-700 shadow-md flex items-center justify-center bg-gradient-to-tr from-teal-600 to-blue-600 text-white font-extrabold text-2xl">
                 {avatarPreview ? (
                   <img
                     src={avatarPreview}
@@ -360,17 +360,17 @@ export default function Profile() {
             {/* Profile Identity Details */}
             <div className="space-y-1">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <h2 className="text-xl font-bold text-slate-900">{displayName}</h2>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">
-                  <ShieldCheck className="w-3 h-3 text-teal-600" />
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{displayName}</h2>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded-full">
+                  <ShieldCheck className="w-3 h-3 text-teal-600 dark:text-teal-400" />
                   {profileData?.account_status || 'Active Account'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">{user?.email}</p>
-              <div className="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 text-[11px] text-slate-400">
-                <span>Account ID: <strong className="font-mono text-slate-600">#{user?.id}</strong></span>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
+              <div className="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 text-[11px] text-slate-400 dark:text-slate-500">
+                <span>Account ID: <strong className="font-mono text-slate-600 dark:text-slate-300">#{user?.id}</strong></span>
                 <span>•</span>
-                <span>Member Since: <strong className="text-slate-600">{memberSince}</strong></span>
+                <span>Member Since: <strong className="text-slate-600 dark:text-slate-300">{memberSince}</strong></span>
               </div>
             </div>
           </div>
@@ -380,9 +380,9 @@ export default function Profile() {
             <button
               type="button"
               onClick={handleStartEdit}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors shadow-xs self-center sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors shadow-xs self-center sm:self-auto"
             >
-              <Edit2 className="w-3.5 h-3.5 text-blue-600" />
+              <Edit2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>Edit Personal Info</span>
             </button>
           )}
@@ -390,9 +390,9 @@ export default function Profile() {
 
         {/* Avatar Actions & Validation Alerts */}
         {avatarPreview && (
-          <div className="mt-4 p-4 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-900">
+          <div className="mt-4 p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-900 dark:text-blue-200">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
               <span>New photo selected. Save changes to persist your new profile picture.</span>
             </div>
             <div className="flex items-center gap-2">
@@ -406,7 +406,7 @@ export default function Profile() {
               <button
                 type="button"
                 onClick={handleCancelAvatarPreview}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs"
+                className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs"
               >
                 Cancel
               </button>
@@ -415,15 +415,15 @@ export default function Profile() {
         )}
 
         {avatarError && (
-          <div className="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+          <div className="mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0" />
             <span>{avatarError}</span>
           </div>
         )}
 
         {/* Avatar management helper row */}
-        <div className="mt-4 pt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+        <div className="mt-4 pt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-[11px] text-slate-400 dark:text-slate-500">
             <Upload className="w-3.5 h-3.5" />
             <span>Supported formats: JPEG, PNG, WebP (Max 2MB). Sandboxed client storage.</span>
           </div>
@@ -431,7 +431,7 @@ export default function Profile() {
             <button
               type="button"
               onClick={handleRemoveAvatar}
-              className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1"
+              className="text-[11px] text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-semibold flex items-center gap-1"
             >
               <Trash2 className="w-3 h-3" />
               <span>Remove Photo</span>
@@ -446,7 +446,7 @@ export default function Profile() {
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Full Name <span className="text-red-500">*</span>
               </label>
               {isEditing ? (
@@ -462,24 +462,24 @@ export default function Profile() {
                       }}
                       placeholder="Enter your full name"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${
-                        nameError ? 'border-rose-300 ring-1 ring-rose-300' : 'border-slate-300'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800`}
+                        nameError ? 'border-rose-300 ring-1 ring-rose-300' : 'border-slate-300 dark:border-slate-600'
+                      } bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-slate-800 dark:text-white`}
                       autoFocus
                     />
                   </div>
                   {nameError && (
-                    <p className="text-xs text-rose-600 mt-1.5 flex items-center gap-1 font-medium">
+                    <p className="text-xs text-rose-600 dark:text-rose-400 mt-1.5 flex items-center gap-1 font-medium">
                       <AlertCircle className="w-3.5 h-3.5" /> {nameError}
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm font-semibold text-slate-800">
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 text-sm font-semibold text-slate-800 dark:text-white">
                   <User className="w-4 h-4 text-slate-400" />
                   <span>{displayName}</span>
                 </div>
               )}
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                 Your full name appears on your official assessment records and PDF clinical reports.
               </p>
             </div>
@@ -487,55 +487,55 @@ export default function Profile() {
             {/* Email Address (Read-only) */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                   Registered Email
                 </label>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
                   Primary Sign-in
                 </span>
               </div>
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm font-medium text-slate-600">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300">
                 <Mail className="w-4 h-4 text-slate-400" />
                 <span className="truncate">{user?.email}</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                 Email serves as your unique authentication identifier and cannot be modified directly.
               </p>
             </div>
 
             {/* Account Registration Date */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Account Registration Date
               </label>
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm font-medium text-slate-600">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300">
                 <Calendar className="w-4 h-4 text-slate-400" />
                 <span>{memberSince}</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">Timestamp recorded in PostgreSQL upon initial registration.</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Timestamp recorded in PostgreSQL upon initial registration.</p>
             </div>
 
             {/* Credential Status */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Security &amp; Password Policy
               </label>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-slate-700">
-                  <KeyRound className="w-4 h-4 text-teal-600" />
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                  <KeyRound className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   <span className="font-medium">12-Round Salted Bcrypt</span>
                 </div>
-                <Link to="/settings" className="font-bold text-blue-600 hover:text-blue-800">
+                <Link to="/settings" className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                   Change Password →
                 </Link>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">Passwords are salted and cryptographically hashed.</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Passwords are salted and cryptographically hashed.</p>
             </div>
           </div>
 
           {/* Edit Mode Buttons */}
           {isEditing && (
-            <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button
                 type="submit"
                 disabled={savingProfile}
@@ -557,7 +557,7 @@ export default function Profile() {
                 type="button"
                 onClick={handleCancelEdit}
                 disabled={savingProfile}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <X className="w-4 h-4" />
                 <span>Cancel</span>
@@ -570,17 +570,17 @@ export default function Profile() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* 3. Account Activity & Longitudinal Evaluations Card                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700 gap-2">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-blue-600" /> Verified Account Activity
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Verified Account Activity
             </h3>
-            <p className="text-xs text-slate-500">Live statistics computed from your stored PostgreSQL evaluations.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Live statistics computed from your stored PostgreSQL evaluations.</p>
           </div>
           <button
             onClick={() => navigate('/history')}
-            className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 self-start sm:self-auto"
+            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 self-start sm:self-auto"
           >
             <span>View Full History</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -589,46 +589,46 @@ export default function Profile() {
 
         <div className="grid sm:grid-cols-3 gap-4 pt-2">
           {/* Total Evaluations */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Completed Assessments</span>
-            <p className="text-2xl font-extrabold text-slate-900 mt-1 font-mono">
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completed Assessments</span>
+            <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">
               {loadingProfile ? (
                 <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
               ) : (
                 profileData?.total_assessments ?? 0
               )}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Evaluations saved to your account</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Evaluations saved to your account</p>
           </div>
 
           {/* Most Recent Evaluation */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Most Recent Assessment</span>
-            <p className="text-sm font-bold text-slate-900 mt-2 truncate">
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Most Recent Assessment</span>
+            <p className="text-sm font-bold text-slate-900 dark:text-white mt-2 truncate">
               {loadingProfile ? (
-                <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
               ) : (
                 latestAssessmentDate
               )}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Timestamp of latest submission</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Timestamp of latest submission</p>
           </div>
 
           {/* Current Session Security */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Session Security</span>
-            <p className="text-sm font-bold text-emerald-700 mt-2 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Session Security</span>
+            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 mt-2 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>JWT Bearer Active</span>
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">Stateless 24-hour token validity</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Stateless 24-hour token validity</p>
           </div>
         </div>
 
         {/* Action Callout */}
-        <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-blue-900">
+        <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-blue-900 dark:text-blue-200">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+            <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <span>Ready to conduct another longitudinal metabolic evaluation?</span>
           </div>
           <button
@@ -643,11 +643,11 @@ export default function Profile() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* 4. Privacy & Data Governance Card                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-3">
-        <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-teal-600" /> Privacy &amp; Health Data Governance
+      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-3">
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-teal-600 dark:text-teal-400" /> Privacy &amp; Health Data Governance
         </h3>
-        <p className="text-xs text-slate-600 leading-relaxed">
+        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           Your personal health assessment responses and predictive model outputs are strictly associated with your
           authenticated account ID in PostgreSQL. Data is never aggregated for commercial marketing or shared with
           third parties without clinical authorization.
