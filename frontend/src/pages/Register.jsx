@@ -152,26 +152,26 @@ export default function Register() {
           </p>
         </div>
 
-        {/* Form Card (Slate-Navy Theme) */}
-        <div className="bg-[#162032] rounded-3xl shadow-2xl border border-slate-700/60 p-7 sm:p-9 relative overflow-hidden text-white">
+        {/* Form Card (Professional Clean White Clinical Theme) */}
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-200/90 p-7 sm:p-9 relative overflow-hidden text-slate-900">
           {/* Top accent gradient bar */}
           <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-600 via-teal-500 to-blue-600" />
 
           {/* Success Banner */}
           {success && (
-            <div className="mb-6 p-4 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-200 flex items-center gap-3 text-sm animate-in fade-in">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 text-sm animate-in fade-in font-medium">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
               <span>Account created successfully! Redirecting to your dashboard...</span>
             </div>
           )}
 
           {/* API Error Banner */}
           {apiError && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-200 flex items-start gap-3 text-sm animate-in fade-in">
-              <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+            <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-3 text-sm animate-in fade-in">
+              <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <div className="font-semibold mb-0.5">Registration Error</div>
-                <div className="text-xs text-rose-300">{apiError}</div>
+                <div className="text-xs text-rose-700">{apiError}</div>
               </div>
             </div>
           )}
@@ -179,7 +179,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label htmlFor="fullName" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Full Name
               </label>
               <div className="relative">
@@ -194,13 +194,13 @@ export default function Register() {
                   value={formData.fullName}
                   onChange={handleChange}
                   placeholder="Dr. Jane Smith"
-                  className={`w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 transition-colors placeholder:text-slate-500 ${
+                  className={`w-full rounded-xl border border-slate-300 bg-slate-50/70 px-4 py-2.5 text-sm text-slate-900 shadow-2xs focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 transition-colors placeholder:text-slate-400 ${
                     errors.fullName ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : ''
                   }`}
                 />
               </div>
               {errors.fullName && (
-                <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3" /> {errors.fullName}
                 </p>
               )}
@@ -208,7 +208,7 @@ export default function Register() {
 
             {/* Email Address */}
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Email Address
               </label>
               <div className="relative">
@@ -223,13 +223,13 @@ export default function Register() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="name@institution.org"
-                  className={`w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 transition-colors placeholder:text-slate-500 ${
+                  className={`w-full rounded-xl border border-slate-300 bg-slate-50/70 px-4 py-2.5 text-sm text-slate-900 shadow-2xs focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 transition-colors placeholder:text-slate-400 ${
                     errors.email ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : ''
                   }`}
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3" /> {errors.email}
                 </p>
               )}
@@ -237,7 +237,7 @@ export default function Register() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -252,31 +252,31 @@ export default function Register() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Minimum 8 characters"
-                  className={`w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 pr-10 transition-colors placeholder:text-slate-500 ${
+                  className={`w-full rounded-xl border border-slate-300 bg-slate-50/70 px-4 py-2.5 text-sm text-slate-900 shadow-2xs focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 pr-10 transition-colors placeholder:text-slate-400 ${
                     errors.password ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : ''
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.password ? (
-                <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3" /> {errors.password}
                 </p>
               ) : (
-                <p className="mt-1 text-[11px] text-slate-400">Must be at least 8 characters long.</p>
+                <p className="mt-1 text-[11px] text-slate-500">Must be at least 8 characters long.</p>
               )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Confirm Password
               </label>
               <div className="relative">
@@ -291,21 +291,21 @@ export default function Register() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Re-enter your password"
-                  className={`w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm text-white shadow-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 pr-10 transition-colors placeholder:text-slate-500 ${
+                  className={`w-full rounded-xl border border-slate-300 bg-slate-50/70 px-4 py-2.5 text-sm text-slate-900 shadow-2xs focus:bg-white focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 pl-10 pr-10 transition-colors placeholder:text-slate-400 ${
                     errors.confirmPassword ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20' : ''
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3" /> {errors.confirmPassword}
                 </p>
               )}
@@ -319,18 +319,18 @@ export default function Register() {
                   name="agreeTerms"
                   checked={formData.agreeTerms}
                   onChange={handleChange}
-                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+                  className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-xs text-slate-300 leading-snug">
+                <span className="text-xs text-slate-600 leading-snug">
                   I agree to the{' '}
-                  <span className="text-blue-400 font-semibold underline underline-offset-2">
+                  <span className="text-blue-600 font-semibold underline underline-offset-2">
                     Terms &amp; Research Privacy Notice
                   </span>
                   . This platform is for educational and research evaluation only.
                 </span>
               </label>
               {errors.agreeTerms && (
-                <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3 h-3" /> {errors.agreeTerms}
                 </p>
               )}
@@ -341,7 +341,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={loading || success}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl py-3 shadow-md shadow-blue-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3 shadow-md shadow-blue-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -360,8 +360,8 @@ export default function Register() {
           </form>
 
           {/* Research Safeguard Note */}
-          <div className="mt-6 pt-5 border-t border-slate-700/60 flex items-center justify-center gap-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+          <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
             <span>Encrypted with bcrypt &amp; JWT · Never plaintext</span>
           </div>
         </div>

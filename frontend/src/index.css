@@ -22,7 +22,7 @@
   }
 
   .clinical-card-dark {
-    @apply bg-[#162032] rounded-3xl border border-slate-700/60 shadow-xl p-6 sm:p-8 text-white;
+    @apply bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 text-slate-900;
   }
 
   .clinical-card-sub {

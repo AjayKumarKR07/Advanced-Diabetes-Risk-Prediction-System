@@ -445,7 +445,7 @@ export default function PredictionResult() {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* SECTION 1: PRIMARY CLASSIFICATION HERO CARD (Advanced Summary)      */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <div className="bg-[#162032] rounded-3xl border border-slate-700/60 shadow-xl p-6 sm:p-10 text-center relative overflow-hidden text-white">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10 text-center relative overflow-hidden text-slate-900">
           {/* Top colored accent indicator line */}
           <div
             className="absolute top-0 left-0 right-0 h-2"
@@ -453,21 +453,21 @@ export default function PredictionResult() {
           />
 
           {/* User metadata row */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-300 mb-6">
-            <span className="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
-              <User className="w-3.5 h-3.5 text-blue-400" />
-              <strong className="text-white">{displayName}</strong>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600 mb-6">
+            <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
+              <User className="w-3.5 h-3.5 text-blue-600" />
+              <strong className="text-slate-900">{displayName}</strong>
             </span>
-            <span className="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
+            <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
+              <Mail className="w-3.5 h-3.5 text-slate-500" />
               <span>{displayEmail}</span>
             </span>
-            <span className="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
+              <Calendar className="w-3.5 h-3.5 text-slate-500" />
               <span>{assessmentDate}</span>
             </span>
-            <span className="flex items-center gap-1.5 bg-blue-950/60 border border-blue-800/60 text-blue-300 px-3 py-1 rounded-full font-mono font-medium">
-              <Database className="w-3 h-3 text-blue-400" />
+            <span className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1 rounded-full font-mono font-medium">
+              <Database className="w-3 h-3 text-blue-600" />
               Assessment #{assessmentId} • Prediction #{predictionId}
             </span>
           </div>
@@ -480,45 +480,45 @@ export default function PredictionResult() {
             <ResultIcon className="w-10 h-10" />
           </div>
 
-          <div className="text-xs font-semibold tracking-wider text-slate-400 uppercase mb-1">
+          <div className="text-xs font-semibold tracking-wider text-slate-500 uppercase mb-1">
             Model Predicted Classification
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">
             {predLabel} (Class {predClass})
           </h1>
 
           {/* Harmonious Status Chip — Strictly aligned with Predicted Class (NO Contradictory Warning) */}
           <div className="flex justify-center mb-5">
             {predClass === 0 ? (
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/70">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Class 0 — No Diabetes</span>
               </span>
             ) : predClass === 1 ? (
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/70">
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-amber-50 text-amber-900 border border-amber-200">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
                 <span>Class 1 — Prediabetes</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/70">
-                <Flame className="w-4 h-4 text-rose-400" />
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200">
+                <Flame className="w-4 h-4 text-rose-600" />
                 <span>Class 2 — Diabetes</span>
               </span>
             )}
           </div>
 
           {/* Primary Model Confidence Statement */}
-          <p className="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
             The model assigns a{' '}
-            <strong className="text-white font-bold">
+            <strong className="text-slate-900 font-bold">
               {(confidence * 100).toFixed(1)}% posterior probability
             </strong>{' '}
-            to <strong className="text-white">{predLabel}</strong> based on your 21 reported clinical and lifestyle indicators.
+            to <strong className="text-slate-900">{predLabel}</strong> based on your 21 reported clinical and lifestyle indicators.
           </p>
 
           {/* Pipeline & Artifact Metadata */}
-          <div className="mt-4 pt-4 border-t border-slate-700/60 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-slate-400 font-mono">
+          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-slate-500 font-mono">
             <span>Model: Multinomial Logistic Regression</span>
             <span>•</span>
             <span>Artifact: {result.model_version || 'model_v1.0_phase5'}</span>
@@ -527,7 +527,7 @@ export default function PredictionResult() {
           </div>
 
           <div className="mt-3">
-            <span className="inline-block text-[11px] text-slate-400 bg-slate-800/60 border border-slate-700 px-3 py-1 rounded-md">
+            <span className="inline-block text-[11px] text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1 rounded-md">
               Academic &amp; Research Demonstration — Not a Clinical Diagnostic Instrument
             </span>
           </div>
