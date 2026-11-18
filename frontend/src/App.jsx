@@ -44,7 +44,7 @@ function PageLoadingFallback() {
 
 /**
  * Public Layout with sticky top Navbar and persistent Footer.
- * Used for public landing, research performance catalog, methodology, and guest auth pages.
+ * Used for research performance catalog, methodology, and guest auth pages.
  */
 function PublicLayout() {
   return (
@@ -59,14 +59,33 @@ function PublicLayout() {
   )
 }
 
+/**
+ * Landing-only layout: no Navbar, no top padding — the Landing page
+ * manages its own hero header and navigation internally.
+ */
+function LandingLayout() {
+  return (
+    <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
+      <main className="flex-1 flex flex-col">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <Suspense fallback={<PageLoadingFallback />}>
         <Routes>
-          {/* Public & Guest Routes */}
-          <Route element={<PublicLayout />}>
+          {/* Landing page — no top Navbar, full-bleed hero */}
+          <Route element={<LandingLayout />}>
             <Route path="/" element={<Landing />} />
+          </Route>
+
+          {/* Public pages with sticky Navbar + Footer */}
+          <Route element={<PublicLayout />}>
             <Route path="/performance" element={<ModelPerformance />} />
             <Route path="/about" element={<AboutMethodology />} />
 

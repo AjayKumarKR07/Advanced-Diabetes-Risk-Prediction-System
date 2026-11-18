@@ -13,7 +13,8 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import {
   ArrowRight,
   Activity,
@@ -32,7 +33,95 @@ import {
   Lock,
   LineChart,
   Sparkles,
+  LogIn,
+  UserPlus,
+  LayoutDashboard,
+  Menu,
+  X,
 } from 'lucide-react'
+
+// ─── Embedded professional top nav (Landing-only, no duplicate Navbar) ────────
+function LandingNav() {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  return (
+    <header className="absolute top-0 inset-x-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Brand */}
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-600/30">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-extrabold text-white tracking-tight">DiabetesRisk <span className="text-teal-300">AI</span></span>
+              <span className="text-[9px] text-blue-300 font-semibold uppercase tracking-widest">Healthcare Analytics</span>
+            </div>
+          </Link>
+
+          {/* Desktop nav links */}
+          <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+            <Link to="/performance" className="text-slate-300 hover:text-white px-3.5 py-2 rounded-lg hover:bg-white/10 transition-colors">Model Performance</Link>
+            <Link to="/about" className="text-slate-300 hover:text-white px-3.5 py-2 rounded-lg hover:bg-white/10 transition-colors">About &amp; Methodology</Link>
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center gap-2">
+            {isAuthenticated ? (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-600/30"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-white/10 transition-colors">
+                  <LogIn className="w-4 h-4" /> Sign In
+                </Link>
+                <Link to="/register" className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-600/30">
+                  <UserPlus className="w-4 h-4" /> Get Started
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Mobile drawer */}
+        {mobileOpen && (
+          <div className="md:hidden bg-slate-900/95 backdrop-blur-md border border-white/10 rounded-2xl mb-4 p-4 space-y-1">
+            <Link to="/performance" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">Model Performance</Link>
+            <Link to="/about" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">About &amp; Methodology</Link>
+            <div className="border-t border-white/10 pt-2 mt-1">
+              {isAuthenticated ? (
+                <button onClick={() => { setMobileOpen(false); navigate('/dashboard') }} className="w-full text-left flex items-center gap-2 text-blue-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-semibold">
+                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+                </button>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium"><LogIn className="w-4 h-4" /> Sign In</Link>
+                  <Link to="/register" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-blue-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-semibold"><UserPlus className="w-4 h-4" /> Get Started</Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  )
+}
 
 // ─── Animated counter hook ────────────────────────────────────────────────────
 function useCountUp(target, duration = 1800, start = false) {
@@ -305,6 +394,9 @@ export default function Landing() {
 
       {/* ── 1. HERO SECTION ───────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+        {/* Professional embedded nav — no duplicate top Navbar */}
+        <LandingNav />
+
         {/* Subtle grid background */}
         <div
           className="absolute inset-0 opacity-[0.035]"
@@ -317,7 +409,7 @@ export default function Landing() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-[128px] opacity-15 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-teal-400 rounded-full blur-[128px] opacity-15 translate-y-1/2 pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 lg:pt-36 lg:pb-28">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-14 items-center">
             {/* Left Column: Heading, Description, CTAs */}
             <div>
