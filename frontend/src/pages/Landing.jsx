@@ -82,8 +82,8 @@ function LandingNav() {
                 <Link to="/login" className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-white/10 transition-colors">
                   <LogIn className="w-4 h-4" /> Sign In
                 </Link>
-                <Link to="/register" className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-600/30">
-                  <UserPlus className="w-4 h-4" /> Get Started
+                <Link to="/register" className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-400 hover:to-teal-400 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:-translate-y-0.5">
+                  <Sparkles className="w-4 h-4" /> Let's Start
                 </Link>
               </>
             )}
@@ -112,7 +112,7 @@ function LandingNav() {
               ) : (
                 <>
                   <Link to="/login" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium"><LogIn className="w-4 h-4" /> Sign In</Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-blue-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-semibold"><UserPlus className="w-4 h-4" /> Get Started</Link>
+                  <Link to="/register" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-blue-300 hover:text-white px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-semibold"><UserPlus className="w-4 h-4" /> Let's Start</Link>
                 </>
               )}
             </div>
@@ -441,7 +441,7 @@ export default function Landing() {
               {/* CTA Buttons */}
               <div className="flex flex-wrap items-center gap-3.5 mb-8">
                 <Link
-                  to="/assess"
+                  to="/register"
                   className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 text-sm sm:text-base"
                 >
                   <span>Start Health Assessment</span>
@@ -463,16 +463,22 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Right Column: Custom SVG Dashboard Illustration */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/25 to-teal-500/25 rounded-3xl blur-2xl transform scale-95" />
-              <div className="relative bg-gradient-to-br from-blue-950/70 via-slate-900/80 to-slate-950/90 border border-white/10 rounded-3xl p-3 sm:p-5 shadow-2xl backdrop-blur-sm">
+            {/* Right Column: Custom SVG Dashboard Illustration — click to register */}
+            <Link to="/register" className="relative group cursor-pointer block">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/25 to-teal-500/25 rounded-3xl blur-2xl transform scale-95 group-hover:scale-100 transition-transform duration-300" />
+              <div className="relative bg-gradient-to-br from-blue-950/70 via-slate-900/80 to-slate-950/90 border border-white/10 rounded-3xl p-3 sm:p-5 shadow-2xl backdrop-blur-sm group-hover:border-blue-400/40 transition-colors duration-300">
                 <HeroDashboardIllustration />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 rounded-3xl bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-300 flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-blue-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
+                    <UserPlus className="w-4 h-4" /> Create Free Account
+                  </div>
+                </div>
               </div>
               <p className="text-center text-[11px] text-slate-400 mt-3 font-mono tracking-wide">
                 Illustrative demo interface with synthetic sample values — not actual patient data.
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -755,24 +761,24 @@ export default function Landing() {
             <div className="relative">
               <div className="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5 text-xs text-white font-medium mb-5 backdrop-blur-xs">
                 <Heart className="w-3.5 h-3.5 text-pink-300" />
-                <span>Accessible · Research Platform · No Registration Required</span>
+                <span>Free to Join · Research Platform · Instant Results</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight">
                 Start Understanding Your Health Indicators Today
               </h2>
               <p className="text-blue-100 max-w-xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
-                Complete the health assessment and explore the insights generated by our
-                research-based machine learning system.
+                Create your free account and run your first AI-powered diabetes risk assessment in minutes.
               </p>
               <Link
-                to="/assess"
+                to="/register"
                 className="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-700 font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-blue-900/25 text-base"
               >
-                <span>Start Your Assessment</span>
+                <UserPlus className="w-5 h-5" />
+                <span>Let's Start — Create Account</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <p className="text-blue-200/70 text-xs mt-5">
-                Takes less than 2 minutes · Immediate probability feedback · Research prototype
+                Already have an account? <Link to="/login" className="text-white underline underline-offset-2 hover:text-blue-200 transition-colors">Sign in here</Link>
               </p>
             </div>
           </div>
