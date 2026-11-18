@@ -126,7 +126,7 @@ export default function Footer() {
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
             <p>© {new Date().getFullYear()} DiabetesRisk AI · Advanced Diabetes Risk Prediction System</p>
-            <p className="text-slate-500">Academic & Final-Year Engineering Project</p>
+            <p className="text-slate-500">Powered by CDC BRFSS 2015 · Logistic Regression · ROC-AUC 0.7707</p>
           </div>
         </div>
       </div>
