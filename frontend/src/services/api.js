@@ -219,4 +219,13 @@ export async function fetchInsightsHistory() {
   return data
 }
 
+/**
+ * POST /api/chat
+ * Send a message to HealthBot AI assistant
+ */
+export async function sendChatMessage(messages) {
+  const { data } = await apiClient.post('/chat', { messages })
+  return data
+}
+
 export default apiClient

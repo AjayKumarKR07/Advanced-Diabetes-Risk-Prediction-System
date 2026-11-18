@@ -644,6 +644,10 @@ export default function HealthAssessmentForm() {
               style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
             />
           </div>
+          <div className="flex items-center justify-between mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <span className="font-semibold">Step {currentStep} of {STEPS.length} · {Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100)}% complete</span>
+            <span className="italic">~{Math.max(1, STEPS.length - currentStep)} min remaining</span>
+          </div>
         </div>
 
         {/* Top Validation Error Banner */}

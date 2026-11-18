@@ -1,4 +1,4 @@
-﻿# Core packages
+# Core packages
 pandas
 numpy
 
@@ -19,6 +19,9 @@ streamlit
 joblib
 pyyaml
 scipy
+
+# AI Assistant
+openai>=1.0.0
 
 # Testing
 pytest

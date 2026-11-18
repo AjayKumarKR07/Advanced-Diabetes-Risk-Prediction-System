@@ -366,62 +366,73 @@ export default function Dashboard() {
   const hasAssessments = overview && overview.total_assessments > 0
 
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="py-6 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6">
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* 1. Welcome & Personal Health Analytics Banner                       */}
+        {/* 1. Hero Banner — Gradient                                            */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/60 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Personal Health Analytics Dashboard</span>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 p-7 sm:p-9 shadow-xl">
+          {/* Decorative blobs */}
+          <div className="pointer-events-none absolute -top-16 -right-16 w-72 h-72 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-12 w-56 h-56 rounded-full bg-teal-500/15 blur-3xl" />
+
+          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2.5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-blue-200 text-xs font-semibold backdrop-blur-sm">
+                <Sparkles className="w-3.5 h-3.5 text-teal-300" />
+                <span>Personal Health Analytics Dashboard</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                {(() => {
+                  const h = new Date().getHours()
+                  const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+                  const firstName = (user?.full_name || 'Patient').split(' ')[0]
+                  return `${greeting}, ${firstName}! 👋`
+                })()}
+              </h1>
+              <p className="text-sm text-blue-200/80 max-w-xl leading-relaxed">
+                Track your health assessments, review AI-predicted risk classifications,
+                and analyze BMI &amp; well-being trajectories.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Welcome back, {user?.full_name || 'Patient'}
-            </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
-              Track your longitudinal metabolic health assessments, review model-predicted risk classifications,
-              analyze BMI and well-being trajectories, or run a new health risk assessment.
-            </p>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => navigate('/assess')}
-              className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold flex items-center gap-2 transition-all shadow-md shadow-blue-500/20"
-            >
-              <PlusCircle className="w-4 h-4" />
-              New Health Assessment
-            </button>
-            <button
-              onClick={handleDownloadPersonalReport}
-              disabled={pdfGenerating || !hasAssessments}
-              className="px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Download Comprehensive Personal Analytics PDF Report"
-            >
-              <Download className={`w-4 h-4 ${pdfGenerating ? 'animate-bounce' : ''}`} />
-              <span>Analytics Report</span>
-            </button>
-            <button
-              onClick={loadData}
-              disabled={refreshing}
-              className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              title="Refresh Dashboard Data"
-            >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+              <button
+                onClick={() => navigate('/assess')}
+                className="px-5 py-2.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-black/20"
+              >
+                <PlusCircle className="w-4 h-4" />
+                New Assessment
+              </button>
+              <button
+                onClick={handleDownloadPersonalReport}
+                disabled={pdfGenerating || !hasAssessments}
+                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-sm"
+                title="Download Comprehensive Personal Analytics PDF Report"
+              >
+                <Download className={`w-4 h-4 ${pdfGenerating ? 'animate-bounce' : ''}`} />
+                <span>Analytics PDF</span>
+              </button>
+              <button
+                onClick={loadData}
+                disabled={refreshing}
+                className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all backdrop-blur-sm"
+                title="Refresh Dashboard Data"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* 2. Date Range Filter Toolbar (Section 11)                           */}
+        {/* 2. Date Range Filter Toolbar                                         */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 px-4 py-3 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <Filter className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span>Time Horizon:</span>
+            <Filter className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <span className="whitespace-nowrap">Time Horizon:</span>
             <div className="flex flex-wrap gap-1.5 ml-1">
               {DATE_PRESETS.map((p) => {
                 const isActive = activePreset === p.label
@@ -429,9 +440,9 @@ export default function Dashboard() {
                   <button
                     key={p.label}
                     onClick={() => handlePresetSelect(p)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-xs'
+                        ? 'bg-blue-600 text-white shadow-sm'
                         : 'bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -468,46 +479,52 @@ export default function Dashboard() {
           )}
 
           {appliedStartDate && (
-            <div className="text-[11px] text-slate-500 dark:text-slate-400">
-              Showing records from <span className="font-semibold text-slate-700 dark:text-slate-200">{appliedStartDate}</span>
-              {appliedEndDate && <> to <span className="font-semibold text-slate-700 dark:text-slate-200">{appliedEndDate}</span></>}
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              From <span className="font-semibold text-slate-700 dark:text-slate-200">{appliedStartDate}</span>
+              {appliedEndDate && <> → <span className="font-semibold text-slate-700 dark:text-slate-200">{appliedEndDate}</span></>}
             </div>
           )}
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* 3. Personal Analytics Overview — 6 KPI Cards (Section 3)            */}
+        {/* 3. KPI Cards — 6 cards with colored accent tops                     */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+
           {/* Card 1: Total Assessments */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Total Assessments
-              </p>
-              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total</p>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 flex items-center justify-center">
+                  <Database className="w-4 h-4 text-blue-500" />
+                </div>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
                 {overview?.total_assessments ?? 0}
               </p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Assessments</p>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                {overview?.assessments_this_month ? `+${overview.assessments_this_month} this month` : 'All time records'}
-              </span>
-              <Database className="w-4 h-4 text-blue-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
+              {overview?.assessments_this_month ? `+${overview.assessments_this_month} this month` : 'All time'}
+            </p>
           </div>
 
-          {/* Card 2: Latest Predicted Class */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          {/* Card 2: Latest Class */}
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-teal-500 to-emerald-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Latest Class
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Latest</p>
+                <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center">
+                  <Activity className="w-4 h-4 text-teal-500" />
+                </div>
+              </div>
+              <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                {overview?.latest_predicted_label || '—'}
               </p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1 truncate">
-                {overview?.latest_predicted_label || 'Awaiting Data'}
-              </p>
-              <div className="pt-1">
+              <div className="mt-1.5">
                 {overview?.latest_predicted_class != null ? (
                   <RiskBadge predictedClass={overview.latest_predicted_class} />
                 ) : (
@@ -515,92 +532,148 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[11px] text-slate-400 truncate">
-                {overview?.latest_assessment_date || 'None recorded'}
-              </span>
-              <Activity className="w-4 h-4 text-teal-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60 truncate">
+              {overview?.latest_assessment_date || 'None yet'}
+            </p>
           </div>
 
           {/* Card 3: Latest BMI */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 to-orange-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Latest BMI
-              </p>
-              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">BMI</p>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center">
+                  <Scale className="w-4 h-4 text-amber-500" />
+                </div>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono tabular-nums">
                 {overview?.latest_bmi != null ? overview.latest_bmi : '—'}
               </p>
-              <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300 mt-0.5 truncate">
-                {overview?.latest_bmi_category || 'No BMI recorded'}
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 truncate">
+                {overview?.latest_bmi_category || 'No data'}
               </p>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[10px] text-slate-400 italic">Screening classification</span>
-              <Scale className="w-4 h-4 text-amber-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 italic mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
+              Screening classification
+            </p>
           </div>
 
-          {/* Card 4: Assessment Activity */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          {/* Card 4: Monthly Activity */}
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-violet-500 to-purple-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Monthly Activity
-              </p>
-              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Monthly</p>
+                <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/40 flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-violet-500" />
+                </div>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
                 {overview?.assessments_this_month ?? 0}
               </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                Evaluations in {new Date().toLocaleString('en-US', { month: 'short' })}
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+                in {new Date().toLocaleString('en-US', { month: 'long' })}
               </p>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[11px] text-slate-400">Activity cadence</span>
-              <Calendar className="w-4 h-4 text-purple-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
+              Activity cadence
+            </p>
           </div>
 
-          {/* Card 5: General Health (1 to 5) */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          {/* Card 5: General Health */}
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-pink-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                General Health
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Health</p>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/40 flex items-center justify-center">
+                  <HeartPulse className="w-4 h-4 text-rose-500" />
+                </div>
+              </div>
+              <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight truncate">
+                {overview?.latest_gen_hlth_label || '—'}
               </p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1 truncate">
-                {overview?.latest_gen_hlth_label || 'Awaiting Data'}
-              </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                Scale 1 (Best) to 5 (Poor)
-              </p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">General Rating</p>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[10px] text-slate-400 italic">Self-reported survey</span>
-              <HeartPulse className="w-4 h-4 text-rose-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 italic mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
+              Scale 1 (Best) → 5 (Poor)
+            </p>
           </div>
 
-          {/* Card 6: Model-Estimated Probability */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-xs flex flex-col justify-between">
+          {/* Card 6: Model Probability */}
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-5 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-blue-400 rounded-t-2xl" />
             <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Model Probability
-              </p>
-              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">AI Score</p>
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-indigo-500" />
+                </div>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono tabular-nums">
                 {overview?.latest_confidence != null
                   ? `${(overview.latest_confidence * 100).toFixed(1)}%`
                   : '—'}
               </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                Estimated class prob.
-              </p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Model Probability</p>
             </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60">
-              <span className="text-[10px] text-slate-400 italic">Non-diagnostic</span>
-              <TrendingUp className="w-4 h-4 text-indigo-500" />
-            </div>
+            <p className="text-[10px] text-slate-400 italic mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
+              Non-diagnostic estimate
+            </p>
           </div>
 
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* Quick Action Cards — 3 gradient cards                               */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <button
+            onClick={() => navigate('/assess')}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl p-5 text-left transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
+          >
+            <div className="pointer-events-none absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10" />
+            <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:bg-white/25 transition-colors">
+              <PlusCircle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">New Assessment</p>
+              <p className="text-[11px] text-blue-200 mt-0.5">Start a 21-indicator evaluation</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-blue-300 ml-auto group-hover:translate-x-0.5 transition-transform" />
+          </button>
+
+          <button
+            onClick={() => navigate('/history')}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl p-5 text-left transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-teal-600 to-teal-700 hover:from-teal-500 hover:to-teal-600"
+          >
+            <div className="pointer-events-none absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10" />
+            <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:bg-white/25 transition-colors">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">View History</p>
+              <p className="text-[11px] text-teal-200 mt-0.5">Browse all past assessments</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-teal-300 ml-auto group-hover:translate-x-0.5 transition-transform" />
+          </button>
+
+          <button
+            onClick={handleDownloadPersonalReport}
+            disabled={pdfGenerating || !hasAssessments}
+            className="group relative overflow-hidden flex items-center gap-4 rounded-2xl p-5 text-left transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5 bg-gradient-to-br from-violet-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-sm"
+          >
+            <div className="pointer-events-none absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10" />
+            <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 group-hover:bg-white/25 transition-colors">
+              <Download className={`w-5 h-5 text-white ${pdfGenerating ? 'animate-bounce' : ''}`} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Download Report</p>
+              <p className="text-[11px] text-violet-200 mt-0.5">Export analytics as PDF</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-violet-300 ml-auto group-hover:translate-x-0.5 transition-transform" />
+          </button>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════ */}

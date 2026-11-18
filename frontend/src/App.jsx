@@ -60,9 +60,19 @@ function PublicLayout() {
 }
 
 /**
- * Landing-only layout: no Navbar, no top padding — the Landing page
- * manages its own hero header and navigation internally.
+ * Auth-only layout: no Navbar, no Footer — clean centered auth pages.
  */
+function AuthLayout() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-blue-100 selection:text-blue-900">
+      <main className="flex-1 flex flex-col">
+        <Outlet />
+      </main>
+    </div>
+  )
+}
+
+
 function LandingLayout() {
   return (
     <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
@@ -89,24 +99,6 @@ export default function App() {
             <Route path="/performance" element={<ModelPerformance />} />
             <Route path="/about" element={<AboutMethodology />} />
 
-            {/* Guest-Only Authentication Routes */}
-            <Route
-              path="/register"
-              element={
-                <GuestOnlyRoute>
-                  <Register />
-                </GuestOnlyRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <GuestOnlyRoute>
-                  <Login />
-                </GuestOnlyRoute>
-              }
-            />
-
             {/* 404 fallback */}
             <Route
               path="*"
@@ -121,6 +113,26 @@ export default function App() {
                     Return to Homepage
                   </a>
                 </div>
+              }
+            />
+          </Route>
+
+          {/* Auth pages — no Navbar, no Footer */}
+          <Route element={<AuthLayout />}>
+            <Route
+              path="/register"
+              element={
+                <GuestOnlyRoute>
+                  <Register />
+                </GuestOnlyRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <GuestOnlyRoute>
+                  <Login />
+                </GuestOnlyRoute>
               }
             />
           </Route>

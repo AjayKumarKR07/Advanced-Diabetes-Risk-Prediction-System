@@ -38,6 +38,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import AIChatWidget from './AIChatWidget'
 
 export default function AuthenticatedLayout({ children }) {
   const location = useLocation()
@@ -469,9 +470,11 @@ export default function AuthenticatedLayout({ children }) {
 
         {/* Dynamic Page Content */}
         <main className="flex-1">
-          {children || <Outlet />}
+        {children || <Outlet />}
         </main>
       </div>
+      {/* AI Health Assistant floating chat widget */}
+      <AIChatWidget />
     </div>
   )
 }

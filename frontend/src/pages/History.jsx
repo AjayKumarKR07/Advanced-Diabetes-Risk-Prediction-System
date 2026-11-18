@@ -96,6 +96,10 @@ export default function History() {
   // PDF Download State (tracks which prediction ID is currently generating)
   const [downloadingId, setDownloadingId] = useState(null)
 
+  // Client-side search/filter
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterClass, setFilterClass] = useState('all')
+
   const PAGE_SIZE = 10
 
   // ── Load History & Stats ──────────────────────────────────────────────────
@@ -248,6 +252,18 @@ export default function History() {
 
   const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 1
 
+  // Client-side filtering
+  const filteredItems = (data?.items || []).filter((pred) => {
+    const q = searchQuery.toLowerCase()
+    const dateStr = new Date(pred.created_at).toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+    }).toLowerCase()
+    const name = (pred.user_name || '').toLowerCase()
+    const matchesSearch = !q || dateStr.includes(q) || name.includes(q) || `a#${pred.assessment_id}`.includes(q)
+    const matchesClass = filterClass === 'all' || String(pred.predicted_class) === filterClass
+    return matchesSearch && matchesClass
+  })
+
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
       <div className="space-y-6">
@@ -314,6 +330,51 @@ export default function History() {
         )}
 
         {/* ═════════════════════════════════════════════════════════════════ */}
+        {/* SEARCH & FILTER BAR                                               */}
+        {/* ═════════════════════════════════════════════════════════════════ */}
+        <div className="flex flex-col sm:flex-row gap-3 items-center bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-3 shadow-xs">
+          <div className="relative flex-1 w-full">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <Activity className="w-4 h-4" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by date, name, or assessment ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Class:</span>
+            {[
+              { val: 'all', label: 'All' },
+              { val: '0', label: 'No Diabetes', color: 'emerald' },
+              { val: '1', label: 'Prediabetes', color: 'amber' },
+              { val: '2', label: 'Diabetes', color: 'rose' },
+            ].map(({ val, label, color }) => (
+              <button
+                key={val}
+                onClick={() => setFilterClass(val)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  filterClass === val
+                    ? color === 'emerald'
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                      : color === 'amber'
+                      ? 'bg-amber-100 text-amber-800 border-amber-200'
+                      : color === 'rose'
+                      ? 'bg-rose-100 text-rose-800 border-rose-200'
+                      : 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-transparent hover:bg-slate-200 dark:hover:bg-slate-600'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ═════════════════════════════════════════════════════════════════ */}
         {/* SUCCESS NOTIFICATION BANNER                                       */}
         {/* ═════════════════════════════════════════════════════════════════ */}
         {successMessage && (
@@ -375,6 +436,15 @@ export default function History() {
                     Take Health Assessment
                   </button>
                 </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 dark:text-slate-500">
+                  <Activity className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                  <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">No matching records</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 mb-4">Try adjusting your search query or class filter.</p>
+                  <button onClick={() => { setSearchQuery(''); setFilterClass('all') }} className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs font-bold transition-all">
+                    Clear Filters
+                  </button>
+                </div>
               ) : (
                 <>
                   {/* Desktop Table View (Hidden on mobile) */}
@@ -392,7 +462,7 @@ export default function History() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {data.items.map((pred) => {
+                        {filteredItems.map((pred) => {
                           const cls = pred.predicted_class
                           const dateFormatted = new Date(pred.created_at).toLocaleString('en-US', {
                             month: 'short',
@@ -489,7 +559,7 @@ export default function History() {
 
                   {/* Mobile Card View (Shown on screens < md) */}
                   <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
-                    {data.items.map((pred) => {
+                    {filteredItems.map((pred) => {
                       const cls = pred.predicted_class
                       const dateFormatted = new Date(pred.created_at).toLocaleString('en-US', {
                         month: 'short',

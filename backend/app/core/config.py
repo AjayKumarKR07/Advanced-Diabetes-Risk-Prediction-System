@@ -76,6 +76,9 @@ class Settings(BaseSettings):
         "qualified healthcare professional for medical advice."
     )
 
+    # -- AI Assistant (Groq) --
+    GROQ_API_KEY: str = ""  # Groq API key — https://console.groq.com
+
     model_config = SettingsConfigDict(
         case_sensitive=True,
         env_file="backend/.env",
