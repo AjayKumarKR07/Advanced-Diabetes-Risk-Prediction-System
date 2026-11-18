@@ -41,6 +41,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import AIChatWidget from './AIChatWidget'
+import NotificationBell from './NotificationBell'
 
 export default function AuthenticatedLayout({ children }) {
   const location = useLocation()
@@ -367,40 +368,8 @@ export default function AuthenticatedLayout({ children }) {
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-3">
-            {/* Notifications Menu */}
-            <div className="relative" ref={notifRef}>
-              <button
-                type="button"
-                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 relative transition-colors"
-                title="Notifications"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full" />
-              </button>
-
-              {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-xl py-3 z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">Notifications</span>
-                    <span className="text-[10px] bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full">
-                      1 Unread
-                    </span>
-                  </div>
-                  <div className="p-3">
-                    <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 flex items-start gap-2.5">
-                      <ShieldCheck className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                      <div className="text-xs text-slate-700">
-                        <p className="font-semibold text-slate-900">System Ready</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          Logistic Regression model pipeline (Phase 5 frozen artifact) active and verified.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Notifications Menu — Phase 6.20 NotificationBell */}
+            <NotificationBell />
 
             {/* Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>

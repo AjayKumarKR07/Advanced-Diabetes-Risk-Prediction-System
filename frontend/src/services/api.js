@@ -228,4 +228,22 @@ export async function sendChatMessage(messages) {
   return data
 }
 
+/**
+ * POST /api/explain
+ * Get XAI feature contribution breakdown for a prediction
+ */
+export async function fetchExplanation(features, predictedClass) {
+  const { data } = await apiClient.post('/explain', { features, predicted_class: predictedClass })
+  return data
+}
+
+/**
+ * GET /api/notifications
+ * Fetch user health notifications and reminders
+ */
+export async function fetchNotifications() {
+  const { data } = await apiClient.get('/notifications')
+  return data
+}
+
 export default apiClient

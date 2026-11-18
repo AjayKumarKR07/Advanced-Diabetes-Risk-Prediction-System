@@ -31,6 +31,7 @@ export async function generateAssessmentReportPdf({
   inputs,
   personalInfo,
   user,
+  historicalStats = null,
 }) {
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({
@@ -1265,6 +1266,203 @@ export async function generatePersonalAnalyticsReportPdf({
   doc.text(doc.splitTextToSize(disc, contentWidth - 6), margin + 3, y + 8.5)
 
   addFooter(3)
+
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION 11: XAI FEATURE DIRECTION SUMMARY
+  // ═══════════════════════════════════════════════════════════════
+  if (y > pageHeight - 60) { doc.addPage(); y = margin; addHeader(); }
+
+  y += 8
+  doc.setFillColor(...colorNavy)
+  doc.rect(margin, y, contentWidth, 7, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(255, 255, 255)
+  doc.text('Section 11 — AI Explanation: Feature Direction Summary', margin + 3, y + 4.5)
+  y += 11
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorSlate)
+  doc.text(
+    'The following health factors are associated with the predicted class based on logistic regression coefficient analysis. This is for educational purposes only — correlation, not causation.',
+    margin, y, { maxWidth: contentWidth }
+  )
+  y += 10
+
+  const xaiByClass = {
+    0: [
+      ['BMI', 'Lower values associated with Class 0'],
+      ['High Blood Pressure', 'Absent in Class 0 group'],
+      ['General Health', 'Better self-reported health'],
+      ['Physical Activity', 'Regular exercise present'],
+      ['Income Level', 'Higher income bracket'],
+    ],
+    1: [
+      ['BMI', 'Elevated BMI associated with pre-diabetes'],
+      ['High Blood Pressure', 'Often co-present'],
+      ['Age', 'Middle-age bracket more common'],
+      ['Physical Activity', 'Reduced activity level'],
+      ['Fruits/Vegetables', 'Lower dietary quality'],
+    ],
+    2: [
+      ['BMI', 'High BMI strongly associated with Class 2'],
+      ['High Blood Pressure', 'Very high co-occurrence'],
+      ['General Health', 'Poor self-reported health'],
+      ['Age', 'Older age groups predominant'],
+      ['Difficulty Walking', 'Often co-reported'],
+    ],
+  }
+
+  const pClass = result?.predicted_class ?? 0
+  const xaiRows = xaiByClass[pClass] || xaiByClass[0]
+
+  // Table header
+  doc.setFillColor(...colorLightBg)
+  doc.setDrawColor(...colorBorder)
+  doc.rect(margin, y, contentWidth, 6, 'FD')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(6.5)
+  doc.setTextColor(...colorNavy)
+  doc.text('Health Factor', margin + 3, y + 4)
+  doc.text('Contribution Direction', margin + 70, y + 4)
+  y += 6
+
+  xaiRows.forEach(([factor, direction], idx) => {
+    const rowBg = idx % 2 === 0 ? [255, 255, 255] : [248, 250, 252]
+    doc.setFillColor(...rowBg)
+    doc.rect(margin, y, contentWidth, 5.5, 'F')
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.2)
+    doc.setTextColor(...colorSlate)
+    doc.text(factor, margin + 3, y + 3.5)
+    doc.text(direction, margin + 70, y + 3.5)
+    y += 5.5
+  })
+
+  y += 4
+  doc.setFont('helvetica', 'italic')
+  doc.setFontSize(5.8)
+  doc.setTextColor(150, 150, 150)
+  doc.text('These directions are derived from logistic regression coefficients and represent population-level statistical associations, not individual-level causal factors.', margin, y, { maxWidth: contentWidth })
+  y += 8
+
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION 12: LONGITUDINAL HEALTH SUMMARY
+  // ═══════════════════════════════════════════════════════════════
+  if (y > pageHeight - 55) { doc.addPage(); y = margin; addHeader(); }
+
+  y += 4
+  doc.setFillColor(...colorNavy)
+  doc.rect(margin, y, contentWidth, 7, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(255, 255, 255)
+  doc.text('Section 12 — Longitudinal Health Summary', margin + 3, y + 4.5)
+  y += 11
+
+  if (historicalStats) {
+    const statsRows = [
+      ['Total Assessments Completed', String(historicalStats.totalAssessments ?? 'N/A')],
+      ['Average BMI (All Assessments)', historicalStats.avgBmi ? historicalStats.avgBmi.toFixed(1) : 'N/A'],
+      ['Most Recent Risk Class', historicalStats.latestClass ?? 'N/A'],
+      ['Trend', historicalStats.trend ?? 'Insufficient data'],
+    ]
+    statsRows.forEach(([label, value], idx) => {
+      const rowBg = idx % 2 === 0 ? [255, 255, 255] : [248, 250, 252]
+      doc.setFillColor(...rowBg)
+      doc.setDrawColor(...colorBorder)
+      doc.rect(margin, y, contentWidth, 5.5, 'FD')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(6.2)
+      doc.setTextColor(...colorNavy)
+      doc.text(label, margin + 3, y + 3.5)
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(...colorSlate)
+      doc.text(value, margin + 90, y + 3.5)
+      y += 5.5
+    })
+  } else {
+    doc.setFillColor(...colorLightBg)
+    doc.setDrawColor(...colorBorder)
+    doc.roundedRect(margin, y, contentWidth, 12, 1.5, 1.5, 'FD')
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    doc.setTextColor(...colorSlate)
+    doc.text(
+      'Complete additional assessments over time to unlock longitudinal health tracking and trend analysis.',
+      margin + 3, y + 7, { maxWidth: contentWidth - 6 }
+    )
+    y += 14
+  }
+
+  y += 6
+
+  // ═══════════════════════════════════════════════════════════════
+  // SECTION 13: ACTIONABLE HEALTH EDUCATION NOTES
+  // ═══════════════════════════════════════════════════════════════
+  if (y > pageHeight - 60) { doc.addPage(); y = margin; addHeader(); }
+
+  doc.setFillColor(...colorNavy)
+  doc.rect(margin, y, contentWidth, 7, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(255, 255, 255)
+  doc.text('Section 13 — Actionable Health Education Notes', margin + 3, y + 4.5)
+  y += 11
+
+  const actionableNotes = {
+    0: [
+      'Maintain your current healthy lifestyle habits — they are associated with lower metabolic risk.',
+      'Schedule routine annual check-ups including fasting glucose and HbA1c if you are over 45 or have family history.',
+      'Continue regular physical activity (≥150 min/week moderate aerobic exercise per CDC guidelines).',
+      'Sustain a balanced diet rich in vegetables, whole grains, and lean proteins.',
+    ],
+    1: [
+      'Pre-diabetes indicators detected — lifestyle intervention is highly effective at this stage.',
+      'Aim for at least 150 minutes of moderate aerobic activity per week (brisk walking, cycling).',
+      'Reduce refined carbohydrate and added sugar intake; increase dietary fibre.',
+      'Consult your physician for a formal fasting plasma glucose or HbA1c test to confirm metabolic status.',
+      'Even a 5–7% reduction in body weight can significantly reduce progression risk (DPP Trial evidence).',
+    ],
+    2: [
+      'Diabetes-associated risk profile detected — please consult a physician for clinical evaluation.',
+      'Request formal laboratory testing: HbA1c (goal: <7.0% if treated) and Fasting Plasma Glucose.',
+      'Work with a registered dietitian on a structured meal plan emphasising glycaemic index management.',
+      'Engage in supervised physical activity appropriate to your fitness level.',
+      'Monitor blood pressure and cholesterol as cardiovascular risk is elevated in this population group.',
+      'IMPORTANT: This model output is NOT a diagnosis. Only a licensed clinician can diagnose diabetes.',
+    ],
+  }
+
+  const notes = actionableNotes[pClass] || actionableNotes[0]
+
+  notes.forEach((note, idx) => {
+    if (y > pageHeight - 20) { doc.addPage(); y = margin; addHeader(); }
+    const rowBg = idx % 2 === 0 ? [255, 255, 255] : [248, 250, 252]
+    doc.setFillColor(...rowBg)
+    doc.setDrawColor(...colorBorder)
+    const noteLines = doc.splitTextToSize(`${idx + 1}. ${note}`, contentWidth - 6)
+    const noteH = noteLines.length * 4 + 3
+    doc.rect(margin, y, contentWidth, noteH, 'FD')
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.2)
+    doc.setTextColor(...colorSlate)
+    doc.text(noteLines, margin + 3, y + 4)
+    y += noteH + 1
+  })
+
+  y += 4
+  doc.setFont('helvetica', 'italic')
+  doc.setFontSize(5.8)
+  doc.setTextColor(150, 150, 150)
+  doc.text(
+    'Educational guidance only. DiabetesRisk AI is not an FDA-cleared medical device. Always consult a licensed healthcare provider before making health decisions.',
+    margin, y, { maxWidth: contentWidth }
+  )
+  y += 8
 
   // Save PDF
   const filename = `DiabetesRisk_AI_Personal_Analytics_${user?.id || 'Report'}.pdf`

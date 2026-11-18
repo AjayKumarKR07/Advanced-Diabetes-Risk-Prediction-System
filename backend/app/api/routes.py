@@ -17,6 +17,8 @@ from backend.app.api.analytics_routes import analytics_router
 from backend.app.api.auth_routes import auth_router
 from backend.app.api.insights_routes import insights_router
 from backend.app.api.chat_routes import chat_router
+from backend.app.api.explain_routes import explain_router
+from backend.app.api.notifications_routes import notifications_router
 from backend.app.core.config import settings
 from backend.app.core.database import check_db_connection, get_db
 from backend.app.core.security import get_current_user, get_optional_user, verify_password
@@ -56,6 +58,12 @@ api_router.include_router(insights_router)
 
 # Mount AI Health Assistant chat route (/api/chat)
 api_router.include_router(chat_router)
+
+# Mount XAI explain route (/api/explain)
+api_router.include_router(explain_router)
+
+# Mount Notifications route (/api/notifications)
+api_router.include_router(notifications_router)
 
 
 # ---------------------------------------------------------------------------

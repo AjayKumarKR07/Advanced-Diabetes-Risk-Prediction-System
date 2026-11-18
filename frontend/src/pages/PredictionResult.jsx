@@ -61,6 +61,7 @@ import {
   FileCheck,
 } from 'lucide-react'
 import DisclaimerBanner from '../components/DisclaimerBanner'
+import FeatureContributionCard from '../components/FeatureContributionCard'
 import { useAuth } from '../context/AuthContext'
 import {
   fetchPredictions,
@@ -258,6 +259,7 @@ export default function PredictionResult() {
           assessmentDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         },
         user,
+        historicalStats: null,
       })
     } catch (err) {
       console.error('PDF export failed:', err)
@@ -1220,6 +1222,14 @@ export default function PredictionResult() {
             </p>
           </div>
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* SECTION 7B: AI FEATURE CONTRIBUTION BREAKDOWN (Phase 6.20 XAI)      */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        <FeatureContributionCard
+          features={inputs}
+          predictedClass={result?.predicted_class}
+        />
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* SECTION 8: LONGITUDINAL HISTORICAL COMPARISON                       */}
