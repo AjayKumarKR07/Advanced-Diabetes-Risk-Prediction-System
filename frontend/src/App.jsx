@@ -27,6 +27,8 @@ const Profile = lazy(() => import('./pages/Profile'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Register = lazy(() => import('./pages/Register'))
 const Login = lazy(() => import('./pages/Login'))
+const Analytics = lazy(() => import('./pages/Analytics'))
+const Insights = lazy(() => import('./pages/Insights'))
 
 /**
  * Lightweight loading spinner fallback while lazy chunks load.
@@ -151,6 +153,8 @@ export default function App() {
             <Route path="/history" element={<History />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/insights" element={<Insights />} />
           </Route>
         </Routes>
       </Suspense>

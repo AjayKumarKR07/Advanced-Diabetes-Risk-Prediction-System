@@ -36,6 +36,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   ExternalLink,
+  BarChart2,
+  Lightbulb,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import AIChatWidget from './AIChatWidget'
@@ -86,6 +88,8 @@ export default function AuthenticatedLayout({ children }) {
   const NAV_ITEMS = [
     { name: 'New Assessment', path: '/assess', icon: PlusCircle, badge: 'New' },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Analytics', path: '/analytics', icon: BarChart2 },
+    { name: 'Insights', path: '/insights', icon: Lightbulb },
     { name: 'History', path: '/history', icon: Clock },
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
@@ -99,6 +103,8 @@ export default function AuthenticatedLayout({ children }) {
     '/profile': 'User Profile Management',
     '/settings': 'Account & Security Settings',
     '/result': 'Assessment Results & Analysis',
+    '/analytics': 'Health Analytics',
+    '/insights': 'Health Insights',
   }
   const currentTitle = PAGE_TITLES[location.pathname] || 'DiabetesRisk AI'
 
