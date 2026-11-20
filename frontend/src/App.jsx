@@ -29,6 +29,9 @@ const Register = lazy(() => import('./pages/Register'))
 const Login = lazy(() => import('./pages/Login'))
 const Analytics = lazy(() => import('./pages/Analytics'))
 const Insights = lazy(() => import('./pages/Insights'))
+const HealthReports = lazy(() => import('./pages/HealthReports'))
+const AuthModelPerformance = lazy(() => import('./pages/AuthModelPerformance'))
+const Notifications = lazy(() => import('./pages/Notifications'))
 
 /**
  * Lightweight loading spinner fallback while lazy chunks load.
@@ -155,6 +158,9 @@ export default function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/insights" element={<Insights />} />
+            <Route path="/reports" element={<HealthReports />} />
+            <Route path="/model-performance" element={<AuthModelPerformance />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
         </Routes>
       </Suspense>

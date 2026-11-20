@@ -38,6 +38,9 @@ import {
   ExternalLink,
   BarChart2,
   Lightbulb,
+  FileText,
+  Cpu,
+  BellRing,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import AIChatWidget from './AIChatWidget'
@@ -85,16 +88,36 @@ export default function AuthenticatedLayout({ children }) {
     navigate('/login')
   }
 
-  // Exact ordered navigation items required by Phase 6.11 specification
-  const NAV_ITEMS = [
-    { name: 'New Assessment', path: '/assess', icon: PlusCircle, badge: 'New' },
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Analytics', path: '/analytics', icon: BarChart2 },
-    { name: 'Insights', path: '/insights', icon: Lightbulb },
-    { name: 'History', path: '/history', icon: Clock },
-    { name: 'Profile', path: '/profile', icon: User },
-    { name: 'Settings', path: '/settings', icon: Settings },
+  // Phase 6.17.1 — Grouped sidebar navigation
+  const NAV_GROUPS = [
+    {
+      heading: 'Workspace',
+      items: [
+        { name: 'New Assessment', path: '/assess', icon: PlusCircle, badge: 'New' },
+        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+        { name: 'Analytics', path: '/analytics', icon: BarChart2 },
+        { name: 'Health Insights', path: '/insights', icon: Lightbulb },
+        { name: 'Assessment History', path: '/history', icon: Clock },
+      ],
+    },
+    {
+      heading: 'Research & Reports',
+      items: [
+        { name: 'Health Reports', path: '/reports', icon: FileText },
+        { name: 'Model Performance', path: '/model-performance', icon: Cpu },
+        { name: 'Notifications', path: '/notifications', icon: BellRing },
+      ],
+    },
+    {
+      heading: 'Account',
+      items: [
+        { name: 'Profile', path: '/profile', icon: User },
+        { name: 'Settings', path: '/settings', icon: Settings },
+      ],
+    },
   ]
+  // Flat list for mobile (same items)
+  const NAV_ITEMS = NAV_GROUPS.flatMap((g) => g.items)
 
   // Page title mapping
   const PAGE_TITLES = {
@@ -156,39 +179,45 @@ export default function AuthenticatedLayout({ children }) {
           </button>
         </div>
 
-        {/* Navigation Menu */}
-        <div className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
-          {!collapsed && (
-            <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              Application Menu
+        {/* Navigation Menu — Grouped (Phase 6.17.1) */}
+        <div className="flex-1 py-4 px-3 overflow-y-auto space-y-4">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.heading}>
+              {!collapsed && (
+                <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  {group.heading}
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon
+                  const isActive = location.pathname === item.path
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100/80 font-bold'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      } ${collapsed ? 'justify-center px-0' : ''}`}
+                      title={collapsed ? item.name : undefined}
+                    >
+                      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                      {!collapsed && (
+                        <span className="truncate flex-1">{item.name}</span>
+                      )}
+                      {!collapsed && item.badge && !isActive && (
+                        <span className="text-[10px] bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-full border border-teal-200">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
-          )}
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.path
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100/80 font-bold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-                } ${collapsed ? 'justify-center px-0' : ''}`}
-                title={collapsed ? item.name : undefined}
-              >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                {!collapsed && (
-                  <span className="truncate flex-1">{item.name}</span>
-                )}
-                {!collapsed && item.badge && !isActive && (
-                  <span className="text-[10px] bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-full border border-teal-200">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            )
-          })}
+          ))}
         </div>
 
         {/* Public Homepage Link */}
@@ -276,41 +305,50 @@ export default function AuthenticatedLayout({ children }) {
           </button>
         </div>
 
-        <div className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
-          <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Navigation Menu
-          </div>
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.path
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 font-bold border border-blue-100'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                <span className="flex-1">{item.name}</span>
-                {item.badge && !isActive && (
-                  <span className="text-[10px] bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-full border border-teal-200">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            )
-          })}
+        <div className="flex-1 py-4 px-4 overflow-y-auto space-y-4">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.heading}>
+              <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                {group.heading}
+              </div>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon
+                  const isActive = location.pathname === item.path
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 font-bold border border-blue-100'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                      <span className="flex-1">{item.name}</span>
+                      {item.badge && !isActive && (
+                        <span className="text-[10px] bg-teal-50 text-teal-700 font-bold px-2 py-0.5 rounded-full border border-teal-200">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
 
-          <div className="pt-4 border-t border-slate-100">
+          <div className="pt-2 border-t border-slate-100">
+            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              External
+            </div>
             <Link
               to="/"
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-50"
             >
               <ExternalLink className="w-4 h-4 text-slate-400" />
-              <span>Public Homepage</span>
+              <span>Public Portal</span>
             </Link>
           </div>
         </div>
