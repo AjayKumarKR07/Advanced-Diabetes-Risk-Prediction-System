@@ -32,6 +32,8 @@ const Insights = lazy(() => import('./pages/Insights'))
 const HealthReports = lazy(() => import('./pages/HealthReports'))
 const AuthModelPerformance = lazy(() => import('./pages/AuthModelPerformance'))
 const Notifications = lazy(() => import('./pages/Notifications'))
+const ResearchMethodology = lazy(() => import('./pages/ResearchMethodology'))
+const HelpAbout = lazy(() => import('./pages/HelpAbout'))
 
 /**
  * Lightweight loading spinner fallback while lazy chunks load.
@@ -161,6 +163,8 @@ export default function App() {
             <Route path="/reports" element={<HealthReports />} />
             <Route path="/model-performance" element={<AuthModelPerformance />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/research" element={<ResearchMethodology />} />
+            <Route path="/help" element={<HelpAbout />} />
           </Route>
         </Routes>
       </Suspense>

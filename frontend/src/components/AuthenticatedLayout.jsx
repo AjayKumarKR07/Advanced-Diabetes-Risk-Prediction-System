@@ -41,6 +41,8 @@ import {
   FileText,
   Cpu,
   BellRing,
+  BookOpen,
+  HelpCircle,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import AIChatWidget from './AIChatWidget'
@@ -88,35 +90,42 @@ export default function AuthenticatedLayout({ children }) {
     navigate('/login')
   }
 
-  // Phase 6.17.1 — Grouped sidebar navigation
+  // Phase 6.17.2 — Grouped sidebar navigation (spec-ordered)
   const NAV_GROUPS = [
     {
       heading: 'Workspace',
       items: [
-        { name: 'New Assessment', path: '/assess', icon: PlusCircle, badge: 'New' },
         { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        { name: 'Analytics', path: '/analytics', icon: BarChart2 },
-        { name: 'Health Insights', path: '/insights', icon: Lightbulb },
+        { name: 'New Assessment', path: '/assess', icon: PlusCircle, badge: 'New' },
         { name: 'Assessment History', path: '/history', icon: Clock },
       ],
     },
     {
-      heading: 'Research & Reports',
+      heading: 'Health & Analytics',
       items: [
+        { name: 'Personal Analytics', path: '/analytics', icon: BarChart2 },
+        { name: 'Health Insights', path: '/insights', icon: Lightbulb },
         { name: 'Health Reports', path: '/reports', icon: FileText },
-        { name: 'Model Performance', path: '/model-performance', icon: Cpu },
-        { name: 'Notifications', path: '/notifications', icon: BellRing },
       ],
     },
     {
-      heading: 'Account',
+      heading: 'Research & Information',
       items: [
+        { name: 'Model Performance', path: '/model-performance', icon: Cpu },
+        { name: 'Research & Methodology', path: '/research', icon: BookOpen },
+      ],
+    },
+    {
+      heading: 'Account & Support',
+      items: [
+        { name: 'Notifications', path: '/notifications', icon: BellRing },
         { name: 'Profile', path: '/profile', icon: User },
         { name: 'Settings', path: '/settings', icon: Settings },
+        { name: 'Help & About', path: '/help', icon: HelpCircle },
       ],
     },
   ]
-  // Flat list for mobile (same items)
+  // Flat list (mobile uses NAV_GROUPS directly now)
   const NAV_ITEMS = NAV_GROUPS.flatMap((g) => g.items)
 
   // Page title mapping
