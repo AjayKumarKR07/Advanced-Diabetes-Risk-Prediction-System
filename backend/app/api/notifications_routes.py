@@ -110,7 +110,7 @@ def _build_notifications(user: User, db: Session) -> List[Notification]:
                         action_label="Start Reassessment",
                         action_url="/assess",
                         created_at=now_str,
-                        is_urgent=days_since >= 60,
+                        is_urgent=False,
                     ))
         except Exception as e:
             logger.debug("Could not compute reassessment reminder: %s", e)
@@ -140,7 +140,7 @@ def _build_notifications(user: User, db: Session) -> List[Notification]:
                     action_label="View Insights",
                     action_url="/insights",
                     created_at=pred_time_str,
-                    is_urgent=True,
+                    is_urgent=False,
                 ))
             elif pred_class == 1:
                 notifications.append(Notification(
@@ -195,8 +195,6 @@ def _build_notifications(user: User, db: Session) -> List[Notification]:
             created_at=now_str,
             is_urgent=False,
         ))
-
-    return notifications
 
     return notifications
 
