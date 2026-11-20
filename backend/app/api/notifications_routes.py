@@ -26,7 +26,8 @@ notifications_router = APIRouter(prefix="/notifications", tags=["Notifications"]
 
 class Notification(BaseModel):
     id: str
-    type: str               # "reminder" | "alert" | "info" | "success"
+    type: str               # "assessment" | "reminder" | "info" | "alert" | "success"
+    category: str = "informational"  # "assessment" | "informational"
     title: str
     message: str
     action_label: Optional[str] = None
@@ -41,71 +42,71 @@ class NotificationsResponse(BaseModel):
 
 
 def _build_notifications(user: User, db: Session) -> List[Notification]:
-    """Generate rule-based notifications from user's assessment history."""
+    """Generate rule-based notifications from user's actual assessment and prediction history."""
     notifications: List[Notification] = []
     now = datetime.now(timezone.utc)
     now_str = now.isoformat()
 
     try:
-        # Fetch user's assessments and predictions
-        assessments_result = db_service.get_user_assessments(db, user.id, page=1, page_size=100)
-
-        # Handle both list and paginated responses
-        if isinstance(assessments_result, dict):
-            assessments = assessments_result.get("items", []) or assessments_result.get("assessments", [])
-        elif isinstance(assessments_result, (list, tuple)):
-            assessments = list(assessments_result)
-        else:
-            assessments = []
-
-        total = len(assessments)
-
+        # Fetch user's assessments scoped strictly to user.id
+        _, assessments = db_service.list_assessments(db, page=1, page_size=100, user_id=user.id)
+        total_assessments = len(assessments)
     except Exception as e:
         logger.warning("Could not fetch assessments for notifications: %s", e)
         assessments = []
-        total = 0
+        total_assessments = 0
 
-    # 1. Welcome / first assessment prompt
-    if total == 0:
+    try:
+        # Fetch user's predictions scoped strictly to user.id
+        _, predictions = db_service.list_predictions(db, page=1, page_size=10, user_id=user.id)
+    except Exception as e:
+        logger.warning("Could not fetch predictions for notifications: %s", e)
+        predictions = []
+
+    # 1. Welcome / initial assessment prompt
+    if total_assessments == 0:
         notifications.append(Notification(
             id="first_assessment",
             type="info",
-            title="Welcome to DiabetesRisk AI! 👋",
-            message="Start your first health assessment to receive personalized risk insights powered by CDC BRFSS data.",
+            category="informational",
+            title="Welcome to DiabetesRisk AI 👋",
+            message="Complete your initial health assessment to evaluate 21 CDC BRFSS health indicators with our research model.",
             action_label="Start Assessment",
             action_url="/assess",
             created_at=now_str,
             is_urgent=False,
         ))
 
-    # 2. Second assessment prompt (after first)
-    if total == 1:
+    # 2. Longitudinal tracking prompt (after 1 assessment)
+    if total_assessments == 1:
         notifications.append(Notification(
             id="second_assessment",
             type="reminder",
-            title="Track Your Progress",
-            message="You have completed 1 assessment. Complete a second evaluation to start tracking your health trends over time.",
+            category="informational",
+            title="Longitudinal Tracking",
+            message="You have recorded 1 assessment. Additional assessments allow the system to analyze longitudinal changes over time.",
             action_label="New Assessment",
             action_url="/assess",
             created_at=now_str,
             is_urgent=False,
         ))
 
-    # 3. 30-day reassessment reminder
-    if total > 0 and assessments:
+    # 3. 30-day reassessment reminder (based on actual latest assessment date)
+    if total_assessments > 0 and assessments:
         try:
-            latest = assessments[0]
-            created = getattr(latest, "created_at", None)
+            latest_assessment = assessments[0]
+            created = getattr(latest_assessment, "created_at", None)
             if created:
                 if created.tzinfo is None:
                     created = created.replace(tzinfo=timezone.utc)
                 days_since = (now - created).days
                 if days_since >= 30:
                     notifications.append(Notification(
-                        id="reassessment_30d",
+                        id=f"reassessment_30d_{latest_assessment.id}",
                         type="reminder",
-                        title="30-Day Reassessment Due",
-                        message=f"It has been {days_since} days since your last health assessment. Regular check-ins help track changes in your risk profile.",
+                        category="informational",
+                        title="Periodic Reassessment Due",
+                        message=f"It has been {days_since} days since your last recorded assessment. Regular check-ins support accurate longitudinal tracking.",
                         action_label="Start Reassessment",
                         action_url="/assess",
                         created_at=now_str,
@@ -114,83 +115,88 @@ def _build_notifications(user: User, db: Session) -> List[Notification]:
         except Exception as e:
             logger.debug("Could not compute reassessment reminder: %s", e)
 
-    # 4. Risk-based alerts from latest prediction
-    if total > 0 and assessments:
+    # 4. Assessment-triggered notification from saved prediction record
+    # Canonical classes: Class 0 (No Diabetes), Class 1 (Prediabetes), Class 2 (Diabetes)
+    # Strictly non-diagnostic; uses saved predicted_class without probability threshold inference.
+    if predictions:
         try:
-            latest = assessments[0]
-            # Try to get prediction from latest assessment
-            predictions = db_service.get_user_predictions(db, user.id, page=1, page_size=1)
-            if isinstance(predictions, dict):
-                pred_items = predictions.get("items", []) or predictions.get("predictions", [])
-            elif isinstance(predictions, (list, tuple)):
-                pred_items = list(predictions)
-            else:
-                pred_items = []
+            latest_pred = predictions[0]
+            pred_class = getattr(latest_pred, "predicted_class", None)
 
-            if pred_items:
-                latest_pred = pred_items[0]
-                pred_class = getattr(latest_pred, "predicted_class", None)
+            pred_created = getattr(latest_pred, "created_at", None)
+            pred_time_str = (
+                pred_created.isoformat()
+                if pred_created and hasattr(pred_created, "isoformat")
+                else now_str
+            )
 
-                if pred_class == 2:  # Diabetes
-                    notifications.append(Notification(
-                        id="diabetes_alert",
-                        type="alert",
-                        title="⚠️ Elevated Diabetes Risk Detected",
-                        message="Your latest assessment shows an elevated diabetes risk indicator. This is NOT a diagnosis — please consult a qualified healthcare professional for clinical evaluation.",
-                        action_label="View Insights",
-                        action_url="/insights",
-                        created_at=now_str,
-                        is_urgent=True,
-                    ))
-                elif pred_class == 1:  # Prediabetes
-                    notifications.append(Notification(
-                        id="prediabetes_alert",
-                        type="alert",
-                        title="Prediabetes Risk Indicator",
-                        message="Your assessment indicates prediabetes-range risk factors. Lifestyle changes like regular exercise and balanced nutrition may significantly reduce progression risk.",
-                        action_label="View Health Insights",
-                        action_url="/insights",
-                        created_at=now_str,
-                        is_urgent=False,
-                    ))
-                elif pred_class == 0:  # No Diabetes
-                    notifications.append(Notification(
-                        id="healthy_badge",
-                        type="success",
-                        title="✅ Low Risk Profile",
-                        message="Your latest assessment shows low diabetes risk indicators. Maintain your healthy lifestyle and schedule regular check-ups.",
-                        action_label="View Analytics",
-                        action_url="/analytics",
-                        created_at=now_str,
-                        is_urgent=False,
-                    ))
+            if pred_class == 2:
+                notifications.append(Notification(
+                    id=f"assessment_pred_{latest_pred.id}",
+                    type="assessment",
+                    category="assessment",
+                    title="Assessment Result: Class 2 — Diabetes",
+                    message="Your latest assessment classification is Class 2 — Diabetes. This is an educational research model estimate, NOT a medical diagnosis. Please consult a qualified healthcare professional for clinical diagnostic evaluation.",
+                    action_label="View Insights",
+                    action_url="/insights",
+                    created_at=pred_time_str,
+                    is_urgent=True,
+                ))
+            elif pred_class == 1:
+                notifications.append(Notification(
+                    id=f"assessment_pred_{latest_pred.id}",
+                    type="assessment",
+                    category="assessment",
+                    title="Assessment Result: Class 1 — Prediabetes",
+                    message="Your latest assessment classification is Class 1 — Prediabetes. Note that the research model has documented sensitivity limitations (Recall: 30.89%) for this class. Consult a physician for formal clinical testing.",
+                    action_label="View Insights",
+                    action_url="/insights",
+                    created_at=pred_time_str,
+                    is_urgent=False,
+                ))
+            elif pred_class == 0:
+                notifications.append(Notification(
+                    id=f"assessment_pred_{latest_pred.id}",
+                    type="assessment",
+                    category="assessment",
+                    title="Assessment Result: Class 0 — No Diabetes",
+                    message="Your latest assessment classification is Class 0 — No Diabetes. Continue maintaining healthy habits, balanced nutrition, and routine primary care check-ups.",
+                    action_label="View Analytics",
+                    action_url="/analytics",
+                    created_at=pred_time_str,
+                    is_urgent=False,
+                ))
         except Exception as e:
-            logger.debug("Could not generate risk-based notification: %s", e)
+            logger.debug("Could not generate assessment-triggered notification: %s", e)
 
-    # 5. AI Assistant info (always shown)
+    # 5. AI Assistant guidance (informational)
     notifications.append(Notification(
         id="healthbot_info",
         type="info",
-        title="💬 HealthBot is Ready",
-        message="Ask HealthBot any question about your results, CDC health indicators, or diabetes risk factors. Click the chat bubble (bottom-right).",
+        category="informational",
+        title="Research Assistant (HealthBot)",
+        message="Consult HealthBot for questions regarding CDC BRFSS health indicators, validation metrics, or model methodology.",
         action_label=None,
         action_url=None,
         created_at=now_str,
         is_urgent=False,
     ))
 
-    # 6. Analytics reminder after 2+ assessments
-    if total >= 2:
+    # 6. Longitudinal analytics reminder (after 2+ assessments)
+    if total_assessments >= 2:
         notifications.append(Notification(
             id="analytics_available",
-            type="success",
-            title="📊 Analytics Now Available",
-            message=f"You have completed {total} assessments. Visit Analytics to view your BMI trends, risk distribution, and health score progression.",
+            type="info",
+            category="informational",
+            title="Longitudinal Analytics Available",
+            message=f"You have recorded {total_assessments} assessments. View longitudinal trends, indicator comparisons, and metric trajectories in Personal Analytics.",
             action_label="Open Analytics",
             action_url="/analytics",
             created_at=now_str,
             is_urgent=False,
         ))
+
+    return notifications
 
     return notifications
 

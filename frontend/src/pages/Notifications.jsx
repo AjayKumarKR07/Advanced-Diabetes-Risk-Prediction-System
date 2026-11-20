@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Loader2,
   Clock,
+  Activity,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { fetchNotifications } from '../services/api'
@@ -39,29 +40,38 @@ function saveStoredIds(ids) {
   } catch {}
 }
 
-function getNotifStyle(type) {
+function getNotifStyle(type, category) {
+  if (type === 'assessment' || category === 'assessment') {
+    return {
+      icon: <Activity className="w-4 h-4 text-blue-600" />,
+      border: 'border-l-blue-600',
+      badge: 'bg-blue-50 text-blue-700 border-blue-200',
+      label: 'Assessment',
+    }
+  }
+
   switch (type) {
+    case 'reminder':
+      return {
+        icon: <Calendar className="w-4 h-4 text-indigo-500" />,
+        border: 'border-l-indigo-500',
+        badge: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+        label: 'Reminder',
+      }
     case 'alert':
     case 'urgent':
       return {
-        icon: <AlertTriangle className="w-4 h-4 text-red-500" />,
-        border: 'border-l-red-500',
-        badge: 'bg-red-50 text-red-700 border-red-200',
-        label: 'Alert',
-      }
-    case 'reminder':
-      return {
-        icon: <Calendar className="w-4 h-4 text-amber-500" />,
+        icon: <AlertTriangle className="w-4 h-4 text-amber-500" />,
         border: 'border-l-amber-500',
         badge: 'bg-amber-50 text-amber-700 border-amber-200',
-        label: 'Reminder',
+        label: 'Notice',
       }
     case 'success':
       return {
         icon: <CheckCheck className="w-4 h-4 text-emerald-500" />,
         border: 'border-l-emerald-500',
         badge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        label: 'Success',
+        label: 'Milestone',
       }
     case 'ai':
     case 'feature':
@@ -69,14 +79,14 @@ function getNotifStyle(type) {
         icon: <Sparkles className="w-4 h-4 text-purple-500" />,
         border: 'border-l-purple-500',
         badge: 'bg-purple-50 text-purple-700 border-purple-200',
-        label: 'Feature',
+        label: 'Research',
       }
     default:
       return {
-        icon: <Info className="w-4 h-4 text-blue-500" />,
-        border: 'border-l-blue-500',
-        badge: 'bg-blue-50 text-blue-700 border-blue-200',
-        label: 'Info',
+        icon: <Info className="w-4 h-4 text-slate-500" />,
+        border: 'border-l-slate-400',
+        badge: 'bg-slate-50 text-slate-700 border-slate-200',
+        label: 'Information',
       }
   }
 }
@@ -154,9 +164,13 @@ export default function Notifications() {
   }
 
   const unreadCount = notifications.filter((n) => !readIds.includes(n.id)).length
+  const assessmentCount = notifications.filter((n) => n.category === 'assessment' || n.type === 'assessment').length
+
   const displayedNotifications =
     filter === 'unread'
       ? notifications.filter((n) => !readIds.includes(n.id))
+      : filter === 'assessment'
+      ? notifications.filter((n) => n.category === 'assessment' || n.type === 'assessment')
       : notifications
 
   return (
@@ -195,17 +209,21 @@ export default function Notifications() {
       <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
         {/* Filter tabs */}
         <div className="flex gap-1">
-          {['all', 'unread'].map((f) => (
+          {[
+            { id: 'all', label: `All (${notifications.length})` },
+            { id: 'assessment', label: `Assessments (${assessmentCount})` },
+            { id: 'unread', label: `Unread (${unreadCount})` },
+          ].map((tab) => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              key={tab.id}
+              onClick={() => setFilter(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${
-                filter === f
+                filter === tab.id
                   ? 'bg-blue-50 text-blue-700 border border-blue-200'
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
               }`}
             >
-              {f === 'all' ? `All (${notifications.length})` : `Unread (${unreadCount})`}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -265,7 +283,7 @@ export default function Notifications() {
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-50">
           {displayedNotifications.map((notif) => {
             const isRead = readIds.includes(notif.id)
-            const style = getNotifStyle(notif.type)
+            const style = getNotifStyle(notif.type, notif.category)
 
             return (
               <div

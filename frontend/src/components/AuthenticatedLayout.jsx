@@ -5,13 +5,12 @@
  * 
  * Features:
  * - Persistent desktop left sidebar with collapsible mode (icons + labels or compact icons)
- * - Exact ordered sidebar navigation:
- *     1. New Assessment — /assess
- *     2. Dashboard — /dashboard
- *     3. History — /history
- *     4. Profile — /profile
- *     5. Settings — /settings
- *     + Logout at bottom
+ * - 4-Group navigation hierarchy (12 authenticated pages):
+ *     Workspace: Dashboard (/dashboard), New Assessment (/assess), Assessment History (/history)
+ *     Health & Analytics: Personal Analytics (/analytics), Health Insights (/insights), Health Reports (/reports)
+ *     Research & Information: Model Performance (/model-performance), Research & Methodology (/research)
+ *     Account & Support: Notifications (/notifications), Profile (/profile), Settings (/settings), Help & About (/help)
+ *     + Public Portal (/) & Logout at bottom
  * - Responsive mobile navigation drawer with backdrop
  * - Top sticky header with dynamic page title, notification bell, and user avatar dropdown
  * - Seamless integration with AuthContext
@@ -130,14 +129,19 @@ export default function AuthenticatedLayout({ children }) {
 
   // Page title mapping
   const PAGE_TITLES = {
-    '/assess': 'New Health Assessment',
     '/dashboard': 'Patient Dashboard',
+    '/assess': 'New Health Assessment',
     '/history': 'Assessment History',
+    '/analytics': 'Personal Health Analytics',
+    '/insights': 'Clinical Health Insights',
+    '/reports': 'Personal Health Reports',
+    '/model-performance': 'Model Performance & Validation',
+    '/research': 'Research & Methodology',
+    '/notifications': 'Notifications & Reminders',
     '/profile': 'User Profile Management',
     '/settings': 'Account & Security Settings',
+    '/help': 'Help & Documentation',
     '/result': 'Assessment Results & Analysis',
-    '/analytics': 'Health Analytics',
-    '/insights': 'Health Insights',
   }
   const currentTitle = PAGE_TITLES[location.pathname] || 'DiabetesRisk AI'
 

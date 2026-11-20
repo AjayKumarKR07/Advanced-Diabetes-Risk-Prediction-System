@@ -8,7 +8,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell, X, CheckCheck, AlertTriangle, Info, Calendar, Sparkles } from 'lucide-react'
+import { Bell, X, CheckCheck, AlertTriangle, Info, Calendar, Sparkles, Activity } from 'lucide-react'
 import { fetchNotifications } from '../services/api'
 
 const STORAGE_KEY = 'diabetes_ai_notifs_read'
@@ -17,18 +17,24 @@ const POLL_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
 /** Map notification type → icon + colour scheme */
 function getNotifStyle(type) {
   switch (type) {
+    case 'assessment':
+      return {
+        icon: <Activity className="w-4 h-4 text-blue-600" />,
+        border: 'border-l-blue-600',
+        bg: 'bg-blue-50/70',
+      }
     case 'alert':
     case 'urgent':
       return {
-        icon: <AlertTriangle className="w-4 h-4 text-red-500" />,
-        border: 'border-l-red-500',
-        bg: 'bg-red-50',
+        icon: <AlertTriangle className="w-4 h-4 text-amber-500" />,
+        border: 'border-l-amber-500',
+        bg: 'bg-amber-50',
       }
     case 'reminder':
       return {
-        icon: <Calendar className="w-4 h-4 text-amber-500" />,
-        border: 'border-l-amber-500',
-        bg: 'bg-amber-50',
+        icon: <Calendar className="w-4 h-4 text-indigo-500" />,
+        border: 'border-l-indigo-500',
+        bg: 'bg-indigo-50',
       }
     case 'success':
       return {
@@ -45,9 +51,9 @@ function getNotifStyle(type) {
       }
     default:
       return {
-        icon: <Info className="w-4 h-4 text-blue-500" />,
-        border: 'border-l-blue-500',
-        bg: 'bg-blue-50',
+        icon: <Info className="w-4 h-4 text-slate-500" />,
+        border: 'border-l-slate-400',
+        bg: 'bg-slate-50',
       }
   }
 }
@@ -195,7 +201,7 @@ export default function NotificationBell() {
             ) : (
               notifications.map((notif) => {
                 const isRead = readIds.includes(notif.id)
-                const style = getNotifStyle(notif.type)
+                const style = getNotifStyle(notif.type, notif.category)
                 return (
                   <div
                     key={notif.id}
